@@ -1,6 +1,6 @@
 # Mietshop
 
-## Technical requirements
+## Technical Requirements
 
 * MySQL DBMS
 * Bootstrap 5.3
@@ -8,33 +8,59 @@
 * Mail server with SMTP support
 * PHP 8.x webserver with file access and text editor
 
+---
+
 ## Features
 
 ### CMS
 
-Upload, edit or delete
+Upload, edit, or delete:
 
-* rental objects (e.g. title, description, price options, photos, stock amount)
-* legal information (imprint, data privacy, business conditions)
-* social media links in your footer
-* business information (e.g. company name, CEO, contact)
-* database entries via your own interface (expert mode - with caution)
+* Rental objects (e.g., title, description, price options, photos, stock amount)
+* Legal information (imprint, data privacy, business conditions)
+* Social media links in the footer
+* Business information (e.g., company name, CEO, contact)
+* Database entries via your own interface (expert mode – handle with caution)
 
-### Consent banner
+### Consent Banner
 
-* activate or disable services (e.g. Google Maps) when visiting the website the first time (due to legal aspects of EU)
-* tells the visitor briefly which services are offered and which cookies exactly
+* Activate or disable services (e.g., Google Maps) upon first visit (to comply with EU regulations)
+* Briefly informs the visitor which services and cookies are in use
 
-## Planned features
+---
+
+## Planned Features
 
 ### CMS
 
-* news feed on the landing page (**planned**)
+* News feed on the landing page (**planned**)
 
-### MVC
+### MVP Architecture
 
-Model-View-Controller architecture is being planned to be implemented step-by-step.
-Goal is using interfaces,
-regarding the SOLID principles / clean architecture.
+* Model-View-Presenter (MVP) architecture is planned to be implemented step-by-step.
+* MVC is considered unsuitable because it does not fully separate the view from the model, which can lead to business or data logic leaking into the view.
+* MVP is preferred for easier view replacement and better adherence to SOLID principles and clean architecture.
+* Interfaces and abstract classes are being used to define contracts and reusable base functionality while keeping components decoupled.
 
-#### Author and copyright by: Janek Piekarski
+---
+
+## Architecture Overview
+
++-----------+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+------------------+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+-----------+ <br>
+|&nbsp;&nbsp;&nbsp;Model&nbsp;&nbsp;&nbsp;|&nbsp;<--->&nbsp;|&nbsp;&nbsp;&nbsp;Presenter&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;<---> |&nbsp;&nbsp;&nbsp;View&nbsp;&nbsp;&nbsp;&nbsp;| <br>
++-----------+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+------------------+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+-----------+
+
+* The **Model** manages all data operations (`fetch`, `insert`, `delete`).
+* The **Presenter** coordinates the interaction between Model and View, prepares data, and decides which View to render.
+* The **View** is “dumb”: it only displays the data provided by the Presenter and forwards user actions back to the Presenter.
+* A **Router** is used on the landing page to choose the suitable Presenter in the beginning (you need an entry point of course)
+
+---
+
+## Coding Principles
+
+* Interfaces are used to define contracts between components.
+* Abstract classes provide base functionality for reusability.
+* Dependency Injection is applied where possible to decouple components.
+* Lazy loading can be applied for Models and Views to optimize performance.
+* The architecture follows SOLID principles to ensure maintainability, testability, and flexibility.  
