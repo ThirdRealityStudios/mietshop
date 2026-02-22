@@ -2,9 +2,9 @@
 
 namespace de\thirdrealitystudios\mietshop\app\controller;
 
-use de\thirdrealitystudios\mietshop\framework\interface\IController;
+use de\thirdrealitystudios\mietshop\framework\interface\IPresenter;
 
-class HomeIController implements IController
+class HomePresenter implements IPresenter
 {
     public function process(array $get, array $post) : void
     {

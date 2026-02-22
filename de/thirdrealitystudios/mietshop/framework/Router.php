@@ -4,10 +4,10 @@ namespace de\thirdrealitystudios\mietshop\framework;
 
 use de\thirdrealitystudios\mietshop\framework\interface\IRouter;
 
-class IRouter implements IRouter
+class Router implements IRouter
 {
-    public function route(array $get, array $post) : void
+    public function route() : void
     {
-
+        
     }
 }

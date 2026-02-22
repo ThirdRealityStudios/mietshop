@@ -13,7 +13,7 @@
 	const LANG_ARTICLE_OBJECT_NAME_SINGLE = "Objekt"; // e.g. "Rental object" (= German: "Mietobjekt")
 	const LANG_ARTICLE_OBJECT_NAME_PLURAL = "Objekte"; // e.g. "Rental objects" (= German: "Mietobjekte")
 
-	// Simply the translation of "Invalid Request"
+	// Simply the translation of "Invalid HTTPRequestHeader"
 	const LANG_INVALID_REQUEST = "Ungültige Anfrage";
 
 	// Simply the translation of "Internal Processing Error"
