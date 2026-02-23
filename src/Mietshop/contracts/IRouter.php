@@ -1,8 +1,8 @@
 <?php
 
-namespace src\de\thirdrealitystudios\mietshop\infrastructure\interface;
+namespace src\mietshop\contracts;
 
-use src\de\thirdrealitystudios\mietshop\infrastructure\HTTPRequest;
+use src\mietshop\infrastructure\HTTPRequest;
 
 /**
  * A router is an addition to the MVP pattern because initially,

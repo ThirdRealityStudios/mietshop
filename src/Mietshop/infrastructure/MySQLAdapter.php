@@ -1,12 +1,11 @@
 <?php
 
-namespace src\de\thirdrealitystudios\mietshop\infrastructure;
+namespace src\mietshop\infrastructure;
 
 use PDO;
 use PDOException;
-use src\de\thirdrealitystudios\mietshop\infrastructure\interface\IModel;
 
-class MySQLModel implements IModel
+class MySQLAdapter
 {
     /**
      * Setup description before being able to use a database connection:
@@ -14,7 +13,7 @@ class MySQLModel implements IModel
      *
      * For XAMPP after first installation:
      *
-     * 1. open console / Shell via XAMPP interface
+     * 1. open console / Shell via XAMPP contracts
      *
      * 2. set your root password with:
      *
@@ -222,11 +221,18 @@ class MySQLModel implements IModel
     }
 
     /**
+     * Creates a valid SQL insertion command,
+     * using the provided table name (SQL FROM equivalent) and the values (string array) to insert.
+     *
+     * E.g. passing $tableName = "Account", $insertionValues = ["username123", "myPassword"] would result in:
+     *
+     * INSERT INTO Account(Username, Password) VALUES ('username123', 'myPassword') ON DUPLICATE KEY UPDATE Username=Username, Password=Password;
+     *
      * @param string $tableName
      * @param string ...$insertionValues
      * @return string|null Returns only NULL if no columns could be found for the given table as string parameter.
      */
-    public function genInsertSQL(string $tableName, string ...$insertionValues): ?string
+    private function genInsertSQL(string $tableName, string ...$insertionValues): ?string
     {
         $insertSQL = 'INSERT INTO '.$tableName.'(';
 
@@ -318,7 +324,7 @@ class MySQLModel implements IModel
      * @return bool True if the dataset could be created successfully. Otherwise, false (e.g. syntax error or DB error).
      * @throws PDOException
      */
-    public function create(mixed $destination, mixed $value): bool
+    public function insert(mixed $destination, mixed $value): bool
     {
         if(is_string($destination) && strlen($destination) > 0 && !str_contains($destination, " ") && is_string($value))
         {
@@ -328,63 +334,5 @@ class MySQLModel implements IModel
         {
             return false;
         }
-    }
-
-    /**
-     * @param mixed $key
-     * @param mixed $source
-     * @return mixed
-     */
-    public function read(mixed $key, mixed $source): mixed
-    {
-        // TODO: Implement read() method.
-    }
-
-    /**
-     * @param mixed $source
-     * @return array|null
-     */
-    public function readAll(mixed $source): ?array
-    {
-        // TODO: Implement readAll() method.
-    }
-
-    /**
-     * @param mixed $source
-     * @return array|null
-     */
-    public function readKeys(mixed $source): ?array
-    {
-        // TODO: Implement readKeys() method.
-    }
-
-    /**
-     * @param mixed $key
-     * @param mixed $value
-     * @param mixed $destination
-     * @return bool
-     */
-    public function update(mixed $key, mixed $value, mixed $destination): bool
-    {
-        // TODO: Implement update() method.
-    }
-
-    /**
-     * @param mixed $key
-     * @param mixed $destination
-     * @return bool
-     */
-    public function delete(mixed $key, mixed $destination): bool
-    {
-        // TODO: Implement delete() method.
-    }
-
-    /**
-     * @param mixed $destination
-     * @return bool
-     */
-    public function deleteAll(mixed $destination): bool
-    {
-        // TODO: Implement deleteAll() method.
     }
 }

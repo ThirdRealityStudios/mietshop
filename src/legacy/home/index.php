@@ -93,7 +93,7 @@
 			$essentials -> getViewFactory() -> echoFeed(NULL, $homeHintHTMLContent);
 			
 			//////////////////////////////////////////////////////////////////////////
-			///////// Below generation of all selectable buttons for the interface:
+			///////// Below generation of all selectable buttons for the contracts:
 
 			$managementInterface = '<div class="row">';
 			$managementInterface .= '<div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12"><p class="fs-2 text-center m-0">Meine Funktionen</p></div>';

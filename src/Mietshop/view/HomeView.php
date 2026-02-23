@@ -1,8 +1,8 @@
 <?php
 
-namespace src\de\thirdrealitystudios\mietshop\app\view;
+namespace src\mietshop\view;
 
-use src\de\thirdrealitystudios\mietshop\infrastructure\interface\IView;
+use src\mietshop\contracts\IView;
 
 class HomeView implements IView
 {

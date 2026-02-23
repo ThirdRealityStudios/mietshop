@@ -1,18 +1,16 @@
 <?php
 
-namespace src\de\thirdrealitystudios\mietshop\domain\model;
+namespace src\mietshop\model;
 
-use src\de\thirdrealitystudios\mietshop\infrastructure\interface\IModel;
+use src\mietshop\contracts\IModel;
 
-/**
- * Class which represents mostly company data,
- * which is displayed on almost every webpage or is legally mandatory,
- * such as imprint details (e.g. owner name, phone, e-mail),
- * your data privacy information,
- * your general business conditions (German: AGBs).
- */
-class GlobalModel implements IModel
+class HomeModel implements IModel
 {
+    public function __construct()
+    {
+
+    }
+    
     /**
      * @param mixed $value
      * @return bool

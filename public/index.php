@@ -1,7 +1,7 @@
 <?php
 
-use src\de\thirdrealitystudios\mietshop\infrastructure\HTTPRequest;
-use src\de\thirdrealitystudios\mietshop\infrastructure\Router;
+use src\mietshop\infrastructure\HTTPRequest;
+use src\mietshop\infrastructure\Router;
 
 function autoloader(string $class) : void
 {

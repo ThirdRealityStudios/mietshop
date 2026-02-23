@@ -1,6 +1,6 @@
 <?php
 
-namespace src\de\thirdrealitystudios\mietshop\infrastructure;
+namespace src\mietshop\infrastructure;
 
 class HTTPRequest
 {

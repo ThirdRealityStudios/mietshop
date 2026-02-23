@@ -1,6 +1,6 @@
 <?php
 
-namespace src\de\thirdrealitystudios\mietshop\infrastructure\interface;
+namespace src\mietshop\contracts;
 
 interface IView
 {
