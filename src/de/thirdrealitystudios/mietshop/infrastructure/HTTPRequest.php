@@ -1,6 +1,6 @@
 <?php
 
-namespace src\de\thirdrealitystudios\mietshop\framework;
+namespace src\de\thirdrealitystudios\mietshop\infrastructure;
 
 class HTTPRequest
 {
@@ -198,6 +198,4 @@ class HTTPRequest
     {
         return array_keys($this -> post);
     }
-
-
 }

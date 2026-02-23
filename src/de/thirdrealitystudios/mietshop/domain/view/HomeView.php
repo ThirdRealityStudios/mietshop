@@ -2,7 +2,7 @@
 
 namespace src\de\thirdrealitystudios\mietshop\app\view;
 
-use src\de\thirdrealitystudios\mietshop\framework\interface\IView;
+use src\de\thirdrealitystudios\mietshop\infrastructure\interface\IView;
 
 class HomeView implements IView
 {

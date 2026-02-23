@@ -1,11 +1,11 @@
 <?php
 
-namespace src\de\thirdrealitystudios\mietshop\framework\abstract;
+namespace src\de\thirdrealitystudios\mietshop\infrastructure\abstract;
 
-use src\de\thirdrealitystudios\mietshop\app\model\GlobalModel;
-use src\de\thirdrealitystudios\mietshop\framework\HTTPRequest;
-use src\de\thirdrealitystudios\mietshop\framework\interface\IModel;
-use src\de\thirdrealitystudios\mietshop\framework\interface\IView;
+use src\de\thirdrealitystudios\mietshop\domain\model\GlobalModel;
+use src\de\thirdrealitystudios\mietshop\infrastructure\HTTPRequest;
+use src\de\thirdrealitystudios\mietshop\infrastructure\interface\IModel;
+use src\de\thirdrealitystudios\mietshop\infrastructure\interface\IView;
 
 /**
  * You can use this abstract class to implement your own presenter which guides everything.

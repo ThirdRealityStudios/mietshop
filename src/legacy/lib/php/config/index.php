@@ -17,32 +17,7 @@
 	 * DATABASE CONFIG
 	 *
 	 */
-	// "xampp" is default empty database when installed phpMyAdmin.
-	const DB_NAME = "myWebsite";
-	
-	const DB_HOST = "localhost";
-	
-	// "root" is default user when installed phpMyAdmin.
-	const DB_USER = "root";
 
-	// For XAMPP after first installation:
-	// 
-	// 1. open console / Shell via XAMPP interface
-	// 
-	// 2. set your root password with: 
-	// 
-	//    mysqladmin --user=root password "myPassword"
-	// 
-	//    OR change an existing root password with:
-	// 
-	//    mysqladmin --user=root --password=myPassword password "myNewPassword"
-	// 
-	// 3. create database for your website with: 
-	// 
-	//    mysql --password=myPassword -u root -e "create database myWebsite";
-	// 
-	const DB_PASS = "myPassword";
-	
 	/*
 	 *
 	 * SMTP SERVER CONFIG

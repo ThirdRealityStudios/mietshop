@@ -1,13 +1,13 @@
 <?php
 
-use src\de\thirdrealitystudios\mietshop\framework\HTTPRequest;
-use src\de\thirdrealitystudios\mietshop\framework\Router;
+use src\de\thirdrealitystudios\mietshop\infrastructure\HTTPRequest;
+use src\de\thirdrealitystudios\mietshop\infrastructure\Router;
 
 function autoloader(string $class) : void
 {
     $class = str_replace("\\", DIRECTORY_SEPARATOR, $class);
 
-    // '..' in order to access the folder 'src' to start the web app.
+    // '..' in order to access the folder 'src' to start the web domain.
     require_once __DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.$class.'.php';
 }
 

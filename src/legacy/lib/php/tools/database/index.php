@@ -118,17 +118,7 @@
 		}
 		
 		// Connects to a given database.
-		private function connect(): ?PDO
-        {
-			try
-			{
-				return new PDO("mysql:host=".DB_HOST.";dbname=".DB_NAME, DB_USER, DB_PASS);
-			}
-			catch(PDOException $pe)
-			{
-				return NULL;
-			}
-		}
+
 
 		/**
 		 * Returns all tables (names) of the given database.
@@ -249,53 +239,6 @@
 		}
 
 		/**
-		 * Executes a SQL statement by preparing the statement and
-		 * creating a PDO object for each call to this function.
-		 *
-		 * Attention!
-		 *
-		 * Not suitable for queries, such as "SELECT", because there is no usable array returned!
-		 * For such cases use "select($column, $from, $where, $additionalSQL)" instead.
-		 *
-		 * @param string $sql SQL statement.
-		 * @return bool true if SQL execution on server was successful, otherwise false.
-		 */
-		public function perform(string $sql): bool
-		{
-			$pdo = $this -> connect();
-
-			if(!is_null($pdo))
-			{
-				try
-				{
-					$prepared = $pdo -> prepare($sql);
-
-					if($prepared !== false)
-					{
-						$success = $prepared -> execute();
-
-						// Close connection and give other statements the chance to be executed.
-						$success &= $prepared -> closeCursor();
-
-						return $success;
-					}
-					else
-					{
-						return false;
-					}
-				}
-				catch(PDOException $e)
-				{
-					return false;
-				}
-			}
-			else
-			{
-				return false;
-			}
-		}
-
-		/**
 		 * Replaces all special characters to different values to ensure safe SQL execution for values transmitted.
 		 */
 		public function getSQLSafeValue($value)
@@ -399,97 +342,6 @@
 		}
 
 		/**
-		 * SELECTs or SHOWs all elements of either a column or property by the where-condition given.
-		 * Uses PDO::FETCH_ASSOC.
-		 *
-		 * @param string $operation SQL operation. Can be either SELECT or SHOW.
-		 * @param string $target Either SQL column name or property name, e.g. INDEXES (for SHOW).
-		 * @param string $from SQL table.
-		 * @param string|NULL $where SQL condition (not including WHERE, only condition). Use NULL to ignore.
-		 * @param string|NULL $additionalSQL Additional SQL which follows after the WHERE or FROM statement. Use NULL to ignore.
-		 *
-		 * @return array|NULL Either the query results or NULL if the column or table was not found.
-		 */
-		public function query(string $operation, string $target, string $from, string|NULL $where, string|NULL $additionalSQL): ?array
-		{
-			$sqlSelect = "$operation $target FROM $from".($where === NULL ? "" : (" WHERE ".$where)).($additionalSQL === NULL ? "" : (" ".$additionalSQL)).";";
-
-			$pdo = $this -> connect();
-
-			if(!is_null($pdo))
-			{
-				$prepared = $pdo -> prepare($sqlSelect);
-
-				if($prepared !== false)
-				{
-					$isExecutionSuccessful = $prepared -> execute();
-
-					if($isExecutionSuccessful)
-					{
-						try
-						{
-							$fetchedArray = $prepared -> fetchAll(PDO::FETCH_ASSOC);
-
-							if(is_array($fetchedArray))
-							{
-								$isClosedSuccessfully = $prepared -> closeCursor();
-
-								// If the connection could not be closed successfully
-								// (although data might be fetched),
-								// it is preferred not to return the fetched data in order
-								// to let the dev or admin fix the actual closure problem.
-								// He will know because NULL is returned only all the time.
-								if($isClosedSuccessfully)
-								{
-									return $fetchedArray;
-								}
-								else
-								{
-									return NULL;
-								}
-							}
-							else
-							{
-								return NULL;
-							}
-						}
-						catch (PDOException $e)
-						{
-							return NULL;
-						}
-					}
-					else
-					{
-						return NULL;
-					}
-				}
-				else
-				{
-					return NULL;
-				}
-			}
-			else
-			{
-				return NULL;
-			}
-		}
-
-		/**
-		 * Selects all elements of a given column by the where-condition given.
-		 *
-		 * @param string $column SQL table column.
-		 * @param $from string SQL table.
-		 * @param string|NULL $where SQL condition (not including WHERE, only condition). Use NULL to ignore.
-		 * @param string|NULL $additionalSQL Additional SQL which follows after the WHERE or FROM statement. Use NULL to ignore.
-		 *
-		 * @return array|NULL Either the query results or NULL if the column or table was not found.
-		 */
-		public function select(string $column, string $from, string|NULL $where, string|NULL $additionalSQL): ?array
-		{
-			return $this -> query("SELECT", $column, $from, $where, $additionalSQL);
-		}
-
-		/**
 		 * Shows the attributes of a table by the where-condition given.
 		 *
 		 * @param string $property SQL property, e.g. TABLES or INDEXES.
@@ -587,47 +439,6 @@
 		{
 			$this -> dropAll();
 			$this -> create();
-		}
-
-		/**
-		 * Returns the column names of a table.
-		 *
-		 * @param string $tableName SQL table name.
-		 * @return string[]|NULL Either the column names (at least one) or NULL (e.g. SQL execution failed).
-		 */
-		public function getColumnNames(string $tableName): ?array
-		{
-			$fetchedArray = $this -> select("DISTINCT COLUMN_NAME", "INFORMATION_SCHEMA.COLUMNS", "TABLE_NAME = '$tableName'", null);
-
-			if(is_array($fetchedArray) && sizeof($fetchedArray) > 0)
-			{
-				$columns = array_values($fetchedArray);
-
-				if(sizeof($columns) > 0)
-				{
-					$columnNames = [];
-
-					foreach($columns as $rows)
-					{
-						if(sizeof($rows) > 0)
-						{
-							$columnName = array_values($rows)[0];
-
-							$columnNames[] = $columnName;
-						}
-					}
-
-					return $columnNames;
-				}
-				else
-				{
-					return NULL;
-				}
-			}
-			else
-			{
-				return NULL;
-			}
 		}
 
 		/**
@@ -754,6 +565,7 @@
 		// Generates a string which gives the PHP SQL insertion one or more criterias which values are allowed or not before transmission.
 		// The syntax of such criterias are %CRITERIA%, e.g. if a database column is not nullable means %NOTNULL%.
 		// The criterias are removed by PHP before the SQL statement gets transmitted to the database.
+		/*
 		private function getInsertionCriterias($tableName, $columnName)
 		{
 			$isNullable = $this->isNullable($tableName, $columnName);
@@ -767,6 +579,7 @@
 			// Return safe SQL string.
 			return $insertionCriterias;
 		}
+		*/
 
 		/**
 		 * Tells you if a SQL record exists already in the given table with the passed values.
@@ -987,72 +800,6 @@
 			else
 			{
 				return true;
-			}
-		}
-
-		/**
-		 * @param string $tableName
-		 * @param string ...$insertionValues
-		 * @return string|NULL Returns only NULL no columns could be found for the given table as string parameter.
-		 */
-		public function getInsertionSQL(string $tableName, string ...$insertionValues): ?string
-		{
-			$insertSQL = 'INSERT INTO '.$tableName.'(';
-
-			$columnNames = $this -> getColumnNames($tableName);
-
-			if(is_array($columnNames))
-			{
-				for($i = 1; $i < sizeof($columnNames) && $i <= sizeof($insertionValues); $i++)
-				{
-					$columnName = $columnNames[$i];
-
-					// Add criterias to the current columns SQL (removed later before transmission).
-					$_SESSION['insert'.$columnName.'Criteria'] = $this -> getInsertionCriterias($tableName, $columnName);
-
-					if($i < (sizeof($columnNames) - 1) && $i < sizeof($insertionValues))
-					{
-						$insertSQL .= ($columnName.", ");
-					}
-					else
-					{
-						$insertSQL .= ($columnName.") VALUES ('");
-					}
-				}
-
-				for($i = 0; $i < (sizeof($columnNames) - 1) && $i < sizeof($insertionValues); $i++)
-				{
-					$insertionValue = $insertionValues[$i];
-
-					if($i < (sizeof($columnNames) - 2) && $i < (sizeof($insertionValues) - 1))
-					{
-						$insertSQL .= ($insertionValue."', '");
-					}
-					else
-					{
-						$insertSQL .= ($insertionValue."') ON DUPLICATE KEY UPDATE ");
-					}
-				}
-
-				for($i = 1; $i < sizeof($columnNames) && $i <= sizeof($insertionValues); $i++)
-				{
-					$columnName = $columnNames[$i];
-
-					if($i < (sizeof($columnNames) - 1) && $i < sizeof($insertionValues))
-					{
-						$insertSQL .= ("$columnName = $columnName, ");
-					}
-					else
-					{
-						$insertSQL .= ("$columnName = $columnName;");
-					}
-				}
-
-				return $insertSQL;
-			}
-			else
-			{
-				return NULL;
 			}
 		}
 
