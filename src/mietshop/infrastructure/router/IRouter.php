@@ -1,8 +1,8 @@
 <?php
 
-namespace src\mietshop\contracts;
+namespace src\mietshop\infrastructure\router;
 
-use src\mietshop\infrastructure\HTTPRequest;
+use src\mietshop\infrastructure\http\IHTTPRequest;
 
 /**
  * A router is an addition to the MVP pattern because initially,
@@ -15,8 +15,8 @@ interface IRouter
     /**
      * Processes an HTTP request object and calls the correct presenter object.
      *
-     * @param HTTPRequest $request
+     * @param IHTTPRequest $request
      * @return void
      */
-    public function route(HTTPRequest $request) : void;
+    public function route(IHTTPRequest $request) : void;
 }

@@ -3,7 +3,7 @@
 namespace src\mietshop\presenter;
 
 use src\mietshop\contracts\abstract\AbstractPresenter;
-use src\mietshop\infrastructure\HTTPRequest;
+use src\mietshop\infrastructure\http\HTTPRequest;
 
 class HomePresenter extends AbstractPresenter
 {

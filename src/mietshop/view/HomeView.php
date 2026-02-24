@@ -8,6 +8,7 @@ class HomeView implements IView
 {
     public function show(array $data): void
     {
+        
         // TODO: Implement show() method.
     }
 }

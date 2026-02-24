@@ -4,7 +4,7 @@ namespace src\mietshop\contracts\abstract;
 
 use src\mietshop\contracts\IModel;
 use src\mietshop\contracts\IView;
-use src\mietshop\infrastructure\HTTPRequest;
+use src\mietshop\infrastructure\http\HTTPRequest;
 use src\mietshop\model\GlobalModel;
 
 /**

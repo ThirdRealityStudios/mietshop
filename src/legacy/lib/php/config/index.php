@@ -85,7 +85,7 @@
 	 * COMPANY DETAILS
 	 *
 	 */
-	const COMPANY_NAME = "Mein Mietshop (Einzelunternehmen)"; // e.g. "Regioverleih Emsland"
+	const COMPANY_NAME = "Mein mietshop (Einzelunternehmen)"; // e.g. "Regioverleih Emsland"
 	const COMPANY_SLOGAN = "Meine ausführliche Beschreibung für Suchmaschinenoptimierung"; // e.g. "Mieten Sie Bau- und Arbeitsgeräte zum perfekten Preis-Leistungsverhältnis » Bautrocknungsgeräte, Abbruchhammer, Rüttelplatten - Rabatte nutzen ✓"
 	const COMPANY_PURPOSE = "Vermietung"; // very short word, describing the purpose of your company (only shown in tab title), e.g. "Maschinenvermietung"
 	const COMPANY_SHORT_DESCRIPTION = "Mieten Sie Bau- und Arbeitsgeräte 😎"; // max. 38 symbols recommended for SEO, e.g. "Mieten Sie Bau- und Arbeitsgeräte 😎"

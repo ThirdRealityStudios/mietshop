@@ -1,8 +1,8 @@
 <?php
 
-namespace src\mietshop\infrastructure;
+namespace src\mietshop\infrastructure\http;
 
-class HTTPRequest
+class HTTPRequest implements IHTTPRequest
 {
     // RFC-technically part of the HTTP request header (your GET parameters in URI / URI field).
     private array $query;
@@ -90,12 +90,15 @@ class HTTPRequest
         // Save other header fields which were not directly given by $this -> server (possible).
         foreach($headerFields as $headerField)
         {
-            $headerFieldArray = explode(": ", $headerField);
-            $fieldName = $headerFieldArray[0];
-            $fieldValue = $headerFieldArray[1];
+            if(is_string($headerField) && !empty($headerField))
+            {
+                $headerFieldArray = explode(": ", $headerField);
+                $fieldName = $headerFieldArray[0];
+                $fieldValue = $headerFieldArray[1];
 
-            // Save it, don't care about over-writing.
-            $this -> header[strtolower($fieldName)] = $fieldValue;
+                // Save it, don't care about over-writing.
+                $this -> header[strtolower($fieldName)] = $fieldValue;
+            }
         }
     }
 
@@ -110,90 +113,41 @@ class HTTPRequest
         $this -> initHeader();
     }
 
-    /**
-     * Returns the given HTTP header field,
-     * meaning its value.
-     * If you want to get cookies,
-     * then do use getCookies() instead!
-     *
-     * @param string $name The header field name to retrieve the value from.
-     * @return string|null Whether the field value (as a string) or NULL if the field does not exist (also returns NULL for cookie).
-     */
     public function getHeaderValue(string $name) : ?string
     {
         return $this -> header[strtolower($name)] ?? null;
     }
 
-    /**
-     * Returns all keys of an HTTP request header to access all values.
-     * (except the field Cookie - use the suitable get-function for that instead).
-     *
-     * @return array All keys (or an empty array)
-     */
     public function getHeaderKeys(): array
     {
         return array_keys($this -> header);
     }
 
-    /**
-     * Returns the given cookie,
-     * meaning its value.
-     *
-     * @param string $name The name of the cookie to retrieve the value from.
-     * @return string|null Whether the cookie value (as a string) or NULL if the cookie does not exist.
-     */
     public function getCookieValue(string $name) : ?string
     {
         return $this -> cookies[$name] ?? null;
     }
 
-    /**
-     * Returns all keys to access all cookie values sent by HTTP request.
-     *
-     * @return array All keys (or an empty array)
-     */
     public function getCookieKeys(): array
     {
         return array_keys($this -> cookies);
     }
 
-    /**
-     * Returns the given query value (GET value from your URI string).
-     *
-     * @param string $name The name of the GET parameter to retrieve the value from.
-     * @return string|null Whether the query value (as a string) or NULL if the query value does not exist.
-     */
     public function getQueryValue(string $name) : ?string
     {
         return $this -> query[$name] ?? null;
     }
 
-    /**
-     * Returns all keys to access all query data (GET values) sent in an HTTP request header.
-     *
-     * @return array All keys (or an empty array)
-     */
     public function getQueryKeys(): array
     {
         return array_keys($this -> query);
     }
 
-    /**
-     * Returns the given POST value (from your HTTP request body).
-     *
-     * @param string $name The name of the POST parameter to retrieve the value from.
-     * @return string|null Whether the POST value (as a string) or NULL if the POST value does not exist.
-     */
     public function getPOSTValue(string $name) : ?string
     {
         return $this -> post[$name] ?? null;
     }
 
-    /**
-     * Returns all keys to access all POST data sent in an HTTP request body.
-     *
-     * @return array All keys (or an empty array)
-     */
     public function getPOSTKeys(): array
     {
         return array_keys($this -> post);
