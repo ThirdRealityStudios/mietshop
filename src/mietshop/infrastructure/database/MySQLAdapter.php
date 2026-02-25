@@ -2,59 +2,38 @@
 
 namespace src\mietshop\infrastructure\database;
 
-use PDO, PDOException;
+use PDO;
 
 class MySQLAdapter implements IDatabaseAdapter
 {
-    private string $host;
-    private string $databaseName;
-    private string $username;
-    private string $password;
+    private PDO $pdo;
 
-    public function setCredentials(string $host, string $databaseName, string $username, string $password): void
+    public function connect(string $host, string $databaseName, string $username, string $password) : void
     {
-        $this->host = $host;
-        $this->databaseName = $databaseName;
-        $this->username = $username;
-        $this->password = $password;
+        $this -> pdo = new PDO("mysql:host={$host};dbname={$databaseName};charset=utf8mb4", $username, $password, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC]);
     }
 
-    /**
-     * Everything as described in the interface.
-     *
-     * @return PDO
-     * @throws PDOException
-     */
-    public function connect(): PDO
-    {
-        return new PDO("mysql:host=$this->host;dbname=$this->databaseName", $this->username, $this->password);
-    }
-
-    /**
-     * Everything as described in the interface.
-     *
-     * @param string $sql
-     * @param array  $params
-     * @return array
-     * @throws PDOException
-     */
     public function fetch(string $sql, array $params = []): array
     {
-        // TODO: Implement fetch() method.
-        return [];
+        // The prepared PDO statement.
+        $response = $this -> pdo -> prepare($sql);
+
+        if(sizeof($params) > 0) // there are parameters to consider. SQL fetch is a little more tricky.
+        {
+            $response -> execute($params);
+        }
+        else // there is no parameter to consider. So SQL fetch is easier.
+        {
+            $response -> execute();
+        }
+
+        return $response -> fetchAll();
     }
 
-    /**
-     * Everything as described in the interface.
-     *
-     * @param string $sql
-     * @param array  $params
-     * @return int
-     * @throws PDOException
-     */
     public function execute(string $sql, array $params = []): int
     {
-        // TODO: Implement execute() method.
-        return 0;
+        $stmt = $this -> pdo -> prepare($sql);
+        $stmt -> execute($params);
+        return $stmt -> rowCount();
     }
 }

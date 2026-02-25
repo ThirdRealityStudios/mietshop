@@ -2,13 +2,18 @@
 
 namespace src\mietshop\infrastructure\database;
 
-use PDO, PDOException;
+use PDOException;
 
 /**
  * This interface describes the most important functions to establish a connection
  * to your database and use it via SQL statements.
  *
- * **Remember:**
+ * Due to efficiency reasons and if PDO used,
+ * you might want to save your PDO object for your implementation,
+ * once created.
+ * Implementations may store the PDO instance in a private property to avoid reconnecting on every query.
+ *
+ * **Also Remember:**
  *
  * it is generally recommended to save unescaped raw user-input,
  * as it is.
@@ -51,7 +56,7 @@ use PDO, PDOException;
  * ***always use urlencode() for fetched URLs from your database***
  * because it could try to escape the link element to inject harmful HTML or JS code.
  *
- * After using urlenocde(...),
+ * After using urlencode(...),
  * you will always have **hexadecimal characters for special characters**:
  *
  *     %3E%3Cscript%3Ewindow.location%3D%27malicious-website.com%27%3C%2Fscript%3E
@@ -95,28 +100,26 @@ use PDO, PDOException;
 interface IDatabaseAdapter
 {
     /**
-     * Sets the login information to use connect() for your database.
+     * Creates a database connection.
+     * Usually,
+     * only one call to this function is necessary for a keep-alive connection to your DB.
+     * You can anyway call this function more than one time for a completely new connection (e.g. with different credentials).
+     * Uses the charset "utf8mb4" for the connection.
      *
-     * @param string $host Your database host, e.g. "database-0123456789.webspace-host.com"
-     * @param string $username Your username, e.g. "root"
-     * @param string $databaseName Your database name, e.g. "xampp" (usually is if just installed)
-     * @param string $password Your password, e.g. "myPassword123"
-     * @return void
-     */
-    public function setCredentials(string $host, string $databaseName, string $username, string $password) : void;
-
-    /**
-     * Creates a database connection and returns a PDO object.
-     * Make sure to call setCredentials(...) before.
-     *
-     * The returned PDO object is ready to use for preparing statements,
+     * The PDO object is used for preparing statements,
      * executing queries,
      * and fetching results.
+     * Saves the PDO object in a private variable for re-use internally.
      *
-     * @return PDO Object representing the database connection.
+     * Can throw an PDOException.
+     *
+     * @param string $host Your database host, e.g. "database-0123456789.webspace-host.com"
+     * @param string $databaseName Your database name, e.g. "xampp" (usually is if just installed)
+     * @param string $username Your username, e.g. "root"
+     * @param string $password Your password, e.g. "myPassword123"
      * @throws PDOException If the database connection fails (e.g., wrong credentials set).
      */
-    public function connect(): PDO;
+    public function connect(string $host, string $databaseName, string $username, string $password) : void;
 
     /**
      * Executes a given SQL statement to read from the database (e.g., SELECT).
@@ -128,11 +131,17 @@ interface IDatabaseAdapter
      *
      * $sql = "SELECT * FROM User WHERE Username = ? AND Password = ?";
      *
-     * $rows = $this -> fetch($sql, [$username, $password]);
+     * $rows = $this->fetch($sql, [$username, $password]);
+     *
+     * Notes:
+     * - Each row is returned as an **associative array** indexed by column name (PDO::FETCH_ASSOC).
+     * - If multiple columns have the same name, only one value per column name is returned.
+     *
+     * Can throw an PDOException.
      *
      * @param string $sql    SQL statement, optionally containing ? placeholders for parameters.
      * @param array  $params Optional array of parameters to replace the ? placeholders.
-     * @return array         Resulting rows as an array (each row is an associative array of columns).
+     * @return array         Resulting rows as an array of associative arrays.
      * @throws PDOException  If connection fails or SQL execution fails.
      */
     public function fetch(string $sql, array $params = []): array;
@@ -148,6 +157,8 @@ interface IDatabaseAdapter
      * $sql = "INSERT INTO User(Username, Password) VALUES(?, ?)";
      *
      * $rows = $this -> execute($sql, [$username, $password]);
+     *
+     * Can throw an PDOException.
      *
      * @param string $sql    SQL statement, optionally containing ? placeholders for parameters.
      * @param array  $params Optional array of parameters to replace the ? placeholders.
