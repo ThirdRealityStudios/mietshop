@@ -5,7 +5,7 @@ namespace src\mietshop\contracts\abstract;
 use src\mietshop\contracts\IGlobalModel;
 use src\mietshop\contracts\IView;
 use src\mietshop\infrastructure\http\HTTPRequest;
-use src\mietshop\model\GlobalGlobalModel;
+use src\mietshop\model\GlobalModel;
 
 /**
  * You can use this abstract class to implement your own presenter which guides everything.
@@ -24,7 +24,7 @@ abstract class AbstractPresenter
 {
     private ?IGlobalModel $model;
 
-    private GlobalGlobalModel $globalModel;
+    private GlobalModel $globalModel;
 
     private IView $view;
 
@@ -39,7 +39,7 @@ abstract class AbstractPresenter
      * @param IGlobalModel|NULL $model The model to be used but not necessary.
      * @param IView $view The view the presenter should call.
      */
-    public function __construct(?IGlobalModel $model, GlobalGlobalModel $globalModel, IView $view)
+    public function __construct(?IGlobalModel $model, GlobalModel $globalModel, IView $view)
     {
         $this -> model = $model;
         $this -> globalModel = $globalModel;
@@ -51,7 +51,7 @@ abstract class AbstractPresenter
         return $this -> model;
     }
 
-    protected function getGlobalModel() : GlobalGlobalModel
+    protected function getGlobalModel() : GlobalModel
     {
         return $this -> globalModel;
     }

@@ -19,6 +19,13 @@ interface IGlobalModel
     public function getCompanyName(): string;
 
     /**
+     * Returns the maximum amount of characters for your company name.
+     *
+     * @return int Company name text limit.
+     */
+    public function getCompanyNameCharacterLimit(): int;
+
+    /**
      * Sets the full company name, including legal form.
      *
      * @param string $companyName Full company name.
@@ -31,7 +38,14 @@ interface IGlobalModel
      *
      * @return string Owner's name.
      */
-    public function getCompanyOwner(): string;
+    public function getOwner(): string;
+
+    /**
+     * Returns the maximum amount of characters for your company owner.
+     *
+     * @return int Company owner text limit.
+     */
+    public function getOwnerCharacterLimit(): int;
 
     /**
      * Sets the company owner's full name.
@@ -46,7 +60,14 @@ interface IGlobalModel
      *
      * @return string Street address.
      */
-    public function getCompanyStreet(): string;
+    public function getStreet(): string;
+
+    /**
+     * Returns the maximum amount of characters for your company street name.
+     *
+     * @return int Company street name text limit.
+     */
+    public function getCompanyStreetCharacterLimit(): int;
 
     /**
      * Sets the company's street address.
@@ -54,14 +75,21 @@ interface IGlobalModel
      * @param string $companyStreet Full street address.
      * @return bool True on success, false on failure.
      */
-    public function setCompanyStreet(string $companyStreet): bool;
+    public function setStreet(string $companyStreet): bool;
 
     /**
      * Returns the company's ZIP/postal code.
      *
      * @return string ZIP code.
      */
-    public function getCompanyZipCode(): string;
+    public function getZipCode(): string;
+
+    /**
+     * Returns the maximum amount of characters for your company ZIP code.
+     *
+     * @return int Company ZIP code text limit.
+     */
+    public function getZIPCodeCharacterLimit(): int;
 
     /**
      * Sets the company's ZIP/postal code.
@@ -69,14 +97,21 @@ interface IGlobalModel
      * @param string $companyZipCode ZIP code.
      * @return bool True on success, false on failure.
      */
-    public function setCompanyZipCode(string $companyZipCode): bool;
+    public function setZipCode(string $companyZipCode): bool;
 
     /**
      * Returns the company location/city.
      *
      * @return string City or place name.
      */
-    public function getCompanyPlace(): string;
+    public function getPlace(): string;
+
+    /**
+     * Returns the maximum amount of characters for your company place name.
+     *
+     * @return int Company place character limit.
+     */
+    public function getPlaceCharacterLimit(): int;
 
     /**
      * Sets the company location/city.
@@ -84,7 +119,7 @@ interface IGlobalModel
      * @param string $companyPlace City or place name.
      * @return bool True on success, false on failure.
      */
-    public function setCompanyPlace(string $companyPlace): bool;
+    public function setPlace(string $companyPlace): bool;
 
     /**
      * Returns the company's mobile phone number.
@@ -92,6 +127,13 @@ interface IGlobalModel
      * @return string Mobile number (with optional country code).
      */
     public function getPhoneMobile(): string;
+
+    /**
+     * Returns the maximum amount of characters for your company mobile phone number.
+     *
+     * @return int Company mobile phone number character limit.
+     */
+    public function getPhoneMobileCharacterLimit(): int;
 
     /**
      * Sets the company's mobile phone number.
@@ -109,6 +151,13 @@ interface IGlobalModel
     public function getPhoneNormal(): string;
 
     /**
+     * Returns the maximum amount of characters for your landline/office phone number.
+     *
+     * @return int Landline/office phone number character limit.
+     */
+    public function getPhoneNormalCharacterLimit(): int;
+
+    /**
      * Sets the company's landline/office phone number.
      *
      * @param string $phoneNormal Landline number.
@@ -122,6 +171,13 @@ interface IGlobalModel
      * @return string Map URL, empty string if not set.
      */
     public function getCompanyMapLocation(): string;
+
+    /**
+     * Returns the maximum amount of characters for your company's location in a map service.
+     *
+     * @return int Character limit for your company's location in a map service.
+     */
+    public function getMapLocationCharacterLimit(): int;
 
     /**
      * Sets a URL for embedding the company's location in a map service.
@@ -139,6 +195,13 @@ interface IGlobalModel
     public function getFacebookLink(): string;
 
     /**
+     * Returns the maximum amount of characters for your company's Facebook page URL.
+     *
+     * @return int Maximum amount of characters for your Facebook page URL.
+     */
+    public function getFacebookLinkCharacterLimit(): int;
+
+    /**
      * Sets the company's Facebook page URL.
      *
      * @param string $facebookLink Facebook URL or empty string.
@@ -152,6 +215,13 @@ interface IGlobalModel
      * @return string Instagram URL, empty if not set.
      */
     public function getInstagramLink(): string;
+
+    /**
+     * Returns the maximum amount of characters for your company's Instagram page URL.
+     *
+     * @return int Maximum amount of characters for your Instagram page URL.
+     */
+    public function getInstagramLinkCharacterLimit(): int;
 
     /**
      * Sets the company's Instagram page URL.
@@ -169,6 +239,13 @@ interface IGlobalModel
     public function getWhatsAppLink(): string;
 
     /**
+     * Returns the maximum amount of characters for your company's WhatsApp contact URL.
+     *
+     * @return int Maximum amount of characters for your WhatsApp contact URL.
+     */
+    public function getWhatsAppLinkCharacterLimit(): int;
+
+    /**
      * Sets the company's WhatsApp contact link.
      *
      * @param string $whatsAppLink WhatsApp link or empty string.
@@ -184,6 +261,13 @@ interface IGlobalModel
     public function getKleinanzeigenLink(): string;
 
     /**
+     * Returns the maximum amount of characters for your company's Kleinanzeigen (classifieds) sellers page URL.
+     *
+     * @return int Maximum amount of characters for your Kleinanzeigen (classifieds) sellers page URL.
+     */
+    public function getKleinanzeigenLinkCharacterLimit(): int;
+
+    /**
      * Sets the company's Kleinanzeigen (classifieds) sellers page URL.
      *
      * @param string $kleinanzeigenLink URL or empty string.
@@ -196,15 +280,22 @@ interface IGlobalModel
      *
      * @return string Privacy text, empty if not set.
      */
-    public function getDataPrivacyInformation(): string;
+    public function getPrivacyPolicyInformation(): string;
+
+    /**
+     * Returns the maximum amount of characters for your company's privacy policy text.
+     *
+     * @return int Maximum amount of characters for your company's privacy policy text.
+     */
+    public function getPrivacyPolicyCharacterLimit(): int;
 
     /**
      * Sets the company's privacy policy text.
      *
-     * @param string $dataPrivacyInformation Privacy text.
+     * @param string $privacyPolicyInformation Privacy text.
      * @return bool True on success, false on failure.
      */
-    public function setDataPrivacyInformation(string $dataPrivacyInformation): bool;
+    public function setPrivacyPolicyInformation(string $privacyPolicyInformation): bool;
 
     /**
      * Returns the company's general business conditions (terms of service) text.
@@ -212,6 +303,13 @@ interface IGlobalModel
      * @return string Terms text, empty if not set.
      */
     public function getCommonBusinessConditions(): string;
+
+    /**
+     * Returns the maximum amount of characters for your common business conditions text.
+     *
+     * @return int Maximum amount of characters for your common business conditions text.
+     */
+    public function getCommonBusinessConditionsCharacterLimit(): int;
 
     /**
      * Sets the company's general business conditions (terms of service) text.
