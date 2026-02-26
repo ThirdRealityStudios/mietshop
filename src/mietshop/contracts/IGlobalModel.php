@@ -3,270 +3,221 @@
 namespace src\mietshop\contracts;
 
 /**
- * This interface defines typical CRUD functions for data access for global / common business data,
- * including company details (e.g. name of business, owner, contact) and legal notes (e.g. data privacy information text, common business conditions [German: AGBs]).
- * This information is usually visible on most views (or in this context: webpages).
+ * Interface for accessing global business data.
+ *
+ * Covers company details (name, owner, address, contact info) and legal notes
+ * (privacy policy, general business conditions). Typically, this information
+ * is displayed on most views or webpages.
  */
 interface IGlobalModel
 {
     /**
-     * Returns the complete name of your company,
-     * usually including the legal note,
-     * e.g. the "Inc." in "Microsoft Inc.".
-     * Or another German example is "Bayer AG",
-     * whereas "AG" is a hint it is a stock-traded company.
+     * Returns the full company name, including legal form (e.g., "Inc.", "AG").
      *
-     * @return string The complete name of your company.
+     * @return string Full company name.
      */
-    public function getCompanyName() : string;
+    public function getCompanyName(): string;
 
     /**
-     * Sets the complete name of your company,
-     * e.g. "Microsoft Inc." or "Bayer AG".
+     * Sets the full company name, including legal form.
      *
-     * @param string $companyName The complete name of your company.
-     * @return bool True if set successfully. Otherwise, false (technical issues or company name requirements might apply).
+     * @param string $companyName Full company name.
+     * @return bool True on success, false on failure.
      */
-    public function setCompanyName(string $companyName) : bool;
+    public function setCompanyName(string $companyName): bool;
 
     /**
-     * Returns the owner of your company,
-     * e.g. "John Smith" or "Max Mustermann".
+     * Returns the company owner's full name (first and last name).
      *
-     * @return string The surname with the lastname of the company owner.
+     * @return string Owner's name.
      */
-    public function getCompanyOwner() : string;
+    public function getCompanyOwner(): string;
 
     /**
-     * Sets the name (surname and lastname) of the company owner.
+     * Sets the company owner's full name.
      *
-     * @param string $companyOwner Name of the owner.
-     * @return bool True if set successfully. Otherwise, false (technical issues or company owner requirements might apply).
+     * @param string $companyOwner Owner's full name.
+     * @return bool True on success, false on failure.
      */
-    public function setCompanyOwner(string $companyOwner) : bool;
+    public function setCompanyOwner(string $companyOwner): bool;
 
     /**
-     * Returns the street of your company,
-     * including house number etc. (country-dependent).
-     * In Germany e.g.: "Gustav-Str. 44b".
+     * Returns the full street address of the company (including house number).
      *
-     * @return string The street of the company, including number etc. (country-dependent).
+     * @return string Street address.
      */
-    public function getCompanyStreet() : string;
+    public function getCompanyStreet(): string;
 
     /**
-     * Sets the street of your company.
-     * The street not only includes the name only here,
-     * but also additional information,
-     * such as the house number (it depends on the country).
-     * So,
-     * the full street information is required here.
+     * Sets the company's street address.
      *
-     * @param string $companyStreet The full information of the street of the company.
-     * @return bool True if set successfully. Otherwise, false (technical issues or street information requirements might apply).
+     * @param string $companyStreet Full street address.
+     * @return bool True on success, false on failure.
      */
-    public function setCompanyStreet(string $companyStreet) : bool;
+    public function setCompanyStreet(string $companyStreet): bool;
 
     /**
-     * Gets the ZIP code of the company.
-     * Usually a short sequence of numbers but might be country-dependent.
-     * Hence,
-     * you receive a string (also for better information processing).
-     * In Germany e.g. the format: "12345".
+     * Returns the company's ZIP/postal code.
      *
-     * @return string The ZIP code of the company as a string.
+     * @return string ZIP code.
      */
-    public function getCompanyZipCode() : string;
+    public function getCompanyZipCode(): string;
 
     /**
-     * Sets the ZIP code of the company.
-     * Usually a short sequence of numbers but might be country-dependent.
-     * Hence,
-     * you set a string.
-     * In Germany e.g. the format: "12345".
+     * Sets the company's ZIP/postal code.
      *
-     * @return bool True if set successfully. Otherwise, false (technical issues or ZIP code requirements might apply).
+     * @param string $companyZipCode ZIP code.
+     * @return bool True on success, false on failure.
      */
-    public function setCompanyZipCode(string $companyZipCode) : bool;
+    public function setCompanyZipCode(string $companyZipCode): bool;
 
     /**
-     * Returns the place name of the company,
-     * e.g. "Munich".
+     * Returns the company location/city.
      *
-     * @return string Place of the company.
+     * @return string City or place name.
      */
-    public function getCompanyPlace() : string;
+    public function getCompanyPlace(): string;
 
     /**
-     * Sets the place name of the company.
+     * Sets the company location/city.
      *
-     * @param string $companyPlace Name of the place.
-     * @return bool True if set successfully. Otherwise, false (technical issues or place name requirements might apply).
+     * @param string $companyPlace City or place name.
+     * @return bool True on success, false on failure.
      */
-    public function setCompanyPlace(string $companyPlace) : bool;
+    public function setCompanyPlace(string $companyPlace): bool;
 
     /**
-     * Returns the mobile phone number which should be visible on most views (or webpages).
-     * It is usually the one to easily call the company owner,
-     * e.g. for potential customers to ask for a service or product quickly.
+     * Returns the company's mobile phone number.
      *
-     * @return string The mobile phone number.
+     * @return string Mobile number (with optional country code).
      */
-    public function getPhoneMobile() : string;
+    public function getPhoneMobile(): string;
 
     /**
-     * Sets the mobile phone number for your company.
-     * It is the one which is shown on most views (or webpages).
-     * It enables customers the opportunity to easily ask for services or products.
-     * Usually,
-     * the number of the company owner.
-     * You might want to include the country code,
-     * like "+49",
-     * if necessary.
+     * Sets the company's mobile phone number.
      *
-     * @param string $phoneMobile The mobile phone number.
-     * @return bool True if set successfully. Otherwise, false (technical issues or phone number requirements might apply).
+     * @param string $phoneMobile Mobile number (with optional country code).
+     * @return bool True on success, false on failure.
      */
-    public function setPhoneMobile(string $phoneMobile) : bool;
+    public function setPhoneMobile(string $phoneMobile): bool;
 
     /**
-     * Returns the normal phone number (not mobile - usually stationary or in your office room) which should be visible on most views (or webpages).
-     * It is usually the one to easily call the company owner,
-     * e.g. for potential customers to ask for a service or product.
+     * Returns the company's landline/office phone number.
      *
-     * @return string The normal phone number.
+     * @return string Landline number.
      */
-    public function getPhoneNormal() : string;
+    public function getPhoneNormal(): string;
 
     /**
-     * Sets the mobile phone number for your company.
-     * It is the one which is shown on most views (or webpages).
-     * It enables customers the opportunity to easily ask for services or products.
-     * Usually,
-     * you would use the number to let customers call you in your office room.
-     * You might want to include the country code,
-     * like "+49",
-     * if necessary.
+     * Sets the company's landline/office phone number.
      *
-     * @param string $phoneNormal The normal phone number.
-     * @return bool True if set successfully. Otherwise, false (technical issues or phone number requirements might apply).
+     * @param string $phoneNormal Landline number.
+     * @return bool True on success, false on failure.
      */
-    public function setPhoneNormal(string $phoneNormal) : bool;
+    public function setPhoneNormal(string $phoneNormal): bool;
 
     /**
-     * Gets the URL of a maps service to show customers the location of your company.
-     * If Google Maps used,
-     * you could expect here e.g. an embed link for your webpage.
-     * Customers will directly see and maybe also recognize the way to your company.
+     * Returns a URL for embedding the company's location in a map service.
      *
-     * @return string Company location URL string. E.g. https://www.google.com/maps/embed?pb=!LocationOfMyCompany!2sde. Can be an empty string of no URL was set.
+     * @return string Map URL, empty string if not set.
      */
-    public function getCompanyMapLocation() : string;
+    public function getCompanyMapLocation(): string;
 
     /**
-     * Sets the URL to specify the location of your company;
-     * usually a Google Maps embeddable link.
+     * Sets a URL for embedding the company's location in a map service.
      *
-     * @param string $companyMapLocation Company location URL
-     * @return bool True if set successfully. Otherwise, false (technical issues or URL requirements might apply).
+     * @param string $companyMapLocation Map embed URL.
+     * @return bool True on success, false on failure.
      */
-    public function setCompanyMapLocation(string $companyMapLocation) : bool;
+    public function setCompanyMapLocation(string $companyMapLocation): bool;
 
     /**
-     * Returns the link to your Facebook webpage.
+     * Returns the company's Facebook page URL.
      *
-     * @return string Link to your Facebook webpage. Can be an empty string if no link was set.
+     * @return string Facebook URL, empty if not set.
      */
-    public function getFacebookLink() : string;
+    public function getFacebookLink(): string;
 
     /**
-     * Sets the link to your Facebook webpage.
-     * You can pass an empty string to signalize,
-     * there is no Facebook webpage.
+     * Sets the company's Facebook page URL.
      *
-     * @param string $facebookLink Link to your Facebook webpage.
-     * @return bool True if set successfully. Otherwise, false (technical issues or URL requirements might apply).
+     * @param string $facebookLink Facebook URL or empty string.
+     * @return bool True on success, false on failure.
      */
-    public function setFacebookLink(string $facebookLink) : bool;
+    public function setFacebookLink(string $facebookLink): bool;
 
     /**
-     * Returns the link to your Instagram page.
+     * Returns the company's Instagram page URL.
      *
-     * @return string Link to your Instagram page. Can be an empty string if no link was set.
+     * @return string Instagram URL, empty if not set.
      */
-    public function getInstagramLink() : string;
+    public function getInstagramLink(): string;
 
     /**
-     * Sets the link to your Instagram page.
-     * You can pass an empty string to signalize,
-     * there is no Instagram page.
+     * Sets the company's Instagram page URL.
      *
-     * @param string $instagramLink Link to your Instagram page.
-     * @return bool True if set successfully. Otherwise, false (technical issues or URL requirements might apply).
+     * @param string $instagramLink Instagram URL or empty string.
+     * @return bool True on success, false on failure.
      */
-    public function setInstagramLink(string $instagramLink) : bool;
+    public function setInstagramLink(string $instagramLink): bool;
 
     /**
-     * Returns the link to your WhatsApp contact.
+     * Returns the company's WhatsApp contact link.
      *
-     * @return string Link to your WhatsApp contact. Can be an empty string if no link was set.
+     * @return string WhatsApp link, empty if not set.
      */
-    public function getWhatsAppLink() : string;
+    public function getWhatsAppLink(): string;
 
     /**
-     * Sets the link to your WhatsApp contact.
-     * You can pass an empty string to signalize,
-     * there is no WhatsApp contact.
+     * Sets the company's WhatsApp contact link.
      *
-     * @param string $whatsAppLink Link to your WhatsApp page.
-     * @return bool True if set successfully. Otherwise, false (technical issues or URL requirements might apply).
+     * @param string $whatsAppLink WhatsApp link or empty string.
+     * @return bool True on success, false on failure.
      */
-    public function setWhatsAppLink(string $whatsAppLink) : bool;
+    public function setWhatsAppLink(string $whatsAppLink): bool;
 
     /**
-     * Returns the link to your Kleinanzeigen sellers page.
+     * Returns the company's Kleinanzeigen (classifieds) sellers page URL.
      *
-     * @return string Link to your Kleinanzeigen sellers page. Can be an empty string if no link was set.
+     * @return string URL, empty if not set.
      */
-    public function getKleinanzeigenLink() : string;
+    public function getKleinanzeigenLink(): string;
 
     /**
-     * Sets the link to your Kleinanzeigen sellers page.
-     * You can pass an empty string to signalize,
-     * there is no sellers page for Kleinanzeigen.
+     * Sets the company's Kleinanzeigen (classifieds) sellers page URL.
      *
-     * @param string $kleinanzeigenLink Link to your Kleinanzeigen page.
-     * @return bool True if set successfully. Otherwise, false (technical issues or URL requirements might apply).
+     * @param string $kleinanzeigenLink URL or empty string.
+     * @return bool True on success, false on failure.
      */
-    public function setKleinanzeigenLink(string $kleinanzeigenLink) : bool;
+    public function setKleinanzeigenLink(string $kleinanzeigenLink): bool;
 
     /**
-     * Returns the full description or information text of your data privacy.
+     * Returns the company's privacy policy text.
      *
-     * @return string Data privacy information. Or empty string if there is no such information (legally seen not good for your public presence).
+     * @return string Privacy text, empty if not set.
      */
-    public function getDataPrivacyInformation() : string;
+    public function getDataPrivacyInformation(): string;
 
     /**
-     * Sets the full description or information text of your data privacy.
+     * Sets the company's privacy policy text.
      *
-     * @param string $dataPrivacyInformation Data privacy text to set.
-     * @return bool True if set successfully. Otherwise, false (technical issues or text requirements might apply).
+     * @param string $dataPrivacyInformation Privacy text.
+     * @return bool True on success, false on failure.
      */
-    public function setDataPrivacyInformation(string $dataPrivacyInformation) : bool;
+    public function setDataPrivacyInformation(string $dataPrivacyInformation): bool;
 
     /**
-     * Returns the full description or information text of your common business conditions.
+     * Returns the company's general business conditions (terms of service) text.
      *
-     * @return string Common business conditions information. Or empty string if there is no such information (it is legal, but there is a higher risk of being sueable when providing products and services).
+     * @return string Terms text, empty if not set.
      */
-    public function getCommonBusinessConditions() : string;
+    public function getCommonBusinessConditions(): string;
 
     /**
-     * Sets the full description or information text of your common business conditions.
+     * Sets the company's general business conditions (terms of service) text.
      *
-     * @param string $commonBusinessConditions Common business conditions text to set.
-     * @return bool True if set successfully. Otherwise, false (technical issues or text requirements might apply).
+     * @param string $commonBusinessConditions Terms text.
+     * @return bool True on success, false on failure.
      */
-    public function setCommonBusinessConditions(string $commonBusinessConditions) : bool;
+    public function setCommonBusinessConditions(string $commonBusinessConditions): bool;
 }
