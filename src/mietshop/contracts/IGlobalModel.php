@@ -25,7 +25,7 @@ interface IGlobalModel
      * e.g. "Microsoft Inc." or "Bayer AG".
      *
      * @param string $companyName The complete name of your company.
-     * @return bool True if the company name could bet set. Otherwise, false (regard potential limitations or name requirements).
+     * @return bool True if set successfully. Otherwise, false (technical issues or company name requirements might apply).
      */
     public function setCompanyName(string $companyName) : bool;
 
@@ -41,7 +41,7 @@ interface IGlobalModel
      * Sets the name (surname and lastname) of the company owner.
      *
      * @param string $companyOwner Name of the owner.
-     * @return bool True if it could be set successfully. Otherwise, false (name requirements or limitations might apply).
+     * @return bool True if set successfully. Otherwise, false (technical issues or company owner requirements might apply).
      */
     public function setCompanyOwner(string $companyOwner) : bool;
 
@@ -63,7 +63,7 @@ interface IGlobalModel
      * the full street information is required here.
      *
      * @param string $companyStreet The full information of the street of the company.
-     * @return bool True if set successfully. Otherwise, false (limitations or requirements might apply to the given street information).
+     * @return bool True if set successfully. Otherwise, false (technical issues or street information requirements might apply).
      */
     public function setCompanyStreet(string $companyStreet) : bool;
 
@@ -84,6 +84,8 @@ interface IGlobalModel
      * Hence,
      * you set a string.
      * In Germany e.g. the format: "12345".
+     *
+     * @return bool True if set successfully. Otherwise, false (technical issues or ZIP code requirements might apply).
      */
     public function setCompanyZipCode(string $companyZipCode) : bool;
 
@@ -99,7 +101,7 @@ interface IGlobalModel
      * Sets the place name of the company.
      *
      * @param string $companyPlace Name of the place.
-     * @return bool True if set successfully. Otherwise, false (limitations or requirements might apply to the given place name).
+     * @return bool True if set successfully. Otherwise, false (technical issues or place name requirements might apply).
      */
     public function setCompanyPlace(string $companyPlace) : bool;
 
@@ -123,7 +125,7 @@ interface IGlobalModel
      * if necessary.
      *
      * @param string $phoneMobile The mobile phone number.
-     * @return bool True if set successfully. Otherwise, false (limitations or requirements might apply to the given phone number).
+     * @return bool True if set successfully. Otherwise, false (technical issues or phone number requirements might apply).
      */
     public function setPhoneMobile(string $phoneMobile) : bool;
 
@@ -147,7 +149,7 @@ interface IGlobalModel
      * if necessary.
      *
      * @param string $phoneNormal The normal phone number.
-     * @return bool True if set successfully. Otherwise, false (limitations or requirements might apply to the given phone number).
+     * @return bool True if set successfully. Otherwise, false (technical issues or phone number requirements might apply).
      */
     public function setPhoneNormal(string $phoneNormal) : bool;
 
@@ -157,39 +159,114 @@ interface IGlobalModel
      * you could expect here e.g. an embed link for your webpage.
      * Customers will directly see and maybe also recognize the way to your company.
      *
-     * @return string Company location maps service URL string. E.g. https://www.google.com/maps/embed?pb=!LocationOfMyCompany!2sde
+     * @return string Company location URL string. E.g. https://www.google.com/maps/embed?pb=!LocationOfMyCompany!2sde. Can be an empty string of no URL was set.
      */
     public function getCompanyMapLocation() : string;
 
     /**
+     * Sets the URL to specify the location of your company;
+     * usually a Google Maps embeddable link.
      *
-     *
-     * @param string $companyMapLocation
-     * @return bool
+     * @param string $companyMapLocation Company location URL
+     * @return bool True if set successfully. Otherwise, false (technical issues or URL requirements might apply).
      */
     public function setCompanyMapLocation(string $companyMapLocation) : bool;
 
+    /**
+     * Returns the link to your Facebook webpage.
+     *
+     * @return string Link to your Facebook webpage. Can be an empty string if no link was set.
+     */
     public function getFacebookLink() : string;
 
+    /**
+     * Sets the link to your Facebook webpage.
+     * You can pass an empty string to signalize,
+     * there is no Facebook webpage.
+     *
+     * @param string $facebookLink Link to your Facebook webpage.
+     * @return bool True if set successfully. Otherwise, false (technical issues or URL requirements might apply).
+     */
     public function setFacebookLink(string $facebookLink) : bool;
 
+    /**
+     * Returns the link to your Instagram page.
+     *
+     * @return string Link to your Instagram page. Can be an empty string if no link was set.
+     */
     public function getInstagramLink() : string;
 
+    /**
+     * Sets the link to your Instagram page.
+     * You can pass an empty string to signalize,
+     * there is no Instagram page.
+     *
+     * @param string $instagramLink Link to your Instagram page.
+     * @return bool True if set successfully. Otherwise, false (technical issues or URL requirements might apply).
+     */
     public function setInstagramLink(string $instagramLink) : bool;
 
+    /**
+     * Returns the link to your WhatsApp contact.
+     *
+     * @return string Link to your WhatsApp contact. Can be an empty string if no link was set.
+     */
     public function getWhatsAppLink() : string;
 
+    /**
+     * Sets the link to your WhatsApp contact.
+     * You can pass an empty string to signalize,
+     * there is no WhatsApp contact.
+     *
+     * @param string $whatsAppLink Link to your WhatsApp page.
+     * @return bool True if set successfully. Otherwise, false (technical issues or URL requirements might apply).
+     */
     public function setWhatsAppLink(string $whatsAppLink) : bool;
 
+    /**
+     * Returns the link to your Kleinanzeigen sellers page.
+     *
+     * @return string Link to your Kleinanzeigen sellers page. Can be an empty string if no link was set.
+     */
     public function getKleinanzeigenLink() : string;
 
+    /**
+     * Sets the link to your Kleinanzeigen sellers page.
+     * You can pass an empty string to signalize,
+     * there is no sellers page for Kleinanzeigen.
+     *
+     * @param string $kleinanzeigenLink Link to your Kleinanzeigen page.
+     * @return bool True if set successfully. Otherwise, false (technical issues or URL requirements might apply).
+     */
     public function setKleinanzeigenLink(string $kleinanzeigenLink) : bool;
 
+    /**
+     * Returns the full description or information text of your data privacy.
+     *
+     * @return string Data privacy information. Or empty string if there is no such information (legally seen not good for your public presence).
+     */
     public function getDataPrivacyInformation() : string;
 
+    /**
+     * Sets the full description or information text of your data privacy.
+     *
+     * @param string $dataPrivacyInformation Data privacy text to set.
+     * @return bool True if set successfully. Otherwise, false (technical issues or text requirements might apply).
+     */
     public function setDataPrivacyInformation(string $dataPrivacyInformation) : bool;
 
-    public function geTCommonBusinessConditions() : string;
+    /**
+     * Returns the full description or information text of your common business conditions.
+     *
+     * @return string Common business conditions information. Or empty string if there is no such information (it is legal, but there is a higher risk of being sueable when providing products and services).
+     */
+    public function getCommonBusinessConditions() : string;
 
+    /**
+     * Sets the full description or information text of your common business conditions.
+     *
+     * @param string $commonBusinessConditions Common business conditions text to set.
+     * @return bool True if set successfully. Otherwise, false (technical issues or text requirements might apply).
+     */
     public function setCommonBusinessConditions(string $commonBusinessConditions) : bool;
 }
