@@ -2,15 +2,17 @@
 
 namespace src\mietshop\model;
 
-use src\mietshop\contracts\IModel;
+use src\mietshop\contracts\IGlobalModel;
 
-class HomeModel implements IModel
+/**
+ * Class which represents mostly company data,
+ * which is displayed on almost every webpage or is legally mandatory,
+ * such as imprint details (e.g. owner name, phone, e-mail),
+ * your data privacy information,
+ * your general business conditions (German: AGBs).
+ */
+class GlobalGlobalModel implements IGlobalModel
 {
-    public function __construct()
-    {
-
-    }
-    
     /**
      * @param mixed $value
      * @return bool

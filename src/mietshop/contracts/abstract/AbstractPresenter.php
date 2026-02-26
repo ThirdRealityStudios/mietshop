@@ -2,10 +2,10 @@
 
 namespace src\mietshop\contracts\abstract;
 
-use src\mietshop\contracts\IModel;
+use src\mietshop\contracts\IGlobalModel;
 use src\mietshop\contracts\IView;
 use src\mietshop\infrastructure\http\HTTPRequest;
-use src\mietshop\model\GlobalModel;
+use src\mietshop\model\GlobalGlobalModel;
 
 /**
  * You can use this abstract class to implement your own presenter which guides everything.
@@ -22,9 +22,9 @@ use src\mietshop\model\GlobalModel;
  */
 abstract class AbstractPresenter
 {
-    private ?IModel $model;
+    private ?IGlobalModel $model;
 
-    private GlobalModel $globalModel;
+    private GlobalGlobalModel $globalModel;
 
     private IView $view;
 
@@ -36,22 +36,22 @@ abstract class AbstractPresenter
      * A view object is always expected.
      * Only exception is a model object if you don't need it (then pass NULL simply).
      *
-     * @param IModel|NULL $model The model to be used but not necessary.
+     * @param IGlobalModel|NULL $model The model to be used but not necessary.
      * @param IView $view The view the presenter should call.
      */
-    public function __construct(?IModel $model, GlobalModel $globalModel, IView $view)
+    public function __construct(?IGlobalModel $model, GlobalGlobalModel $globalModel, IView $view)
     {
         $this -> model = $model;
         $this -> globalModel = $globalModel;
         $this -> view = $view;
     }
 
-    protected function getModel() : ?IModel
+    protected function getModel() : ?IGlobalModel
     {
         return $this -> model;
     }
 
-    protected function getGlobalModel() : GlobalModel
+    protected function getGlobalModel() : GlobalGlobalModel
     {
         return $this -> globalModel;
     }

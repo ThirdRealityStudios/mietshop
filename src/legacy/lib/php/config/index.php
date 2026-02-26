@@ -86,14 +86,14 @@
 	 *
 	 */
 	const COMPANY_NAME = "Mein mietshop (Einzelunternehmen)"; // e.g. "Regioverleih Emsland"
-	const COMPANY_SLOGAN = "Meine ausführliche Beschreibung für Suchmaschinenoptimierung"; // e.g. "Mieten Sie Bau- und Arbeitsgeräte zum perfekten Preis-Leistungsverhältnis » Bautrocknungsgeräte, Abbruchhammer, Rüttelplatten - Rabatte nutzen ✓"
-	const COMPANY_PURPOSE = "Vermietung"; // very short word, describing the purpose of your company (only shown in tab title), e.g. "Maschinenvermietung"
-	const COMPANY_SHORT_DESCRIPTION = "Mieten Sie Bau- und Arbeitsgeräte 😎"; // max. 38 symbols recommended for SEO, e.g. "Mieten Sie Bau- und Arbeitsgeräte 😎"
+	// const COMPANY_SLOGAN = "Meine ausführliche Beschreibung für Suchmaschinenoptimierung"; // e.g. "Mieten Sie Bau- und Arbeitsgeräte zum perfekten Preis-Leistungsverhältnis » Bautrocknungsgeräte, Abbruchhammer, Rüttelplatten - Rabatte nutzen ✓"
+	// const COMPANY_PURPOSE = "Vermietung"; // very short word, describing the purpose of your company (only shown in tab title), e.g. "Maschinenvermietung"
+	// const COMPANY_SHORT_DESCRIPTION = "Mieten Sie Bau- und Arbeitsgeräte 😎"; // max. 38 symbols recommended for SEO, e.g. "Mieten Sie Bau- und Arbeitsgeräte 😎"
 	const COMPANY_BOSS = "Max Mustermann"; // Legal head of your business, aka boss.
 	const COMPANY_STREET = "Sesam Str. 38b"; // The street inclusive building number of your company.
 	const COMPANY_ZIP = "12345"; // The postal code (ZIP code) of your company.
 	const COMPANY_PLACE = "Bielefeld"; // The place's name.
-	const LEGAL_NEGOTIATION_PLACE = "Lingen"; // The place of the court where to do legal negotiations (if you wouldn't set it, then you would have to go the customers place far away maybe - by EU law).
+	// const LEGAL_NEGOTIATION_PLACE = "Lingen"; // The place of the court where to do legal negotiations (if you wouldn't set it, then you would have to go the customers place far away maybe - by EU law).
 	const COMPANY_PHONE_MOBILE = "+491234567890"; // Your mobile number (without space and best with your country number +..)
 	const COMPANY_PHONE_STATIONARY = "+490987654321"; // Your house / stationary phone number (without space and best with your country number +..)
 	const COMPANY_GOOGLE_MAPS_EMBED_LINK = "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1327.7500381095056!2d7.3032388251568685!3d52.38666032545992!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47b82f5109e67e3b%3A0x9eb4cd50587644ad!2sRegioverleih%20Emsland!5e0!3m2!1sde!2sde!4v1637168063046!5m2!1sde!2sde"; // "Embed link for Google Maps", usually very long link and possible to generate via Google itself.
