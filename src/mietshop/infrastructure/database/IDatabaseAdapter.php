@@ -115,8 +115,8 @@ interface IDatabaseAdapter
      *
      * @param string $host Your database host, e.g. "database-0123456789.webspace-host.com"
      * @param string $databaseName Your database name, e.g. "xampp" (usually is if just installed)
-     * @param string $username Your username, e.g. "root"
-     * @param string $password Your password, e.g. "myPassword123"
+     * @param string $username Your username, e.g. "root" or "postgres"
+     * @param string $password Your password, e.g. "myPassword123" or "myPassword"
      * @throws PDOException If the database connection fails (e.g., wrong credentials set).
      */
     public function connect(string $host, string $databaseName, string $username, string $password) : void;

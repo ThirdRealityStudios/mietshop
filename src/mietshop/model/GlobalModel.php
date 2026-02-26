@@ -2,8 +2,8 @@
 
 namespace src\mietshop\model;
 
+use src\mietshop\contracts\GlobalRepository;
 use src\mietshop\contracts\IGlobalModel;
-use src\mietshop\infrastructure\database\IDatabaseAdapter;
 
 /**
  * Class which represents mostly company data,
@@ -14,24 +14,36 @@ use src\mietshop\infrastructure\database\IDatabaseAdapter;
  */
 class GlobalModel implements IGlobalModel
 {
-    public function __construct(IDatabaseAdapter $databaseAdapter)
+    private GlobalRepository $globalRepository;
+
+    public function __construct(GlobalRepository $globalRepository)
     {
-        
+        $this->globalRepository = $globalRepository;
     }
 
     public function getCompanyName(): string
     {
-        return "";
+        // TODO: Implement getCompanyName() method.
+    }
+
+    public function getCompanyNameCharacterLimit(): int
+    {
+        // TODO: Implement getCompanyNameCharacterLimit() method.
     }
 
     public function setCompanyName(string $companyName): bool
     {
-        return true;
+        // TODO: Implement setCompanyName() method.
     }
 
-    public function getCompanyOwner(): string
+    public function getOwner(): string
     {
-        return "";
+        // TODO: Implement getOwner() method.
+    }
+
+    public function getOwnerCharacterLimit(): int
+    {
+        // TODO: Implement getOwnerCharacterLimit() method.
     }
 
     public function setCompanyOwner(string $companyOwner): bool
@@ -39,39 +51,59 @@ class GlobalModel implements IGlobalModel
         // TODO: Implement setCompanyOwner() method.
     }
 
-    public function getCompanyStreet(): string
+    public function getStreet(): string
     {
-        // TODO: Implement getCompanyStreet() method.
+        // TODO: Implement getStreet() method.
     }
 
-    public function setCompanyStreet(string $companyStreet): bool
+    public function getCompanyStreetCharacterLimit(): int
     {
-        // TODO: Implement setCompanyStreet() method.
+        // TODO: Implement getCompanyStreetCharacterLimit() method.
     }
 
-    public function getCompanyZipCode(): string
+    public function setStreet(string $companyStreet): bool
     {
-        // TODO: Implement getCompanyZipCode() method.
+        // TODO: Implement setStreet() method.
     }
 
-    public function setCompanyZipCode(string $companyZipCode): bool
+    public function getZipCode(): string
     {
-        // TODO: Implement setCompanyZipCode() method.
+        // TODO: Implement getZipCode() method.
     }
 
-    public function getCompanyPlace(): string
+    public function getZIPCodeCharacterLimit(): int
     {
-        // TODO: Implement getCompanyPlace() method.
+        // TODO: Implement getZIPCodeCharacterLimit() method.
     }
 
-    public function setCompanyPlace(string $companyPlace): bool
+    public function setZipCode(string $companyZipCode): bool
     {
-        // TODO: Implement setCompanyPlace() method.
+        // TODO: Implement setZipCode() method.
+    }
+
+    public function getPlace(): string
+    {
+        // TODO: Implement getPlace() method.
+    }
+
+    public function getPlaceCharacterLimit(): int
+    {
+        // TODO: Implement getPlaceCharacterLimit() method.
+    }
+
+    public function setPlace(string $companyPlace): bool
+    {
+        // TODO: Implement setPlace() method.
     }
 
     public function getPhoneMobile(): string
     {
         // TODO: Implement getPhoneMobile() method.
+    }
+
+    public function getPhoneMobileCharacterLimit(): int
+    {
+        // TODO: Implement getPhoneMobileCharacterLimit() method.
     }
 
     public function setPhoneMobile(string $phoneMobile): bool
@@ -84,6 +116,11 @@ class GlobalModel implements IGlobalModel
         // TODO: Implement getPhoneNormal() method.
     }
 
+    public function getPhoneNormalCharacterLimit(): int
+    {
+        // TODO: Implement getPhoneNormalCharacterLimit() method.
+    }
+
     public function setPhoneNormal(string $phoneNormal): bool
     {
         // TODO: Implement setPhoneNormal() method.
@@ -92,6 +129,11 @@ class GlobalModel implements IGlobalModel
     public function getCompanyMapLocation(): string
     {
         // TODO: Implement getCompanyMapLocation() method.
+    }
+
+    public function getMapLocationCharacterLimit(): int
+    {
+        // TODO: Implement getMapLocationCharacterLimit() method.
     }
 
     public function setCompanyMapLocation(string $companyMapLocation): bool
@@ -104,6 +146,11 @@ class GlobalModel implements IGlobalModel
         // TODO: Implement getFacebookLink() method.
     }
 
+    public function getFacebookLinkCharacterLimit(): int
+    {
+        // TODO: Implement getFacebookLinkCharacterLimit() method.
+    }
+
     public function setFacebookLink(string $facebookLink): bool
     {
         // TODO: Implement setFacebookLink() method.
@@ -112,6 +159,11 @@ class GlobalModel implements IGlobalModel
     public function getInstagramLink(): string
     {
         // TODO: Implement getInstagramLink() method.
+    }
+
+    public function getInstagramLinkCharacterLimit(): int
+    {
+        // TODO: Implement getInstagramLinkCharacterLimit() method.
     }
 
     public function setInstagramLink(string $instagramLink): bool
@@ -124,6 +176,11 @@ class GlobalModel implements IGlobalModel
         // TODO: Implement getWhatsAppLink() method.
     }
 
+    public function getWhatsAppLinkCharacterLimit(): int
+    {
+        // TODO: Implement getWhatsAppLinkCharacterLimit() method.
+    }
+
     public function setWhatsAppLink(string $whatsAppLink): bool
     {
         // TODO: Implement setWhatsAppLink() method.
@@ -134,19 +191,29 @@ class GlobalModel implements IGlobalModel
         // TODO: Implement getKleinanzeigenLink() method.
     }
 
+    public function getKleinanzeigenLinkCharacterLimit(): int
+    {
+        // TODO: Implement getKleinanzeigenLinkCharacterLimit() method.
+    }
+
     public function setKleinanzeigenLink(string $kleinanzeigenLink): bool
     {
         // TODO: Implement setKleinanzeigenLink() method.
     }
 
-    public function getDataPrivacyInformation(): string
+    public function getPrivacyPolicyInformation(): string
     {
-        // TODO: Implement getDataPrivacyInformation() method.
+        // TODO: Implement getPrivacyPolicyInformation() method.
     }
 
-    public function setDataPrivacyInformation(string $dataPrivacyInformation): bool
+    public function getPrivacyPolicyCharacterLimit(): int
     {
-        // TODO: Implement setDataPrivacyInformation() method.
+        // TODO: Implement getPrivacyPolicyCharacterLimit() method.
+    }
+
+    public function setPrivacyPolicyInformation(string $privacyPolicyInformation): bool
+    {
+        // TODO: Implement setPrivacyPolicyInformation() method.
     }
 
     public function getCommonBusinessConditions(): string
@@ -154,8 +221,13 @@ class GlobalModel implements IGlobalModel
         // TODO: Implement getCommonBusinessConditions() method.
     }
 
-    public function setCommonBusinessConditions(string $commonBusinessConditions): bool
+    public function getTermsOfServiceCharacterLimit(): int
     {
-        // TODO: Implement setCommonBusinessConditions() method.
+        // TODO: Implement getTermsOfServiceCharacterLimit() method.
+    }
+
+    public function setTermsOfService(string $termsOfService): bool
+    {
+        // TODO: Implement setTermsOfService() method.
     }
 }

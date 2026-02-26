@@ -67,8 +67,8 @@ interface IView
      * For a different way of describing the possible security issues and more examples,
      * read the **documentation of the interface IDatabaseAdapter**.
      *
-     * @param array $data Associative array of data to be used by the view.
+     * @param array $data Associative array of data to be used by the view (or leave out parameter => no data to show)
      * @return void
      */
-    public function show(array $data) : void;
+    public function show(array $data = []) : void;
 }

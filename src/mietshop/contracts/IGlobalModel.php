@@ -309,13 +309,13 @@ interface IGlobalModel
      *
      * @return int Maximum amount of characters for your common business conditions text.
      */
-    public function getCommonBusinessConditionsCharacterLimit(): int;
+    public function getTermsOfServiceCharacterLimit(): int;
 
     /**
      * Sets the company's general business conditions (terms of service) text.
      *
-     * @param string $commonBusinessConditions Terms text.
+     * @param string $termsOfService Terms text.
      * @return bool True on success, false on failure.
      */
-    public function setCommonBusinessConditions(string $commonBusinessConditions): bool;
+    public function setTermsOfService(string $termsOfService): bool;
 }

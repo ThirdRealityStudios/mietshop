@@ -18,18 +18,7 @@ function run()
     spl_autoload_register("autoloader");
 
     $request = new HTTPRequest($_GET, $_POST, $_COOKIE, $_SERVER);
-
-    foreach($request -> getHeaderKeys() as $key)
-    {
-        echo "$key: ";
-
-        $value = $request -> getHeaderValue($key);
-
-        echo "$value<br>";
-    }
-
-
-
+    
     $router = new Router();
 
     $router -> route($request);
