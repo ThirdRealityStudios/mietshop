@@ -2,11 +2,12 @@
 
 namespace src\mietshop\infrastructure\router;
 
-use src\mietshop\contracts\CompanyRepository;
 use src\mietshop\infrastructure\database\MySQLAdapter;
 use src\mietshop\infrastructure\http\IHTTPRequest;
 use src\mietshop\model\CompanyModel;
+use src\mietshop\model\GlobalModel;
 use src\mietshop\presenter\HomePresenter;
+use src\mietshop\view\GlobalView;
 use src\mietshop\view\HomeView;
 
 class Router implements IRouter
@@ -21,17 +22,19 @@ class Router implements IRouter
         {
             $databaseAdapter = new MySQLAdapter();
             $databaseAdapter->connect($host, "myWebsite", "root", "myPassword");
-            $globalModel = new CompanyModel($databaseAdapter);
+            $companyModel = new CompanyModel($databaseAdapter);
+            $globalModel = new GlobalModel($companyModel, $databaseAdapter);
+            $globalView = new GlobalView();
 
             if(sizeof($request->getQueryKeys()) === 0)
             {
-                $homeView = new HomeView();
+                $homeView = new HomeView($globalView);
                 $homePresenter = new HomePresenter($globalModel, $homeView);
                 $homePresenter->process($request);
             }
             else
             {
-
+                echo "Other page";
             }
         }
     }

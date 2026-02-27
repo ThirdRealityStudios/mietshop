@@ -4,15 +4,15 @@ namespace src\mietshop\presenter;
 
 use src\mietshop\contracts\IPresenter;
 use src\mietshop\infrastructure\http\HTTPRequest;
-use src\mietshop\model\CompanyModel;
+use src\mietshop\contracts\IGlobalModel;
 use src\mietshop\view\HomeView;
 
 class HomePresenter implements IPresenter
 {
-    private CompanyModel $model;
+    private IGlobalModel $model;
     private HomeView $view;
 
-    public function __construct(CompanyModel $model, HomeView $view)
+    public function __construct(IGlobalModel $model, HomeView $view)
     {
         $this->model = $model;
         $this->view = $view;
@@ -20,20 +20,27 @@ class HomePresenter implements IPresenter
 
     public function process(HTTPRequest $request): void
     {
-        $companyNameCharLimit = $this->model->getNameCharacterLimit();
+        $host = $request->getHeaderValue("host");
 
-        $this->view->show(["CompanyNameCharacterLimit" => $companyNameCharLimit]);
-
-        /*
-        foreach($request -> getHeaderKeys() as $key)
+        if(is_string($host))
         {
-            echo "$key: ";
+            $companyNameCharacterLimit = $this->model->getCompanyModel()->getNameCharacterLimit();
 
-            $value = $request -> getHeaderValue($key);
+            $this->view->show([
+                "host" => $request->getHeaderValue("host"),
+                "CompanyNameCharacterLimit" => $companyNameCharacterLimit]);
+
+            /*
+            foreach($request -> getHeaderKeys() as $key)
+            {
+                echo "$key: ";
+
+                $value = $request -> getHeaderValue($key);
 
 
-            echo "$value<br>";
+                echo "$value<br>";
+            }
+            */
         }
-        */
     }
 }
