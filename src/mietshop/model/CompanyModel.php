@@ -30,7 +30,7 @@ class CompanyModel implements ICompanyModel
 			CREATE TABLE IF NOT EXISTS CompanyModel
 			(
 				ID INT(8) AUTO_INCREMENT PRIMARY KEY UNIQUE,
-
+			    
 				Name VARCHAR(50) NOT NULL DEFAULT \"Mustermann GmbH\",
 			    Owner VARCHAR(40) NOT NULL DEFAULT \"Max Mustermann\",
 			    

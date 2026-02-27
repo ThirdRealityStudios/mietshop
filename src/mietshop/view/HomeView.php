@@ -5,7 +5,7 @@ namespace src\mietshop\view;
 use src\mietshop\contracts\IGlobalView;
 use src\mietshop\contracts\IView;
 
-class HomeView implements IView
+class HomeView implements IHomeView
 {
     private IGlobalView $globalView;
 

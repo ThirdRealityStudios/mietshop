@@ -52,7 +52,7 @@ Upload, edit, or delete:
 
 * The **Model** manages all data operations (`fetch`, `insert`, `delete`).
 * The **Presenter** coordinates the interaction between Model and View, prepares data, and decides which View to render.
-* The **View** is “dumb”: it only displays the data provided by the Presenter and forwards user actions back to the Presenter.
+* The **View** is “dumb”: it only displays the data provided by the Presenter [with function called **show(...)**] and forwards user actions back to the Presenter.
 * A **Router** is used on the landing page to choose the suitable Presenter in the beginning (you need an entry point of course)
 
 ---
