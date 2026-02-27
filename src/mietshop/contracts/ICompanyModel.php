@@ -9,21 +9,21 @@ namespace src\mietshop\contracts;
  * (privacy policy, general business conditions). Typically, this information
  * is displayed on most views or webpages.
  */
-interface IGlobalModel
+interface ICompanyModel
 {
     /**
      * Returns the full company name, including legal form (e.g., "Inc.", "AG").
      *
      * @return string Full company name.
      */
-    public function getCompanyName(): string;
+    public function getName(): string;
 
     /**
      * Returns the maximum amount of characters for your company name.
      *
      * @return int Company name text limit.
      */
-    public function getCompanyNameCharacterLimit(): int;
+    public function getNameCharacterLimit(): int;
 
     /**
      * Sets the full company name, including legal form.
@@ -31,7 +31,7 @@ interface IGlobalModel
      * @param string $companyName Full company name.
      * @return bool True on success, false on failure.
      */
-    public function setCompanyName(string $companyName): bool;
+    public function setName(string $companyName): bool;
 
     /**
      * Returns the company owner's full name (first and last name).
@@ -53,7 +53,7 @@ interface IGlobalModel
      * @param string $companyOwner Owner's full name.
      * @return bool True on success, false on failure.
      */
-    public function setCompanyOwner(string $companyOwner): bool;
+    public function setOwner(string $companyOwner): bool;
 
     /**
      * Returns the full street address of the company (including house number).
@@ -67,7 +67,7 @@ interface IGlobalModel
      *
      * @return int Company street name text limit.
      */
-    public function getCompanyStreetCharacterLimit(): int;
+    public function getStreetCharacterLimit(): int;
 
     /**
      * Sets the company's street address.
@@ -89,7 +89,7 @@ interface IGlobalModel
      *
      * @return int Company ZIP code text limit.
      */
-    public function getZIPCodeCharacterLimit(): int;
+    public function getZipCodeCharacterLimit(): int;
 
     /**
      * Sets the company's ZIP/postal code.
@@ -170,7 +170,7 @@ interface IGlobalModel
      *
      * @return string Map URL, empty string if not set.
      */
-    public function getCompanyMapLocation(): string;
+    public function getMapLocation(): string;
 
     /**
      * Returns the maximum amount of characters for your company's location in a map service.
@@ -185,95 +185,95 @@ interface IGlobalModel
      * @param string $companyMapLocation Map embed URL.
      * @return bool True on success, false on failure.
      */
-    public function setCompanyMapLocation(string $companyMapLocation): bool;
+    public function setMapLocation(string $companyMapLocation): bool;
 
     /**
      * Returns the company's Facebook page URL.
      *
      * @return string Facebook URL, empty if not set.
      */
-    public function getFacebookLink(): string;
+    public function getFacebookURL(): string;
 
     /**
      * Returns the maximum amount of characters for your company's Facebook page URL.
      *
      * @return int Maximum amount of characters for your Facebook page URL.
      */
-    public function getFacebookLinkCharacterLimit(): int;
+    public function getFacebookURLCharacterLimit(): int;
 
     /**
      * Sets the company's Facebook page URL.
      *
-     * @param string $facebookLink Facebook URL or empty string.
+     * @param string $facebookURL Facebook URL or empty string.
      * @return bool True on success, false on failure.
      */
-    public function setFacebookLink(string $facebookLink): bool;
+    public function setFacebookURL(string $facebookURL): bool;
 
     /**
      * Returns the company's Instagram page URL.
      *
      * @return string Instagram URL, empty if not set.
      */
-    public function getInstagramLink(): string;
+    public function getInstagramURL(): string;
 
     /**
      * Returns the maximum amount of characters for your company's Instagram page URL.
      *
      * @return int Maximum amount of characters for your Instagram page URL.
      */
-    public function getInstagramLinkCharacterLimit(): int;
+    public function getInstagramURLCharacterLimit(): int;
 
     /**
      * Sets the company's Instagram page URL.
      *
-     * @param string $instagramLink Instagram URL or empty string.
+     * @param string $instagramURL Instagram URL or empty string.
      * @return bool True on success, false on failure.
      */
-    public function setInstagramLink(string $instagramLink): bool;
+    public function setInstagramURL(string $instagramURL): bool;
 
     /**
      * Returns the company's WhatsApp contact link.
      *
      * @return string WhatsApp link, empty if not set.
      */
-    public function getWhatsAppLink(): string;
+    public function getWhatsAppURL(): string;
 
     /**
      * Returns the maximum amount of characters for your company's WhatsApp contact URL.
      *
      * @return int Maximum amount of characters for your WhatsApp contact URL.
      */
-    public function getWhatsAppLinkCharacterLimit(): int;
+    public function getWhatsAppURLCharacterLimit(): int;
 
     /**
      * Sets the company's WhatsApp contact link.
      *
-     * @param string $whatsAppLink WhatsApp link or empty string.
+     * @param string $whatsAppURL WhatsApp link or empty string.
      * @return bool True on success, false on failure.
      */
-    public function setWhatsAppLink(string $whatsAppLink): bool;
+    public function setWhatsAppURL(string $whatsAppURL): bool;
 
     /**
      * Returns the company's Kleinanzeigen (classifieds) sellers page URL.
      *
      * @return string URL, empty if not set.
      */
-    public function getKleinanzeigenLink(): string;
+    public function getKleinanzeigenURL(): string;
 
     /**
      * Returns the maximum amount of characters for your company's Kleinanzeigen (classifieds) sellers page URL.
      *
      * @return int Maximum amount of characters for your Kleinanzeigen (classifieds) sellers page URL.
      */
-    public function getKleinanzeigenLinkCharacterLimit(): int;
+    public function getKleinanzeigenURLCharacterLimit(): int;
 
     /**
      * Sets the company's Kleinanzeigen (classifieds) sellers page URL.
      *
-     * @param string $kleinanzeigenLink URL or empty string.
+     * @param string $kleinanzeigenURL URL or empty string.
      * @return bool True on success, false on failure.
      */
-    public function setKleinanzeigenLink(string $kleinanzeigenLink): bool;
+    public function setKleinanzeigenURL(string $kleinanzeigenURL): bool;
 
     /**
      * Returns the company's privacy policy text.
@@ -302,7 +302,7 @@ interface IGlobalModel
      *
      * @return string Terms text, empty if not set.
      */
-    public function getCommonBusinessConditions(): string;
+    public function getTermsOfService(): string;
 
     /**
      * Returns the maximum amount of characters for your common business conditions text.

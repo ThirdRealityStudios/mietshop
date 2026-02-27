@@ -2,10 +2,10 @@
 
 namespace src\mietshop\infrastructure\router;
 
-use src\mietshop\contracts\GlobalRepository;
+use src\mietshop\contracts\CompanyRepository;
 use src\mietshop\infrastructure\database\MySQLAdapter;
 use src\mietshop\infrastructure\http\IHTTPRequest;
-use src\mietshop\model\GlobalModel;
+use src\mietshop\model\CompanyModel;
 use src\mietshop\presenter\HomePresenter;
 use src\mietshop\view\HomeView;
 
@@ -21,8 +21,7 @@ class Router implements IRouter
         {
             $databaseAdapter = new MySQLAdapter();
             $databaseAdapter->connect($host, "myWebsite", "root", "myPassword");
-            $globalRepository = new GlobalRepository($databaseAdapter);
-            $globalModel = new GlobalModel($globalRepository);
+            $globalModel = new CompanyModel($databaseAdapter);
 
             if(sizeof($request->getQueryKeys()) === 0)
             {

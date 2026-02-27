@@ -166,4 +166,15 @@ interface IDatabaseAdapter
      * @throws PDOException  If connection fails or SQL execution fails.
      */
     public function execute(string $sql, array $params = []) : int;
+
+    /**
+     * Tells you the technical character limit of an SQL column.
+     * Meant to work with data type VARCHAR.
+     *
+     * @param string $tableName SQL table name.
+     * @param string $columnName SQL column name.
+     * @return int Character limit of the column in that given table. -1 if something went wrong while querying or processing it.
+     * @throws PDOException  If connection fails or SQL execution fails.
+     */
+    public function readCharacterLimit(string $tableName, string $columnName) : int;
 }

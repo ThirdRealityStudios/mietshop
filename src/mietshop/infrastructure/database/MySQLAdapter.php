@@ -3,6 +3,7 @@
 namespace src\mietshop\infrastructure\database;
 
 use PDO;
+use PDOException;
 
 class MySQLAdapter implements IDatabaseAdapter
 {
@@ -35,5 +36,43 @@ class MySQLAdapter implements IDatabaseAdapter
         $stmt = $this -> pdo -> prepare($sql);
         $stmt -> execute($params);
         return $stmt -> rowCount();
+    }
+
+    public function readCharacterLimit(string $tableName, string $columnName): int
+    {
+        // Very rough validity check for the SQL table name and column name
+        if(!empty($tableName) && !str_contains($tableName, " ") && !empty($columnName) && !str_contains($columnName, " "))
+        {
+            $sql = "SELECT character_maximum_length FROM information_schema.columns WHERE table_name = '$tableName' AND column_name = '$columnName'";
+
+            $fetchData = $this->fetch($sql);
+
+            // There should be exactly one row-related dataset returned.
+            if(sizeof($fetchData) === 1)
+            {
+                $firstRowKey = array_keys($fetchData)[0];
+                $fetchDataFirstRow = $fetchData[$firstRowKey];
+
+                if(isset($fetchDataFirstRow["character_maximum_length"]) && is_numeric($fetchDataFirstRow["character_maximum_length"]))
+                {
+                    return $fetchDataFirstRow["character_maximum_length"];
+                }
+                else
+                {
+                    // Cannot fetch column information. Technical MySQL database issue (fetched information does not have expected usual data structure).
+                    return -1;
+                }
+            }
+            else
+            {
+                // Cannot fetch column information. Technical MySQL database issue.
+                return -1;
+            }
+        }
+        else
+        {
+            // The given column name is roughly not even close to a valid column name.
+            return -1;
+        }
     }
 }
