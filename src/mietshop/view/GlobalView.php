@@ -73,20 +73,6 @@ class GlobalView implements IGlobalView
         return $this -> preGenRow($rowContentHTML, $applyTopMargin, 1, 3, 4, 10, 6, 4, 1, 3, 4);
     }
 
-    /**
-     * Generates a pre-defined Bootstrap feed / post in HTML,
-     * which has an optional image you can display (150px by 150px) and an HTML description
-     * (any HTML of your choice theoretically but be careful what you want to embed as HTML code).
-     * IMPORTANT: The existence of the given image URL is not checked!
-     * This function will return the feed HTML for use on your webpage.
-     * Only make sure you place the function inside a Bootstrap container like this:
-     *
-     * <div class="container-fluid"><?= genFeed(..); ?></div>
-     *
-     * @param string|null $pictureURL Simply the URL to your picture which should be displayed in the post. Otherwise pass NULL here (then no picture generated / embedded).
-     * @param string $descriptionHTML The HTML code you want to show in your feed (usually formatted text, a button etc.).
-     * @return string Feed HTML
-     */
     public function genFeed(?string $pictureURL, string $descriptionHTML) : string
     {
         if(is_string($pictureURL))

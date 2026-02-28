@@ -23,7 +23,7 @@ interface ICompanyModel
     /**
      * Returns the maximum amount of characters for your company name.
      *
-     * @return int Company name text limit.
+     * @return int Company name text limit. -1 if there was a technical error.
      */
     public function getCompanyNameCharacterLimit(): int;
 
@@ -45,7 +45,7 @@ interface ICompanyModel
     /**
      * Returns the maximum amount of characters for your company owner.
      *
-     * @return int Company owner text limit.
+     * @return int Company owner text limit. -1 if there was a technical error.
      */
     public function getOwnerCharacterLimit(): int;
 
@@ -67,7 +67,7 @@ interface ICompanyModel
     /**
      * Returns the maximum amount of characters for your company street name.
      *
-     * @return int Company street name text limit.
+     * @return int Company street name text limit. -1 if there was a technical error.
      */
     public function getStreetCharacterLimit(): int;
 
@@ -89,7 +89,7 @@ interface ICompanyModel
     /**
      * Returns the maximum amount of characters for your company ZIP code.
      *
-     * @return int Company ZIP code text limit.
+     * @return int Company ZIP code text limit. -1 if there was a technical error.
      */
     public function getZipCodeCharacterLimit(): int;
 
@@ -111,7 +111,7 @@ interface ICompanyModel
     /**
      * Returns the maximum amount of characters for your company place name.
      *
-     * @return int Company place character limit.
+     * @return int Company place character limit. -1 if there was a technical error.
      */
     public function getPlaceCharacterLimit(): int;
 
@@ -133,7 +133,7 @@ interface ICompanyModel
     /**
      * Returns the maximum amount of characters for your company's email address.
      *
-     * @return int Email address character limit.
+     * @return int Email address character limit. -1 if there was a technical error.
      */
     public function getEmailCharacterLimit(): int;
 
@@ -155,7 +155,7 @@ interface ICompanyModel
     /**
      * Returns the maximum amount of characters for your company mobile phone number.
      *
-     * @return int Company mobile phone number character limit.
+     * @return int Company mobile phone number character limit. -1 if there was a technical error.
      */
     public function getPhoneMobileCharacterLimit(): int;
 
@@ -177,7 +177,7 @@ interface ICompanyModel
     /**
      * Returns the maximum amount of characters for your landline/office phone number.
      *
-     * @return int Landline/office phone number character limit.
+     * @return int Landline/office phone number character limit. -1 if there was a technical error.
      */
     public function getPhoneNormalCharacterLimit(): int;
 
@@ -199,7 +199,7 @@ interface ICompanyModel
     /**
      * Returns the maximum amount of characters for your company's location in a map service.
      *
-     * @return int Character limit for your company's location in a map service.
+     * @return int Character limit for your company's location in a map service. -1 if there was a technical error.
      */
     public function getMapLocationURLCharacterLimit(): int;
 
@@ -221,7 +221,7 @@ interface ICompanyModel
     /**
      * Returns the maximum amount of characters for your company's Facebook page URL.
      *
-     * @return int Maximum amount of characters for your Facebook page URL.
+     * @return int Maximum amount of characters for your Facebook page URL. -1 if there was a technical error.
      */
     public function getFacebookURLCharacterLimit(): int;
 
@@ -243,7 +243,7 @@ interface ICompanyModel
     /**
      * Returns the maximum amount of characters for your company's Instagram page URL.
      *
-     * @return int Maximum amount of characters for your Instagram page URL.
+     * @return int Maximum amount of characters for your Instagram page URL. -1 if there was a technical error.
      */
     public function getInstagramURLCharacterLimit(): int;
 
@@ -265,7 +265,7 @@ interface ICompanyModel
     /**
      * Returns the maximum amount of characters for your company's WhatsApp contact URL.
      *
-     * @return int Maximum amount of characters for your WhatsApp contact URL.
+     * @return int Maximum amount of characters for your WhatsApp contact URL. -1 if there was a technical error.
      */
     public function getWhatsAppURLCharacterLimit(): int;
 
@@ -287,7 +287,7 @@ interface ICompanyModel
     /**
      * Returns the maximum amount of characters for your company's Kleinanzeigen (classifieds) sellers page URL.
      *
-     * @return int Maximum amount of characters for your Kleinanzeigen (classifieds) sellers page URL.
+     * @return int Maximum amount of characters for your Kleinanzeigen (classifieds) sellers page URL. -1 if there was a technical error.
      */
     public function getKleinanzeigenURLCharacterLimit(): int;
 
@@ -309,7 +309,7 @@ interface ICompanyModel
     /**
      * Returns the maximum amount of characters for your company's privacy policy text.
      *
-     * @return int Maximum amount of characters for your company's privacy policy text.
+     * @return int Maximum amount of characters for your company's privacy policy text. -1 if there was a technical error.
      */
     public function getPrivacyPolicyCharacterLimit(): int;
 
@@ -331,7 +331,7 @@ interface ICompanyModel
     /**
      * Returns the maximum amount of characters for your common business conditions text.
      *
-     * @return int Maximum amount of characters for your common business conditions text.
+     * @return int Maximum amount of characters for your common business conditions text. -1 if there was a technical error.
      */
     public function getTermsOfServiceCharacterLimit(): int;
 

@@ -4,6 +4,7 @@ namespace src\mietshop\infrastructure\router;
 
 use src\mietshop\infrastructure\database\MySQLAdapter;
 use src\mietshop\infrastructure\http\IHTTPRequest;
+use src\mietshop\model\CategoryModel;
 use src\mietshop\model\CompanyModel;
 use src\mietshop\presenter\HomePresenter;
 use src\mietshop\view\GlobalView;
@@ -16,12 +17,13 @@ class Router implements IRouter
         $databaseAdapter = new MySQLAdapter();
         $databaseAdapter->connect("localhost", "myWebsite", "root", "myPassword");
         $companyModel = new CompanyModel($databaseAdapter);
+        $categoryModel = new CategoryModel($databaseAdapter);
         $globalView = new GlobalView();
 
         if(sizeof($request->getQueryKeys()) === 0)
         {
             $homeView = new HomeView($globalView);
-            $homePresenter = new HomePresenter($companyModel, $homeView);
+            $homePresenter = new HomePresenter($companyModel, $categoryModel, $homeView);
             $homePresenter->process($request);
         }
         else if(sizeof($request->getQueryKeys()) > 0)

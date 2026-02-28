@@ -2,19 +2,23 @@
 
 namespace src\mietshop\presenter;
 
+use src\mietshop\contracts\ICategoryModel;
 use src\mietshop\contracts\ICompanyModel;
+use src\mietshop\contracts\IHomeView;
 use src\mietshop\contracts\IPresenter;
 use src\mietshop\infrastructure\http\HTTPRequest;
 use src\mietshop\view\HomeView;
 
 class HomePresenter implements IPresenter
 {
-    private ICompanyModel $model;
+    private ICompanyModel $companyModel;
+    private ICategoryModel $categoryModel;
     private HomeView $view;
 
-    public function __construct(ICompanyModel $model, HomeView $view)
+    public function __construct(ICompanyModel $companyModel, ICategoryModel $categoryModel, IHomeView $view)
     {
-        $this->model = $model;
+        $this->companyModel = $companyModel;
+        $this->categoryModel = $categoryModel;
         $this->view = $view;
     }
 
@@ -24,33 +28,35 @@ class HomePresenter implements IPresenter
 
         if(is_string($host) && strlen($host) > 0)
         {
-            $this->model->setCompanyName("Sehr cooles Unternehmen GmbH");
-            $this->model->setOwner("Gutfried Alman");
+            // $this->companyModel->setCompanyName("Sehr cooles Unternehmen GmbH");
+            // $this->companyModel->setOwner("Gutfried Alman");
 
-            $companyName = $this->model->getCompanyName();
-            $owner = $this->model->getOwner();
+            $companyName = $this->companyModel->getCompanyName();
+            $owner = $this->companyModel->getOwner();
 
-            $this->model->setStreet("Maximiliand Str. 3a");
+            $this->companyModel->setStreet("Kurwa Mac Str. 3a");
 
-            $street = $this->model->getStreet();
-            $zipCode = $this->model->getZipCode();
-            $place = $this->model->getPlace();
+            $street = $this->companyModel->getStreet();
+            $zipCode = $this->companyModel->getZipCode();
+            $place = $this->companyModel->getPlace();
 
-            $email = $this->model->getEmail();
+            $email = $this->companyModel->getEmail();
 
-            $companyPhoneMobile = $this->model->getPhoneMobile();
-            $phoneNormal = $this->model->getPhoneNormal();
+            $companyPhoneMobile = $this->companyModel->getPhoneMobile();
+            $phoneNormal = $this->companyModel->getPhoneNormal();
 
-            $mapLocationURL = $this->model->getMapLocationURL();
-            $facebookURL = $this->model->getFacebookURL();
-            $instagramURL = $this->model->getInstagramURL();
-            $whatsAppURL = $this->model->getWhatsAppURL();
-            $kleinanzeigenURL = $this->model->getKleinanzeigenURL();
+            $mapLocationURL = $this->companyModel->getMapLocationURL();
+            $facebookURL = $this->companyModel->getFacebookURL();
+            $instagramURL = $this->companyModel->getInstagramURL();
+            $whatsAppURL = $this->companyModel->getWhatsAppURL();
+            $kleinanzeigenURL = $this->companyModel->getKleinanzeigenURL();
 
-            $privacyPolicy = $this->model->getPrivacyPolicy();
-            $termsOfService = $this->model->getTermsOfService();
+            $privacyPolicy = $this->companyModel->getPrivacyPolicy();
+            $termsOfService = $this->companyModel->getTermsOfService();
 
-            $this->view->show($host, $companyName, $owner, $street, $zipCode, $place, $email, $companyPhoneMobile, $phoneNormal, $mapLocationURL, $facebookURL, $instagramURL, $whatsAppURL, $kleinanzeigenURL, $privacyPolicy, $termsOfService);
+            $categories = $this->categoryModel->readAllCategories();
+
+            $this->view->show($host, $companyName, $owner, $street, $zipCode, $place, $email, $companyPhoneMobile, $phoneNormal, $mapLocationURL, $facebookURL, $instagramURL, $whatsAppURL, $kleinanzeigenURL, $privacyPolicy, $termsOfService, $categories);
         }
     }
 }
