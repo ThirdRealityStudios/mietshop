@@ -2,8 +2,10 @@
 
 namespace src\mietshop\model;
 
+use src\mietshop\contracts\data\ICompanyData;
 use src\mietshop\contracts\ICompanyModel;
 use src\mietshop\infrastructure\database\IDatabaseAdapter;
+use src\mietshop\model\data\CompanyData;
 
 /**
  * Class which represents mostly company data,
@@ -131,6 +133,21 @@ class CompanyModel implements ICompanyModel
         return false;
     }
 
+    public function getEmail(): string
+    {
+        return "mymail@gmail.com";
+    }
+
+    public function getEmailCharacterLimit(): int
+    {
+        return $this->databaseAdapter->readCharacterLimit("CompanyModel", "Email");
+    }
+
+    public function setEmail(string $email): bool
+    {
+        return false;
+    }
+
     public function getPhoneMobile(): string
     {
         return "+49 123 45678";
@@ -161,24 +178,24 @@ class CompanyModel implements ICompanyModel
         return false;
     }
 
-    public function getMapLocation(): string
+    public function getMapLocationURL(): string
     {
-        return "";
+        return "bjkhj";
     }
 
-    public function getMapLocationCharacterLimit(): int
+    public function getMapLocationURLCharacterLimit(): int
     {
         return $this->databaseAdapter->readCharacterLimit("CompanyModel", "MapLocation");
     }
 
-    public function setMapLocation(string $companyMapLocation): bool
+    public function setMapLocationURL(string $companyMapLocation): bool
     {
         return false;
     }
 
     public function getFacebookURL(): string
     {
-        return "";
+        return "https://facebook.com";
     }
 
     public function getFacebookURLCharacterLimit(): int
@@ -193,7 +210,7 @@ class CompanyModel implements ICompanyModel
 
     public function getInstagramURL(): string
     {
-        return "";
+        return "https://instagram.com";
     }
 
     public function getInstagramURLCharacterLimit(): int
@@ -208,7 +225,7 @@ class CompanyModel implements ICompanyModel
 
     public function getWhatsAppURL(): string
     {
-        return "";
+        return "https://whatsapp.com";
     }
 
     public function getWhatsAppURLCharacterLimit(): int
@@ -223,7 +240,7 @@ class CompanyModel implements ICompanyModel
 
     public function getKleinanzeigenURL(): string
     {
-        return "";
+        return "https://kleinanzeigen.de";
     }
 
     public function getKleinanzeigenURLCharacterLimit(): int

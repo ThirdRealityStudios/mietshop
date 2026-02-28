@@ -9,13 +9,7 @@
 <div class="container-fluid mt-5 pb-5 bg-primary-subtle border-top border-3 border-primary">
 	<?php
 		$contactCardText = '<p class="fs-4">Kontakt:</p><br>'.COMPANY_STREET.'<br>'.COMPANY_ZIP.'&nbsp;'.COMPANY_PLACE.'<br><br>E-Mail:&nbsp;<a href="mailto:'.EMAIL_GENERAL.'" class="card-link" title="E-Mail an uns senden">'.EMAIL_GENERAL.'</a><br><br>Telefon:&nbsp;<a href="tel:'.COMPANY_PHONE_STATIONARY.'" class="card-link" title="Uns anrufen">'.COMPANY_PHONE_STATIONARY.'</a><br>Mobil:&nbsp;<a href="tel:'.COMPANY_PHONE_MOBILE.'" class="card-link" title="Uns anrufen">'.COMPANY_PHONE_MOBILE.'</a>';
-		
-		$linkURL0 = DOMAIN.'/privacy';
-		$linkName0 = "Datenschutzerklärung";
-		
-		$linkURL1 = DOMAIN.'/conditions';
-		$linkName1 = "AGBs";
-		
+
 		$essentials -> getViewFactory() -> echoFeed(NULL, $contactCardText);
 
 		$socialMediaText = '';

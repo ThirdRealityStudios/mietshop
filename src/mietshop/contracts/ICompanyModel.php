@@ -2,6 +2,8 @@
 
 namespace src\mietshop\contracts;
 
+use src\mietshop\contracts\data\ICompanyData;
+
 /**
  * Interface for accessing global business data.
  *
@@ -122,6 +124,28 @@ interface ICompanyModel
     public function setPlace(string $companyPlace): bool;
 
     /**
+     * Returns the company's email address.
+     *
+     * @return string Email contact address.
+     */
+    public function getEmail(): string;
+
+    /**
+     * Returns the maximum amount of characters for your company's email address.
+     *
+     * @return int Email address character limit.
+     */
+    public function getEmailCharacterLimit(): int;
+
+    /**
+     * Sets the company's email address.
+     *
+     * @param string $email Email address.
+     * @return bool True on success, false on failure.
+     */
+    public function setEmail(string $email): bool;
+
+    /**
      * Returns the company's mobile phone number.
      *
      * @return string Mobile number (with optional country code).
@@ -170,14 +194,14 @@ interface ICompanyModel
      *
      * @return string Map URL, empty string if not set.
      */
-    public function getMapLocation(): string;
+    public function getMapLocationURL(): string;
 
     /**
      * Returns the maximum amount of characters for your company's location in a map service.
      *
      * @return int Character limit for your company's location in a map service.
      */
-    public function getMapLocationCharacterLimit(): int;
+    public function getMapLocationURLCharacterLimit(): int;
 
     /**
      * Sets a URL for embedding the company's location in a map service.
@@ -185,7 +209,7 @@ interface ICompanyModel
      * @param string $companyMapLocation Map embed URL.
      * @return bool True on success, false on failure.
      */
-    public function setMapLocation(string $companyMapLocation): bool;
+    public function setMapLocationURL(string $companyMapLocation): bool;
 
     /**
      * Returns the company's Facebook page URL.

@@ -16,31 +16,29 @@ interface IGlobalView
      * A prepared associative array is expected as a parameter,
      * which expects e.g. the following associative array:
      *
-     * [
-     *  "host" => "mydomain.com",
-     *  "CompanyName" => "Microsoft Inc.",
-     *  "CompanyOwner" => "William Smith",
-     *  "CompanyStreet" => "Ireland Street 50",
-     *  "CompanyZipCode" => "12345",
-     *  "CompanyPlace" => "Neustadt",
-     *  "CompanyPhoneMobile" => "+49 123 45678",
-     *  "CompanyPhoneNormal" => "12345 6789123",
-     *  "MapLocationURL" => "https://google.com/myloactionWhatver",
-     *  "FacebookURL" => "https://facebook.com/pageWhatever",
-     *  "InstagramURL" => "https://instagram.com/pageWhatever",
-     *  "WhatsAppURL" => "https://whatsapp.com/?phone=1234567890",
-     *  "KleinanzeigenURL" => "https://kleinanzeigen.de/?page=whatever",
-     *  "PrivacyPolicy" => "My privacy policy - briefly",
-     *  "TermsOfService" => "My brief terms of service"
-     * ]
-     *
      * Of course,
      * the associative values can be an empty string
      * (which will, depending on the value, determine the exact view output).
      *
      *
-     * @param array $data
+     * @param string $host
+     * @param string $companyName
+     * @param string $companyOwner
+     * @param string $street
+     * @param string $zipCode
+     * @param string $place
+     * @param string $email
+     * @param string $phoneMobile
+     * @param string $phoneNormal
+     * @param string $mapLocationURL
+     * @param string $facebookURL
+     * @param string $instagramURL
+     * @param string $whatsappURL
+     * @param string $kleinanzeigenURL
+     * @param string $privacyPolicy
+     * @param string $termsOfService
+     * @param string $body
      * @return void
      */
-    public function show(array $data) : void;
+    public function show(string $host, string $companyName, string $companyOwner, string $street, string $zipCode, string $place, string $email, string $phoneMobile, string $phoneNormal, string $mapLocationURL, string $facebookURL, string $instagramURL, string $whatsappURL, string $kleinanzeigenURL, string $privacyPolicy, string $termsOfService, string $body) : void;
 }
