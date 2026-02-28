@@ -375,6 +375,8 @@ class GlobalView implements IGlobalView
 
     private function genBootstrapFooter(string $companyName, string $street, string $zipCode, string $place, string $email, string $phoneNormal, string $phoneMobile, string $mapLocationURL, string $facebookURL, string $instagramURL, string $whatsappURL, string $kleinanzeigenURL): string
     {
+
+
         $contactCardText = "<p class=\"fs-4\">Kontakt:</p><br>{$street}<br>{$zipCode}&nbsp;{$place}<br><br>E-Mail:&nbsp;<a href=\"mailto:{$email}\" class=\"card-link\" title=\"E-Mail an uns senden\">$email</a><br><br>Telefon:&nbsp;<a href=\"tel:{$phoneNormal}\" class=\"card-link\" title=\"Uns anrufen\">$phoneNormal</a><br>Mobil:&nbsp;<a href=\"tel:$phoneMobile\" class=\"card-link\" title=\"Uns anrufen\">$phoneMobile</a>";
 
         $contactFeed = $this->genFeed(null, $contactCardText);
@@ -383,29 +385,17 @@ class GlobalView implements IGlobalView
 
         $socialMediaCount = 0;
 
-        if(!empty($kleinanzeigenURL))
-        {
-            $socialMedia .= "<a class=\"d-inline-block me-2 mb-2\" href=\"{$kleinanzeigenURL}\"><img src=\"/img/logo/socialmedia/Kleinanzeigen.png\" alt=\"Kleinanzeigen\" title=\"Kleinanzeigen öffnen\" height=\"50\"></a>";
-            $socialMediaCount++;
-        }
+        $socialMedia .= "<a class=\"d-inline-block me-2 mb-2\" href=\"{$kleinanzeigenURL}\"><img src=\"/img/logo/socialmedia/Kleinanzeigen.png\" alt=\"Kleinanzeigen\" title=\"Kleinanzeigen öffnen\" height=\"50\"></a>";
+        $socialMediaCount++;
 
-        if(!empty($instagramURL))
-        {
-            $socialMedia .= "<a class=\"d-inline-block me-2 mb-2\" href=\"$instagramURL\"><img src=\"/img/logo/socialmedia/Instagram.png\" alt=\"Instagram\" title=\"Instagram öffnen\" height=\"50\"></a>";
-            $socialMediaCount++;
-        }
+        $socialMedia .= "<a class=\"d-inline-block me-2 mb-2\" href=\"$instagramURL\"><img src=\"/img/logo/socialmedia/Instagram.png\" alt=\"Instagram\" title=\"Instagram öffnen\" height=\"50\"></a>";
+        $socialMediaCount++;
 
-        if(!empty($whatsappURL))
-        {
-            $socialMedia .= "<a class=\"d-inline-block me-2 mb-2\" href=\"$whatsappURL\"><img src=\"/img/logo/socialmedia/Whatsapp.png\" alt=\"WhatsApp\" title=\"WhatsApp öffnen\" height=\"50\"></a>";
-            $socialMediaCount++;
-        }
+        $socialMedia .= "<a class=\"d-inline-block me-2 mb-2\" href=\"$whatsappURL\"><img src=\"/img/logo/socialmedia/Whatsapp.png\" alt=\"WhatsApp\" title=\"WhatsApp öffnen\" height=\"50\"></a>";
+        $socialMediaCount++;
 
-        if(!empty($facebookURL))
-        {
-            $socialMedia .= "<a class=\"d-inline-block me-2 mb-2\" href=\"$facebookURL\"><img src=\"/img/logo/socialmedia/Facebook.png\" alt=\"Facebook\" title=\"Facebook öffnen\" height=\"50\"></a>";
-            $socialMediaCount++;
-        }
+        $socialMedia .= "<a class=\"d-inline-block me-2 mb-2\" href=\"$facebookURL\"><img src=\"/img/logo/socialmedia/Facebook.png\" alt=\"Facebook\" title=\"Facebook öffnen\" height=\"50\"></a>";
+        $socialMediaCount++;
 
         $optionalSocialMediaTitle = "";
 
@@ -422,12 +412,7 @@ class GlobalView implements IGlobalView
 
         $socialMediaFeed = $this->genFeed(null, $optionalSocialMediaTitle.$socialMedia);
 
-        $mapsServiceEmbedded = "";
-
-        if(!empty($mapLocationURL))
-        {
-            $mapsServiceEmbedded = $this->genFeed(null, "<iframe src=\"$mapLocationURL\" allowfullscreen=\"\" loading=\"lazy\" class=\"rounded\" style=\"width: 100%;\" height=\"480\"></iframe>");
-        }
+        $mapsServiceEmbedded = $this->genFeed(null, "<iframe src=\"$mapLocationURL\" allowfullscreen=\"\" loading=\"lazy\" class=\"rounded\" style=\"width: 100%;\" height=\"480\"></iframe>");
 
         $copyrightRow = $this->preGenDefaultRow("<p class=\"mb-0 text-center\">Copyright&nbsp;©&nbsp;$companyName&nbsp;-&nbsp;Alle&nbsp;Rechte&nbsp;vorbehalten.</p>", true);
 
@@ -443,8 +428,21 @@ class GlobalView implements IGlobalView
 
     public function show(string $host, string $companyName, string $companyOwner, string $street, string $zipCode, string $place, string $email, string $phoneMobile, string $phoneNormal, string $mapLocationURL, string $facebookURL, string $instagramURL, string $whatsappURL, string $kleinanzeigenURL, string $privacyPolicy, string $termsOfService, string $body): void
     {
-        $bodyHTML = $this->genBootstrapHeader($companyName).$body.$this->genBootstrapFooter($companyName, $street, $zipCode, $place, $email, $phoneNormal, $phoneMobile, $mapLocationURL, $facebookURL, $instagramURL, $whatsappURL, $kleinanzeigenURL);
+        $companyNameHTMLSafe = htmlspecialchars($companyName, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $streetHTMLSafe = htmlspecialchars($street, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $zipCodeHTMLSafe = htmlspecialchars($zipCode, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $placeHTMLSafe = htmlspecialchars($place, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $emailHTMLSafe = htmlspecialchars($email, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $phoneNormalSafe = htmlspecialchars($phoneNormal, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $phoneMobileSafe = htmlspecialchars($phoneMobile, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $mapLocationURLSafe = urlencode($mapLocationURL);
+        $facebookURLSafe = urlencode($facebookURL);
+        $instagramURLSafe = urlencode($instagramURL);
+        $whatsappURLSafe = urlencode($whatsappURL);
+        $kleinanzeigenURLSafe = urlencode($kleinanzeigenURL);
 
-        echo $this->genDefaultHTMLDoc($bodyHTML, $companyName);
+        $bodyHTML = $this->genBootstrapHeader($companyNameHTMLSafe).$body.$this->genBootstrapFooter($companyNameHTMLSafe, $streetHTMLSafe, $zipCodeHTMLSafe, $placeHTMLSafe, $emailHTMLSafe, $phoneNormalSafe, $phoneMobileSafe, $mapLocationURLSafe, $facebookURLSafe, $instagramURLSafe, $whatsappURLSafe, $kleinanzeigenURLSafe);
+
+        echo $this->genDefaultHTMLDoc($bodyHTML, $companyNameHTMLSafe);
     }
 }
