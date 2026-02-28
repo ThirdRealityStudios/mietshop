@@ -59,6 +59,12 @@ class MySQLAdapter implements IDatabaseAdapter
         return $columnNames;
     }
 
+    /**
+     * @param string $tableName
+     * @param string $columnName
+     * @return int The maximum length for that value. Otherwise, -1 if the query failed for some reason.
+     * @throws PDOException If query fails for some reason.
+     */
     public function readCharacterLimit(string $tableName, string $columnName): int
     {
         // Very rough validity check for the SQL table name and column name

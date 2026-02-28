@@ -33,7 +33,7 @@ class CompanyModel implements ICompanyModel
 			(
 				ID INT(8) AUTO_INCREMENT PRIMARY KEY UNIQUE,
 			    
-				Name VARCHAR(50) NOT NULL DEFAULT \"Mustermann GmbH\",
+				CompanyName VARCHAR(50) NOT NULL DEFAULT \"Mustermann GmbH\",
 			    Owner VARCHAR(40) NOT NULL DEFAULT \"Max Mustermann\",
 			    
 			    Street VARCHAR(40) NOT NULL DEFAULT \"Sesamstr. 91b\",
@@ -135,9 +135,20 @@ class CompanyModel implements ICompanyModel
 
             if(in_array($name, $columnNames))
             {
-                $updatedRows = $this->databaseAdapter->execute("INSERT INTO CompanyModel($name) VALUES(?)", [$value]);
+                $fetchData = $this->databaseAdapter->fetch("SELECT MIN(CompanyModel.ID) AS MINIMUM FROM CompanyModel");
 
-                return $updatedRows === 1;
+                if(sizeof($fetchData) === 1 && isset($fetchData[0]["MINIMUM"]))
+                {
+                    $minimumID = $fetchData[0]["MINIMUM"];
+
+                    $updatedRows = $this->databaseAdapter->execute("UPDATE CompanyModel SET $name=? WHERE CompanyModel.ID=?", [$value, $minimumID]);
+
+                    return $updatedRows === 1;
+                }
+                else
+                {
+                    return false;
+                }
             }
             else
             {
@@ -150,21 +161,21 @@ class CompanyModel implements ICompanyModel
         }
     }
 
-    public function getName(): string
+    public function getCompanyName(): string
     {
-        return $this->readValue("Name");
+        return $this->readValue("CompanyName");
     }
 
-    public function getNameCharacterLimit(): int
+    public function getCompanyNameCharacterLimit(): int
     {
-        return $this->databaseAdapter->readCharacterLimit("CompanyModel", "Name");
+        return $this->databaseAdapter->readCharacterLimit("CompanyModel", "CompanyName");
     }
 
-    public function setName(string $companyName): bool
+    public function setCompanyName(string $companyName): bool
     {
-        if(strlen($companyName) <= $this->getNameCharacterLimit())
+        if(strlen($companyName) <= $this->getCompanyNameCharacterLimit())
         {
-            return $this->updateValue("Name", $companyName);
+            return $this->updateValue("CompanyName", $companyName);
         }
         else
         {
@@ -436,7 +447,7 @@ class CompanyModel implements ICompanyModel
         }
     }
 
-    public function getPrivacyPolicyInformation(): string
+    public function getPrivacyPolicy(): string
     {
         return $this->readValue("PrivacyPolicy");
     }
@@ -446,7 +457,7 @@ class CompanyModel implements ICompanyModel
         return $this->databaseAdapter->readCharacterLimit("CompanyModel", "PrivacyPolicy");
     }
 
-    public function setPrivacyPolicyInformation(string $privacyPolicyInformation): bool
+    public function setPrivacyPolicy(string $privacyPolicyInformation): bool
     {
         if(strlen($privacyPolicyInformation) <= $this->getPrivacyPolicyCharacterLimit())
         {

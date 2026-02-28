@@ -384,7 +384,7 @@ class GlobalView implements IGlobalView
 
     private function genDefaultHTMLDoc(string $bodyHTML, string $companyName) : string
     {
-        return "<!DOCTYPE html><html lang=\"de\">{$this->genHeadHTML($companyName)}<body class=\"bg-body-secondary\">$bodyHTML</body></html>";
+        return "<!DOCTYPE html><html lang=\"de\">{$this->genHeadHTML($companyName)}<body class=\"bg-primary-subtle\"><div class=\"bg-body-secondary\">$bodyHTML</div></body></html>";
     }
 
     private function genBootstrapFooter(string $companyName, string $street, string $zipCode, string $place, string $email, string $phoneNormal, string $phoneMobile, string $mapLocationURL, string $facebookURL, string $instagramURL, string $whatsappURL, string $kleinanzeigenURL): string
@@ -434,21 +434,14 @@ class GlobalView implements IGlobalView
             ";
         }
 
+        $socialMediaFeed = $this->genFeed(null, $optionalSocialMediaTitle.$socialMedia);
+
+        $mapsServiceEmbedded = "";
+
         if(!empty($mapLocationURL))
         {
             $mapsServiceEmbedded = $this->genFeed(null, "<iframe src=\"$mapLocationURL\" allowfullscreen=\"\" loading=\"lazy\" class=\"rounded\" style=\"width: 100%;\" height=\"480\"></iframe>");
         }
-        else
-        {
-            $mapsServiceEmbedded = "<div style=\"height: 20vh;\"></div>";
-        }
-
-        if($socialMediaCount <= 1 && empty($mapLocationURL)) // then need distance to the copyright text.
-        {
-            $socialMedia .= "<div style=\"height: 25vh;\"></div>";
-        }
-
-        $socialMediaFeed = $this->genFeed(null, $optionalSocialMediaTitle.$socialMedia);
 
         $copyrightRow = $this->preGenDefaultRow("<p class=\"mb-0 text-center\">Copyright&nbsp;©&nbsp;$companyName&nbsp;-&nbsp;Alle&nbsp;Rechte&nbsp;vorbehalten.</p>", true);
 

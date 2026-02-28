@@ -22,9 +22,11 @@ class HomePresenter implements IPresenter
     {
         $host = $request->getHeaderValue("host");
 
-        if(is_string($host))
+        if(is_string($host) && strlen($host) > 0)
         {
-            $companyName = $this->model->getName();
+            $this->model->setCompanyName("Sehr cooles Unternehmen GmbH");
+
+            $companyName = $this->model->getCompanyName();
             $owner = $this->model->getOwner();
 
             $street = $this->model->getStreet();
@@ -42,22 +44,10 @@ class HomePresenter implements IPresenter
             $whatsAppURL = $this->model->getWhatsAppURL();
             $kleinanzeigenURL = $this->model->getKleinanzeigenURL();
 
-            $privacyPolicy = $this->model->getPrivacyPolicyInformation();
+            $privacyPolicy = $this->model->getPrivacyPolicy();
             $termsOfService = $this->model->getTermsOfService();
 
             $this->view->show($host, $companyName, $owner, $street, $zipCode, $place, $email, $companyPhoneMobile, $phoneNormal, $mapLocationURL, $facebookURL, $instagramURL, $whatsAppURL, $kleinanzeigenURL, $privacyPolicy, $termsOfService);
-
-            /*
-            foreach($request -> getHeaderKeys() as $key)
-            {
-                echo "$key: ";
-
-                $value = $request -> getHeaderValue($key);
-
-
-                echo "$value<br>";
-            }
-            */
         }
     }
 }

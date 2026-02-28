@@ -18,14 +18,14 @@ interface ICompanyModel
      *
      * @return string Full company name.
      */
-    public function getName(): string;
+    public function getCompanyName(): string;
 
     /**
      * Returns the maximum amount of characters for your company name.
      *
      * @return int Company name text limit.
      */
-    public function getNameCharacterLimit(): int;
+    public function getCompanyNameCharacterLimit(): int;
 
     /**
      * Sets the full company name, including legal form.
@@ -33,7 +33,7 @@ interface ICompanyModel
      * @param string $companyName Full company name.
      * @return bool True on success, false on failure.
      */
-    public function setName(string $companyName): bool;
+    public function setCompanyName(string $companyName): bool;
 
     /**
      * Returns the company owner's full name (first and last name).
@@ -304,7 +304,7 @@ interface ICompanyModel
      *
      * @return string Privacy text, empty if not set.
      */
-    public function getPrivacyPolicyInformation(): string;
+    public function getPrivacyPolicy(): string;
 
     /**
      * Returns the maximum amount of characters for your company's privacy policy text.
@@ -319,7 +319,7 @@ interface ICompanyModel
      * @param string $privacyPolicyInformation Privacy text.
      * @return bool True on success, false on failure.
      */
-    public function setPrivacyPolicyInformation(string $privacyPolicyInformation): bool;
+    public function setPrivacyPolicy(string $privacyPolicyInformation): bool;
 
     /**
      * Returns the company's general business conditions (terms of service) text.
