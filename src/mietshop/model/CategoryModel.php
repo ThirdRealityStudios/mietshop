@@ -75,4 +75,11 @@ class CategoryModel implements ICategoryModel
     {
         return $this->databaseAdapter->readCharacterLimit("CategoryModel", "CategoryName");
     }
+
+    public function deleteCategory(int $id): bool
+    {
+        $sql = "DELETE FROM CategoryModel WHERE ID = ?";
+
+        return $this->databaseAdapter->execute($sql, [$id]);
+    }
 }

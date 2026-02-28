@@ -31,7 +31,9 @@ class HomeView implements IHomeView
 
             foreach($categories as $category)
             {
-                $ourRentalObjectsHTMLContent .= "<p class=\"fs-6 mb-3\">• $category</p>";
+                $safeCategoryName = htmlspecialchars($category);
+
+                $ourRentalObjectsHTMLContent .= "<p class=\"fs-6 mb-3\">• {$safeCategoryName}</p>";
             }
 
             $ourRentalObjectsHTMLContent .= "<a class=\"btn btn-primary mb-3\" href=\"/?view=search\">Jetzt stöbern und anfragen</a>";

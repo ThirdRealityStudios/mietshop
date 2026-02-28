@@ -45,4 +45,12 @@ interface ICategoryModel
      * @return bool True, if category successfully created. Otherwise, false (e.g. if technical issues).
      */
     public function createCategory(string $name) : bool;
+
+    /**
+     * Deletes a category by the ID given.
+     *
+     * @param int $id ID of the category.
+     * @return bool True, if successfully deleted category. Otherwise, false (e.g. if technical issues).
+     */
+    public function deleteCategory(int $id) : bool;
 }
