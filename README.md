@@ -97,7 +97,7 @@ Upload, edit, or delete:
 
 1. HTML
 
-       <h1><?= htmlspecialchars($title) ?></h1>
+       <h1><?= htmlspecialchars($title, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?></h1>
 
 2. URL
 
