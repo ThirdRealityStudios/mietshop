@@ -412,7 +412,12 @@ class GlobalView implements IGlobalView
 
         $socialMediaFeed = $this->genFeed(null, $optionalSocialMediaTitle.$socialMedia);
 
-        $mapsServiceEmbedded = $this->genFeed(null, "<iframe src=\"$mapLocationURL\" allowfullscreen=\"\" loading=\"lazy\" class=\"rounded\" style=\"width: 100%;\" height=\"480\"></iframe>");
+        $mapsServiceEmbedded = "";
+
+        if(!empty($mapLocationURL))
+        {
+            $mapsServiceEmbedded = $this->genFeed(null, "<iframe src=\"$mapLocationURL\" allowfullscreen=\"\" loading=\"lazy\" class=\"rounded bg-white\" style=\"width: 100%;\" height=\"480\"></iframe>");
+        }
 
         $copyrightRow = $this->preGenDefaultRow("<p class=\"mb-0 text-center\">Copyright&nbsp;©&nbsp;$companyName&nbsp;-&nbsp;Alle&nbsp;Rechte&nbsp;vorbehalten.</p>", true);
 
@@ -435,11 +440,11 @@ class GlobalView implements IGlobalView
         $emailHTMLSafe = htmlspecialchars($email, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         $phoneNormalSafe = htmlspecialchars($phoneNormal, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         $phoneMobileSafe = htmlspecialchars($phoneMobile, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-        $mapLocationURLSafe = urlencode($mapLocationURL);
-        $facebookURLSafe = urlencode($facebookURL);
-        $instagramURLSafe = urlencode($instagramURL);
-        $whatsappURLSafe = urlencode($whatsappURL);
-        $kleinanzeigenURLSafe = urlencode($kleinanzeigenURL);
+        $mapLocationURLSafe = htmlspecialchars($mapLocationURL, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $facebookURLSafe = htmlspecialchars($facebookURL, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $instagramURLSafe = htmlspecialchars($instagramURL, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $whatsappURLSafe = htmlspecialchars($whatsappURL, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $kleinanzeigenURLSafe = htmlspecialchars($kleinanzeigenURL, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 
         $bodyHTML = $this->genBootstrapHeader($companyNameHTMLSafe).$body.$this->genBootstrapFooter($companyNameHTMLSafe, $streetHTMLSafe, $zipCodeHTMLSafe, $placeHTMLSafe, $emailHTMLSafe, $phoneNormalSafe, $phoneMobileSafe, $mapLocationURLSafe, $facebookURLSafe, $instagramURLSafe, $whatsappURLSafe, $kleinanzeigenURLSafe);
 

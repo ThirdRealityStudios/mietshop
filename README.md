@@ -79,9 +79,9 @@ Upload, edit, or delete:
        // Converts special HTML characters to entities.
        // Protects against injection of HTML / JS in your page.
 
-2. URL parameters / href attributes:
+2. URL **parameters** / href attributes:
 
-       urlencode($text)
+       urlencode($queryPartOfURL)
 
        // Encodes unsafe URL characters.
        // Prevents malicious alteration of <a href="..."> links.
@@ -101,7 +101,7 @@ Upload, edit, or delete:
 
 2. URL
 
-       <a href="page.php?id=<?= urlencode($id) ?>">Link</a>
+       <a href="page.php?id=<?= "https://facebook.com/?query=".urlencode($id) ?>">Link</a>
 
 3. JS
 
