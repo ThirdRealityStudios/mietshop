@@ -2,10 +2,9 @@
 
 namespace src\mietshop\model;
 
-use src\mietshop\contracts\data\ICompanyData;
+use PDOException;
 use src\mietshop\contracts\ICompanyModel;
 use src\mietshop\infrastructure\database\IDatabaseAdapter;
-use src\mietshop\model\data\CompanyData;
 
 /**
  * Class which represents mostly company data,
@@ -22,6 +21,7 @@ class CompanyModel implements ICompanyModel
 
     /**
      * @param IDatabaseAdapter $databaseAdapter Database adapter. Make sure you have connected yet.
+     * @throws PDOException
      */
     public function __construct(IDatabaseAdapter $databaseAdapter)
     {
@@ -40,6 +40,8 @@ class CompanyModel implements ICompanyModel
 			    ZipCode VARCHAR(5) NOT NULL DEFAULT \"12345\",
 			    Place VARCHAR(20) NOT NULL DEFAULT \"Musterstadt\",
 			    
+			    Email VARCHAR(100) NOT NULL DEFAULT \"mail@website.com\",
+			    
 			    PhoneMobile VARCHAR(16) NOT NULL DEFAULT \"+49 123 45678\",
 			    PhoneNormal VARCHAR(16) NOT NULL DEFAULT \"12345 6789123\",
 			    
@@ -56,11 +58,65 @@ class CompanyModel implements ICompanyModel
 			";
 
         $this->databaseAdapter->execute($sql);
+
+        $this->ensureDefaultDataset();
+    }
+
+    /**
+     * @throws PDOException
+     */
+    private function ensureDefaultDataset()
+    {
+        $query = $this->databaseAdapter->fetch("SELECT COUNT(*) AS RowCount FROM CompanyModel");
+
+        $firstRowKey = array_keys($query)[0];
+
+        if(sizeof($query) === 1 && isset($query[$firstRowKey]["RowCount"]) && $query[$firstRowKey]["RowCount"] === 0)
+        {
+            $this->databaseAdapter->execute("INSERT INTO CompanyModel() VALUES()");
+        }
+    }
+
+    /**
+     * @param string $name
+     * @return string
+     */
+    private function getValue(string $name) : string
+    {
+        try
+        {
+            $columnNames = $this->databaseAdapter->readColumnNames("CompanyModel");
+
+            if(in_array($name, $columnNames))
+            {
+                $dataFetched = $this->databaseAdapter->fetch("SELECT $name FROM CompanyModel");
+
+                $firstRowKey = array_keys($dataFetched)[0];
+                $firstRow = $dataFetched[$firstRowKey];
+
+                if(isset($firstRow[$name]))
+                {
+                    return $firstRow[$name];
+                }
+                else
+                {
+                    return "";
+                }
+            }
+            else
+            {
+                return "";
+            }
+        }
+        catch(PDOException $e)
+        {
+            return "";
+        }
     }
 
     public function getName(): string
     {
-        return "Meine Mietshop GmbH";
+        return $this->getValue("Name");
     }
 
     public function getNameCharacterLimit(): int
@@ -75,7 +131,7 @@ class CompanyModel implements ICompanyModel
 
     public function getOwner(): string
     {
-        return "Max Mustermann";
+        return $this->getValue("Owner");
     }
 
     public function getOwnerCharacterLimit(): int
@@ -90,7 +146,7 @@ class CompanyModel implements ICompanyModel
 
     public function getStreet(): string
     {
-        return "Sesamstrasse 1";
+        return $this->getValue("Street");
     }
 
     public function getStreetCharacterLimit(): int
@@ -105,7 +161,7 @@ class CompanyModel implements ICompanyModel
 
     public function getZipCode(): string
     {
-        return "12345";
+        return $this->getValue("ZipCode");
     }
 
     public function getZipCodeCharacterLimit(): int
@@ -120,7 +176,7 @@ class CompanyModel implements ICompanyModel
 
     public function getPlace(): string
     {
-        return "Neustadt";
+        return $this->getValue("Place");
     }
 
     public function getPlaceCharacterLimit(): int
@@ -135,7 +191,7 @@ class CompanyModel implements ICompanyModel
 
     public function getEmail(): string
     {
-        return "mymail@gmail.com";
+        return $this->getValue("Email");
     }
 
     public function getEmailCharacterLimit(): int
@@ -150,7 +206,7 @@ class CompanyModel implements ICompanyModel
 
     public function getPhoneMobile(): string
     {
-        return "+49 123 45678";
+        return $this->getValue("PhoneMobile");
     }
 
     public function getPhoneMobileCharacterLimit(): int
@@ -165,7 +221,7 @@ class CompanyModel implements ICompanyModel
 
     public function getPhoneNormal(): string
     {
-        return "12345 6789123";
+        return $this->getValue("PhoneNormal");
     }
 
     public function getPhoneNormalCharacterLimit(): int
@@ -180,7 +236,7 @@ class CompanyModel implements ICompanyModel
 
     public function getMapLocationURL(): string
     {
-        return "bjkhj";
+        return $this->getValue("MapLocationURL");
     }
 
     public function getMapLocationURLCharacterLimit(): int
@@ -195,7 +251,7 @@ class CompanyModel implements ICompanyModel
 
     public function getFacebookURL(): string
     {
-        return "https://facebook.com";
+        return $this->getValue("FacebookURL");
     }
 
     public function getFacebookURLCharacterLimit(): int
@@ -210,7 +266,7 @@ class CompanyModel implements ICompanyModel
 
     public function getInstagramURL(): string
     {
-        return "https://instagram.com";
+        return $this->getValue("InstagramURL");
     }
 
     public function getInstagramURLCharacterLimit(): int
@@ -225,7 +281,7 @@ class CompanyModel implements ICompanyModel
 
     public function getWhatsAppURL(): string
     {
-        return "https://whatsapp.com";
+        return $this->getValue("WhatsAppURL");
     }
 
     public function getWhatsAppURLCharacterLimit(): int
@@ -240,7 +296,7 @@ class CompanyModel implements ICompanyModel
 
     public function getKleinanzeigenURL(): string
     {
-        return "https://kleinanzeigen.de";
+        return $this->getValue("KleinanzeigenURL");
     }
 
     public function getKleinanzeigenURLCharacterLimit(): int
@@ -255,7 +311,7 @@ class CompanyModel implements ICompanyModel
 
     public function getPrivacyPolicyInformation(): string
     {
-        return "Meine Datenschutzerklärung";
+        return $this->getValue("PrivacyPolicy");
     }
 
     public function getPrivacyPolicyCharacterLimit(): int
@@ -270,7 +326,7 @@ class CompanyModel implements ICompanyModel
 
     public function getTermsOfService(): string
     {
-        return "Meine Allgemeinen Geschäftsbedingungen";
+        return $this->getValue("TermsOfService");
     }
 
     public function getTermsOfServiceCharacterLimit(): int

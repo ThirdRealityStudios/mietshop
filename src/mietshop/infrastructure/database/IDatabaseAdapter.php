@@ -177,4 +177,15 @@ interface IDatabaseAdapter
      * @throws PDOException  If connection fails or SQL execution fails.
      */
     public function readCharacterLimit(string $tableName, string $columnName) : int;
+
+    /**
+     * Tells you all column names of a given table.
+     * If the first column is named "id" (case-insensitively seen),
+     * then it will not be included.
+     *
+     * @param string $tableName SQL table name.
+     * @return array All column names as an array.
+     * @throws PDOException If SQL execution fails for some reason.
+     */
+    public function readColumnNames(string $tableName) : array;
 }

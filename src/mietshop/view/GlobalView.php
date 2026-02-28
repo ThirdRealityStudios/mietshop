@@ -6,6 +6,9 @@ use src\mietshop\contracts\IGlobalView;
 
 class GlobalView implements IGlobalView
 {
+    /////////////////////////////////////////////////////////////////////////////////////////////////
+    /// Bootstrap Feed And Row Generation Functions
+
     /**
      * Pre-generates a Bootstrap row in HTML with a top-margin of 5 Bootstrap units (mt-5).
      * So the pre-generated HTML will be returned (NOT outputted).
@@ -119,7 +122,189 @@ class GlobalView implements IGlobalView
         return $this -> preGenDefaultRow($html, true);
     }
 
-    private function genBootstrapHeader(string $host, string $companyName) : string
+    /////////////////////////////////////////////////////////////////////////////////////////////////
+    /// Popup Generation Functions
+
+    /**
+     * Generates a (little) transparent fullscreen cover,
+     * using Bootstrap colors,
+     * which prevents users from interacting with elements from the website.
+     * Should be placed as the first element of the body tag,
+     * so it can cover everything which follows.
+     *
+     * @param string $bootstrapFluidContainerHTML The HTML code which fits into a Bootstrap fluid container, e.g. a "<div class="row">...</div>".
+     * @return string HTML which represents your blocked screen with your content appearing on it, e.g. cookie popup.
+     */
+    private function genFullscreenBlocking(string $bootstrapFluidContainerHTML) : string
+    {
+        return
+        "
+        <div class=\"container-fluid border border-3 border-primary bg-primary-subtle position-fixed z-3 w-100 h-100\" style=\"opacity: 0.94;\">
+            $bootstrapFluidContainerHTML
+        </div>
+        ";
+    }
+
+    /**
+     * Internal use for genFormPopup(). Ignore.
+     *
+     * @param string $firstAction
+     * @param string $firstHiddenInputName
+     * @param string $firstHiddenInputValue
+     * @param string $firstButtonTitle
+     * @return string
+     */
+    private function genFirstPopupForm(string $firstAction, string $firstHiddenInputName, string $firstHiddenInputValue, string $firstButtonTitle) : string
+    {
+        return
+        "
+        <form class=\"form mb-3\" method=\"POST\" action=\"$firstAction\">
+            <input type=\"hidden\" name=\"$firstHiddenInputName\" value=\"$firstHiddenInputValue\">
+            <input type=\"submit\" class=\"btn btn-primary fw-bold d-block mt-3\" value=\"$firstButtonTitle\">
+        </form>
+        ";
+    }
+
+    /**
+     * Internal use for genFormPopup(). Ignore.
+     *
+     * @param string $secondAction
+     * @param string $secondHiddenInputName
+     * @param string $secondHiddenInputValue
+     * @param string $secondButtonTitle
+     * @return string
+     */
+    private function genSecondPopupForm(string $secondAction, string $secondHiddenInputName, string $secondHiddenInputValue, string $secondButtonTitle) : string
+    {
+        return
+        "
+        <form class=\"form mb-3\" method=\"POST\" action=\"$secondAction\">
+            <input type=\"hidden\" name=\"$secondHiddenInputName\" value=\"$secondHiddenInputValue\">
+            <input type=\"submit\" class=\"btn btn-secondary\" value=\"$secondButtonTitle\">
+        </form>
+        ";
+    }
+
+    /**
+     * Internal use for genFormPopup(). Ignore.
+     *
+     * @param string $firstAction
+     * @param string $firstHiddenInputName
+     * @param string $firstHiddenInputValue
+     * @param string $firstButtonTitle
+     * @param string $secondAction
+     * @param string $secondHiddenInputName
+     * @param string $secondHiddenInputValue
+     * @param string $secondButtonTitle
+     * @return string
+     */
+    private function genPopupForms(string $firstAction, string $firstHiddenInputName, string $firstHiddenInputValue, string $firstButtonTitle, string $secondAction, string $secondHiddenInputName, string $secondHiddenInputValue, string $secondButtonTitle) : string
+    {
+        return $this->genFirstPopupForm($firstAction, $firstHiddenInputName, $firstHiddenInputValue, $firstButtonTitle).$this->genSecondPopupForm($secondAction, $secondHiddenInputName, $secondHiddenInputValue, $secondButtonTitle);
+    }
+
+    /**
+     * Generates a (little) transparent fullscreen popup,
+     * using pre-defined Bootstrap colors and the parameters to create a form for both buttons.
+     * Should be placed as the first element of the body tag,
+     * so the popup can cover everything which follows.
+     * The parameter description does not have to be related to a cookie consent popup,
+     * as it is only an example below.
+     * Bootstrap was being used to create the popup HTML.
+     * The returned HTML string represents a <div class="container-fluid ...">...</div>.
+     * Never use this function to generate multiple popups at once,
+     * as there can be only one visible at once which covers the whole screen after the body tag.
+     *
+     * @param string $preceedingHTML Maybe a title with description, like <p>Cookie consent</p><p>Please select Yes or No.</p>
+     * @param string $firstAction For e.g. "https://my-domain.de/cookie/consent/"
+     * @param string $firstHiddenInputName E.g. "enableAllServices" for clicking the first button.
+     * @param string $firstHiddenInputValue E.g. "1" in order to symbolize "yes, I want all services to be active".
+     * @param string $firstButtonTitle E.g. "Yes, activate all services".
+     * @param string $secondAction Self-explanatory (it could be like $firstAction in this example).
+     * @param string $secondHiddenInputName E.g. "disableAllServices".
+     * @param string $secondHiddenInputValue E.g. "1" in order to say "Do it. Disable every service".
+     * @param string $secondButtonTitle E.g. "No, disable all services".
+     * @return string HTML which represents your fullscreen popup, using Bootstrap fluid container.
+     * @author Janek Piekarski <janek.piekarski.postfach@gmail.com>
+     */
+    private function genFullscreenPopup(string $preceedingHTML, string $firstAction, string $firstHiddenInputName, string $firstHiddenInputValue, string $firstButtonTitle, string $secondAction, string $secondHiddenInputName, string $secondHiddenInputValue, string $secondButtonTitle) : string
+    {
+        $formHTML = $this->genPopupForms($firstAction, $firstHiddenInputName, $firstHiddenInputValue, $firstButtonTitle, $secondAction, $secondHiddenInputName, $secondHiddenInputValue, $secondButtonTitle);
+
+        $popupContentHTML = "<div class=\"row\"><div class=\"col-12 mt-3\">{$preceedingHTML}{$formHTML}</div></div>";
+
+        return $this->genFullscreenBlocking($popupContentHTML);
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////
+    /// Cookie And Services Consent Popup Functions
+
+    /**
+     * @param string $serviceName
+     * @param string $publisherName
+     * @param string $publisherDomain
+     * @param string $usedCookies
+     * @param string $publisherPrivacyLink
+     * @param int $currentPageNumber
+     * @param string $checkboxName
+     * @param bool $isBoxChecked
+     * @return string
+     */
+    function genPopupDetailPage(string $serviceName, string $publisherName, string $publisherDomain, string $usedCookies, string $publisherPrivacyLink, int $currentPageNumber, string $checkboxName, bool $isBoxChecked) : string
+    {
+        $popupPageDetailHTML = '';
+
+        if($currentPageNumber > 0)
+        {
+            $popupPageDetailHTML =
+            "
+            <div class=\"col-12 mt-3\">
+                <div class=\"mb-3\">
+                    <p class=\"fw-bold mb-0\">Dienst:</p>
+                    <p>$serviceName</p>
+                    <p class=\"fw-bold mb-0\">Anbieter:</p>
+                    <p>$publisherName</p>
+                    <p class=\"fw-bold mb-0\">Domain:</p>
+                    <p>$publisherDomain</p>
+                    <p class=\"fw-bold mb-0\">Verwendete(r) Cookie(s):</p>
+                    <p>$usedCookies</p>
+                    <p class=\"fw-bold mb-0\">Datenschutzerklärung:</p>
+                    <a href=\"$publisherPrivacyLink\" target=\"_blank\">$publisherPrivacyLink</a>
+                </div>
+                <form class=\"form mb-3\" method=\"POST\" action=\"\">
+                    <label for=\"$checkboxName\" class=\"form-check-label align-middle me-2\">Dienst erlauben:</label>
+                    <input id=\"$checkboxName\" type=\"checkbox\" name=\"$checkboxName\" class=\"form-check-input align-middle\"
+                ";
+
+            if($isBoxChecked)
+                $popupPageDetailHTML .= " checked/>";
+            else
+                $popupPageDetailHTML .= " />";
+
+            $nextPageNumber = $currentPageNumber + 1;
+
+            $popupPageDetailHTML .=
+            "
+                    <input type=\"hidden\" name=\"page\" value=\"{$nextPageNumber}\">
+                    <input type=\"submit\" class=\"btn btn-primary d-block mt-3\" value=\"Merken und weiter\">
+                </form>
+                <form class=\"form mb-3\" method=\"POST\" action=\"\">
+                    <input type=\"hidden\" name=\"page\" value=\"0\">
+                    <input type=\"submit\" class=\"btn btn-secondary\" value=\"Abbrechen\">
+                </form>
+            </div>
+            ";
+        }
+
+        return $popupPageDetailHTML;
+    }
+
+
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////
+    /// HTML Doc Basic Functions
+
+    private function genBootstrapHeader(string $companyName) : string
     {
         return "
         <nav class=\"navbar bg-primary-subtle sticky-top border-bottom border-3 border-primary w-100 z-2\">
@@ -161,7 +346,7 @@ class GlobalView implements IGlobalView
         ";
     }
 
-    private function genHeadHTML($host, $companyName)
+    private function genHeadHTML($companyName) : string
     {
         return "
         <head>
@@ -197,9 +382,9 @@ class GlobalView implements IGlobalView
         ";
     }
 
-    private function genDefaultHTMLDoc(string $bodyHTML, string $host, string $companyName)
+    private function genDefaultHTMLDoc(string $bodyHTML, string $companyName) : string
     {
-        return "<!DOCTYPE html><html lang=\"de\">{$this->genHeadHTML($host, $companyName)}<body class=\"bg-body-secondary\">$bodyHTML</body></html>";
+        return "<!DOCTYPE html><html lang=\"de\">{$this->genHeadHTML($companyName)}<body class=\"bg-body-secondary\">$bodyHTML</body></html>";
     }
 
     private function genBootstrapFooter(string $companyName, string $street, string $zipCode, string $place, string $email, string $phoneNormal, string $phoneMobile, string $mapLocationURL, string $facebookURL, string $instagramURL, string $whatsappURL, string $kleinanzeigenURL): string
@@ -214,7 +399,7 @@ class GlobalView implements IGlobalView
 
         if(!empty($kleinanzeigenURL))
         {
-            $socialMedia .= "<a class=\"d-inline-block me-2 mb-2\" href=\"$kleinanzeigenURL\"><img src=\"/img/logo/socialmedia/Kleinanzeigen.png\" alt=\"Kleinanzeigen\" title=\"Kleinanzeigen öffnen\" height=\"50\"></a>";
+            $socialMedia .= "<a class=\"d-inline-block me-2 mb-2\" href=\"{$kleinanzeigenURL}\"><img src=\"/img/logo/socialmedia/Kleinanzeigen.png\" alt=\"Kleinanzeigen\" title=\"Kleinanzeigen öffnen\" height=\"50\"></a>";
             $socialMediaCount++;
         }
 
@@ -279,8 +464,8 @@ class GlobalView implements IGlobalView
 
     public function show(string $host, string $companyName, string $companyOwner, string $street, string $zipCode, string $place, string $email, string $phoneMobile, string $phoneNormal, string $mapLocationURL, string $facebookURL, string $instagramURL, string $whatsappURL, string $kleinanzeigenURL, string $privacyPolicy, string $termsOfService, string $body): void
     {
-        $bodyHTML = $this->genBootstrapHeader($host, $companyName).$body.$this->genBootstrapFooter($companyName, $street, $zipCode, $place, $email, $phoneNormal, $phoneMobile, $mapLocationURL, $facebookURL, $instagramURL, $whatsappURL, $kleinanzeigenURL);
+        $bodyHTML = $this->genBootstrapHeader($companyName).$body.$this->genBootstrapFooter($companyName, $street, $zipCode, $place, $email, $phoneNormal, $phoneMobile, $mapLocationURL, $facebookURL, $instagramURL, $whatsappURL, $kleinanzeigenURL);
 
-        echo $this->genDefaultHTMLDoc($bodyHTML, $host, $companyName);
+        echo $this->genDefaultHTMLDoc($bodyHTML, $companyName);
     }
 }

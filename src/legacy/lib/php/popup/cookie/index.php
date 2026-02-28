@@ -3,60 +3,6 @@
 
     require_once $_SERVER['DOCUMENT_ROOT'].'/lib/php/popup/index.php';
 
-    function genPopupDetailPage($serviceName, $publisherName, $publisherDomain, $usedCookies, $publisherPrivacyLink, $acceptPostIdentifier, $currentPageNumber)
-		{
-      $popupPageDetailHTML = '';
-
-      if(is_string($serviceName) && is_string($publisherName) && is_string($publisherDomain) && is_string($usedCookies) && is_string($publisherPrivacyLink) && is_string($acceptPostIdentifier) && is_numeric($currentPageNumber) && $currentPageNumber > 0)
-      {
-        $popupPageDetailHTML = '<div class="col-12 mt-3">';
-
-        $popupPageDetailHTML .= '<div class="mb-3">';
-        $popupPageDetailHTML .= '<p class="fw-bold mb-0">Dienst:</p>';
-        $popupPageDetailHTML .= "<p>$serviceName</p>";
-        $popupPageDetailHTML .= '<p class="fw-bold mb-0">Anbieter:</p>';
-        $popupPageDetailHTML .= "<p>$publisherName</p>";
-        $popupPageDetailHTML .= '<p class="fw-bold mb-0">Domain:</p>';
-        $popupPageDetailHTML .= "<p>$publisherDomain</p>";
-        $popupPageDetailHTML .= '<p class="fw-bold mb-0">Verwendete(r) Cookie(s):</p>';
-        $popupPageDetailHTML .= "<p>$usedCookies</p>";
-        $popupPageDetailHTML .= '<p class="fw-bold mb-0">Datenschutzerklärung:</p>';
-        $popupPageDetailHTML .= "<a href=\"$publisherPrivacyLink\" target=\"_blank\">$publisherPrivacyLink</a>";
-        $popupPageDetailHTML .= '</div>';
-
-        $popupPageDetailHTML .= '<form class="form mb-3" method="POST" action="'.DOMAIN.'/lib/php/popup/cookie/upload/">';
-
-        // Get the default or user-set value for the checkbox (at this point usually always existing - but double safety check only against manipulation)
-        if(isset($_SESSION[$acceptPostIdentifier]) && is_numeric($_SESSION[$acceptPostIdentifier]) && $_SESSION[$acceptPostIdentifier] >= 0 && $_SESSION[$acceptPostIdentifier] <= 1)
-        {
-          $popupPageDetailHTML .= '<label for="'.$acceptPostIdentifier.'" class="form-check-label align-middle me-2">Dienst erlauben:</label>';
-          $popupPageDetailHTML .= '<input id="'.$acceptPostIdentifier.'" type="checkbox" name="'.$acceptPostIdentifier.'" class="form-check-input align-middle"';
-
-          if($_SESSION[$acceptPostIdentifier] == 1)
-            $popupPageDetailHTML .= ' checked/>';
-          else
-            $popupPageDetailHTML .= ' />';
-        }
-
-        $popupPageDetailHTML .= '<input type="hidden" name="page" value="'.($currentPageNumber+1).'">';
-        $popupPageDetailHTML .= '<input type="submit" class="btn btn-primary d-block mt-3" value="Merken und weiter">';
-        $popupPageDetailHTML .= '</form>';
-
-        $popupPageDetailHTML .= '<form class="form mb-3" method="POST" action="'.DOMAIN.'/lib/php/popup/cookie/upload/">';
-        $popupPageDetailHTML .= '<input type="hidden" name="page" value="0">';
-        $popupPageDetailHTML .= '<input type="submit" class="btn btn-secondary" value="Abbrechen">';
-        $popupPageDetailHTML .= '</form>';
-
-        $popupPageDetailHTML .= '</div>';
-      }
-      else
-      {
-        $popupPageDetailHTML .= '<p class="text-danger">Internal error while generating the requested popup page for the corresponding cookie(s). Are arguments to function invalid?</p>';
-      }
-
-      return $popupPageDetailHTML;
-    }
-
     function isServiceCookieValid($cookieName)
     {
       if(is_string($cookieName))
