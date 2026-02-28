@@ -13,27 +13,20 @@ class Router implements IRouter
 {
     public function route(IHTTPRequest $request) : void
     {
-        $host = $request->getHeaderValue("host");
+        $databaseAdapter = new MySQLAdapter();
+        $databaseAdapter->connect("localhost", "myWebsite", "root", "myPassword");
+        $companyModel = new CompanyModel($databaseAdapter);
+        $globalView = new GlobalView();
 
-        /* Make sure no one can send manipulated HTTP requests where "host" is not an IP/domain
-         * but a malicious string to change the behavior of the connect() function. */
-        if(is_string($host) && filter_var(gethostbyname($host), FILTER_VALIDATE_IP))
+        if(sizeof($request->getQueryKeys()) === 0)
         {
-            $databaseAdapter = new MySQLAdapter();
-            $databaseAdapter->connect($host, "myWebsite", "root", "myPassword");
-            $companyModel = new CompanyModel($databaseAdapter);
-            $globalView = new GlobalView();
-
-            if(sizeof($request->getQueryKeys()) === 0)
-            {
-                $homeView = new HomeView($globalView);
-                $homePresenter = new HomePresenter($companyModel, $homeView);
-                $homePresenter->process($request);
-            }
-            else if(sizeof($request->getQueryKeys()) > 0)
-            {
-                echo "Other page";
-            }
+            $homeView = new HomeView($globalView);
+            $homePresenter = new HomePresenter($companyModel, $homeView);
+            $homePresenter->process($request);
+        }
+        else if(sizeof($request->getQueryKeys()) > 0)
+        {
+            echo "Other page";
         }
     }
 }
