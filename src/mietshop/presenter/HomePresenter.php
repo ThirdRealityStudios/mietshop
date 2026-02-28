@@ -25,9 +25,12 @@ class HomePresenter implements IPresenter
         if(is_string($host) && strlen($host) > 0)
         {
             $this->model->setCompanyName("Sehr cooles Unternehmen GmbH");
+            $this->model->setOwner("Gutfried Alman");
 
             $companyName = $this->model->getCompanyName();
             $owner = $this->model->getOwner();
+
+            $this->model->setStreet("Maximiliand Str. 3a");
 
             $street = $this->model->getStreet();
             $zipCode = $this->model->getZipCode();

@@ -74,10 +74,10 @@ interface ICompanyModel
     /**
      * Sets the company's street address.
      *
-     * @param string $companyStreet Full street address.
+     * @param string $street Full street address.
      * @return bool True on success, false on failure.
      */
-    public function setStreet(string $companyStreet): bool;
+    public function setStreet(string $street): bool;
 
     /**
      * Returns the company's ZIP/postal code.

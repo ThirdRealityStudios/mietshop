@@ -215,11 +215,11 @@ class CompanyModel implements ICompanyModel
         return $this->databaseAdapter->readCharacterLimit("CompanyModel", "Street");
     }
 
-    public function setStreet(string $companyStreet): bool
+    public function setStreet(string $street): bool
     {
-        if(strlen(($companyStreet) <= $this->getStreetCharacterLimit()))
+        if(strlen($street) <= $this->getStreetCharacterLimit())
         {
-            return $this->updateValue("Street", $companyStreet);
+            return $this->updateValue("Street", $street);
         }
         else
         {
