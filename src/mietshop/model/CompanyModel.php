@@ -59,13 +59,16 @@ class CompanyModel implements ICompanyModel
 
         $this->databaseAdapter->execute($sql);
 
-        $this->ensureDefaultDataset();
+        $this->createDefaultDataset();
     }
 
     /**
+     * Creates a default dataset if not yet created.
+     *
+     * @return void
      * @throws PDOException
      */
-    private function ensureDefaultDataset()
+    private function createDefaultDataset() : void
     {
         $query = $this->databaseAdapter->fetch("SELECT COUNT(*) AS RowCount FROM CompanyModel");
 
@@ -78,10 +81,13 @@ class CompanyModel implements ICompanyModel
     }
 
     /**
-     * @param string $name
-     * @return string
+     * Returns the corresponding value from the CompanyModel dataset,
+     * using the column name.
+     *
+     * @param string $name SQL column name
+     * @return string Value from CompanyModel.
      */
-    private function getValue(string $name) : string
+    private function readValue(string $name) : string
     {
         try
         {
@@ -114,9 +120,39 @@ class CompanyModel implements ICompanyModel
         }
     }
 
+    /**
+     * Sets the given value in the CompanyModel dataset,
+     * using the column nam.
+     *
+     * @param string $name SQL column name
+     * @return bool True if updated successfully. Otherwise, false.
+     */
+    private function updateValue(string $name, string $value) : bool
+    {
+        try
+        {
+            $columnNames = $this->databaseAdapter->readColumnNames("CompanyModel");
+
+            if(in_array($name, $columnNames))
+            {
+                $updatedRows = $this->databaseAdapter->execute("INSERT INTO CompanyModel($name) VALUES(?)", [$value]);
+
+                return $updatedRows === 1;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        catch(PDOException $e)
+        {
+            return false;
+        }
+    }
+
     public function getName(): string
     {
-        return $this->getValue("Name");
+        return $this->readValue("Name");
     }
 
     public function getNameCharacterLimit(): int
@@ -126,12 +162,19 @@ class CompanyModel implements ICompanyModel
 
     public function setName(string $companyName): bool
     {
-        return false;
+        if(strlen($companyName) <= $this->getNameCharacterLimit())
+        {
+            return $this->updateValue("Name", $companyName);
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public function getOwner(): string
     {
-        return $this->getValue("Owner");
+        return $this->readValue("Owner");
     }
 
     public function getOwnerCharacterLimit(): int
@@ -141,12 +184,19 @@ class CompanyModel implements ICompanyModel
 
     public function setOwner(string $companyOwner): bool
     {
-        return false;
+        if(strlen($companyOwner) <= $this->getOwnerCharacterLimit())
+        {
+            return $this->updateValue("Owner", $companyOwner);
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public function getStreet(): string
     {
-        return $this->getValue("Street");
+        return $this->readValue("Street");
     }
 
     public function getStreetCharacterLimit(): int
@@ -156,12 +206,19 @@ class CompanyModel implements ICompanyModel
 
     public function setStreet(string $companyStreet): bool
     {
-        return false;
+        if(strlen(($companyStreet) <= $this->getStreetCharacterLimit()))
+        {
+            return $this->updateValue("Street", $companyStreet);
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public function getZipCode(): string
     {
-        return $this->getValue("ZipCode");
+        return $this->readValue("ZipCode");
     }
 
     public function getZipCodeCharacterLimit(): int
@@ -171,12 +228,19 @@ class CompanyModel implements ICompanyModel
 
     public function setZipCode(string $companyZipCode): bool
     {
-        return false;
+        if(strlen($companyZipCode) <= $this->getZipCodeCharacterLimit())
+        {
+            return $this->updateValue("ZipCode", $companyZipCode);
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public function getPlace(): string
     {
-        return $this->getValue("Place");
+        return $this->readValue("Place");
     }
 
     public function getPlaceCharacterLimit(): int
@@ -186,12 +250,19 @@ class CompanyModel implements ICompanyModel
 
     public function setPlace(string $companyPlace): bool
     {
-        return false;
+        if(strlen($companyPlace) <= $this->getPlaceCharacterLimit())
+        {
+            return $this->updateValue("Place", $companyPlace);
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public function getEmail(): string
     {
-        return $this->getValue("Email");
+        return $this->readValue("Email");
     }
 
     public function getEmailCharacterLimit(): int
@@ -201,12 +272,19 @@ class CompanyModel implements ICompanyModel
 
     public function setEmail(string $email): bool
     {
-        return false;
+        if(strlen($email) <= $this->getEmailCharacterLimit())
+        {
+            return $this->updateValue("Email", $email);
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public function getPhoneMobile(): string
     {
-        return $this->getValue("PhoneMobile");
+        return $this->readValue("PhoneMobile");
     }
 
     public function getPhoneMobileCharacterLimit(): int
@@ -216,12 +294,19 @@ class CompanyModel implements ICompanyModel
 
     public function setPhoneMobile(string $phoneMobile): bool
     {
-        return false;
+        if(strlen($phoneMobile) <= $this->getPhoneMobileCharacterLimit())
+        {
+            return $this->updateValue("PhoneMobile", $phoneMobile);
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public function getPhoneNormal(): string
     {
-        return $this->getValue("PhoneNormal");
+        return $this->readValue("PhoneNormal");
     }
 
     public function getPhoneNormalCharacterLimit(): int
@@ -231,12 +316,19 @@ class CompanyModel implements ICompanyModel
 
     public function setPhoneNormal(string $phoneNormal): bool
     {
-        return false;
+        if(strlen($phoneNormal) <= $this->getPhoneNormalCharacterLimit())
+        {
+            return $this->updateValue("PhoneNormal", $phoneNormal);
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public function getMapLocationURL(): string
     {
-        return $this->getValue("MapLocationURL");
+        return $this->readValue("MapLocationURL");
     }
 
     public function getMapLocationURLCharacterLimit(): int
@@ -246,12 +338,19 @@ class CompanyModel implements ICompanyModel
 
     public function setMapLocationURL(string $companyMapLocation): bool
     {
-        return false;
+        if(strlen($companyMapLocation) <= $this->getMapLocationURLCharacterLimit())
+        {
+            return $this->updateValue("MapLocationURL", $companyMapLocation);
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public function getFacebookURL(): string
     {
-        return $this->getValue("FacebookURL");
+        return $this->readValue("FacebookURL");
     }
 
     public function getFacebookURLCharacterLimit(): int
@@ -261,12 +360,19 @@ class CompanyModel implements ICompanyModel
 
     public function setFacebookURL(string $facebookURL): bool
     {
-        return false;
+        if(strlen($facebookURL) <= $this->getFacebookURLCharacterLimit())
+        {
+            return $this->updateValue("FacebookURL", $facebookURL);
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public function getInstagramURL(): string
     {
-        return $this->getValue("InstagramURL");
+        return $this->readValue("InstagramURL");
     }
 
     public function getInstagramURLCharacterLimit(): int
@@ -276,12 +382,19 @@ class CompanyModel implements ICompanyModel
 
     public function setInstagramURL(string $instagramURL): bool
     {
-        return false;
+        if(strlen($instagramURL) <= $this->getInstagramURLCharacterLimit())
+        {
+            return $this->updateValue("InstagramURL", $instagramURL);
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public function getWhatsAppURL(): string
     {
-        return $this->getValue("WhatsAppURL");
+        return $this->readValue("WhatsAppURL");
     }
 
     public function getWhatsAppURLCharacterLimit(): int
@@ -291,12 +404,19 @@ class CompanyModel implements ICompanyModel
 
     public function setWhatsAppURL(string $whatsAppURL): bool
     {
-        return false;
+        if(strlen($whatsAppURL) <= $this->getWhatsAppURLCharacterLimit())
+        {
+            return $this->updateValue("WhatsAppURL", $whatsAppURL);
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public function getKleinanzeigenURL(): string
     {
-        return $this->getValue("KleinanzeigenURL");
+        return $this->readValue("KleinanzeigenURL");
     }
 
     public function getKleinanzeigenURLCharacterLimit(): int
@@ -306,12 +426,19 @@ class CompanyModel implements ICompanyModel
 
     public function setKleinanzeigenURL(string $kleinanzeigenURL): bool
     {
-        return false;
+        if(strlen($kleinanzeigenURL) <= $this->getKleinanzeigenURLCharacterLimit())
+        {
+            return $this->updateValue("KleinanzeigenURL", $kleinanzeigenURL);
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public function getPrivacyPolicyInformation(): string
     {
-        return $this->getValue("PrivacyPolicy");
+        return $this->readValue("PrivacyPolicy");
     }
 
     public function getPrivacyPolicyCharacterLimit(): int
@@ -321,12 +448,19 @@ class CompanyModel implements ICompanyModel
 
     public function setPrivacyPolicyInformation(string $privacyPolicyInformation): bool
     {
-        return false;
+        if(strlen($privacyPolicyInformation) <= $this->getPrivacyPolicyCharacterLimit())
+        {
+            return $this->updateValue("PrivacyPolicy", $privacyPolicyInformation);
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public function getTermsOfService(): string
     {
-        return $this->getValue("TermsOfService");
+        return $this->readValue("TermsOfService");
     }
 
     public function getTermsOfServiceCharacterLimit(): int
@@ -336,6 +470,13 @@ class CompanyModel implements ICompanyModel
 
     public function setTermsOfService(string $termsOfService): bool
     {
-        return false;
+        if(strlen($termsOfService) <= $this->getTermsOfServiceCharacterLimit())
+        {
+            return $this->updateValue("TermsOfService", $termsOfService);
+        }
+        else
+        {
+            return false;
+        }
     }
 }

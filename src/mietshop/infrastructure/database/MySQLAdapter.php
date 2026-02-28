@@ -40,29 +40,23 @@ class MySQLAdapter implements IDatabaseAdapter
 
     public function readColumnNames(string $tableName) : array
     {
-        // Very rough validity check for the SQL table name
-        if(!empty($tableName) && !str_contains($tableName, " "))
+        $sql = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ?";
+
+        $fetchData = $this->fetch($sql, [$tableName]);
+
+        $columnNames = [];
+
+        foreach($fetchData as $row)
         {
-            $sql = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ?";
-
-            $fetchData = $this->fetch($sql, [$tableName]);
-
-            $columnNames = [];
-
-            foreach($fetchData as $row)
+            if(strcmp(strtolower($row['COLUMN_NAME']), "id") === 0)
             {
-                if(strcmp(strtolower($row['COLUMN_NAME']), "id") === 0)
-                {
-                    continue;
-                }
-
-                $columnNames[] = $row['COLUMN_NAME'];
+                continue;
             }
 
-            return $columnNames;
+            $columnNames[] = $row['COLUMN_NAME'];
         }
 
-        return [];
+        return $columnNames;
     }
 
     public function readCharacterLimit(string $tableName, string $columnName): int
