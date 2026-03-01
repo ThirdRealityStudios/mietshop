@@ -14,7 +14,7 @@ class HomeView implements IHomeView
         $this->globalView = $globalView;
     }
 
-    public function show(string $host, array $companyData, array $categories): void
+    public function show(array $companyData, array $categories): void
     {
         $body = "";
 

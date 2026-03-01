@@ -6,8 +6,8 @@ use src\mietshop\infrastructure\http\HTTPRequest;
 
 /**
  * You can use this interface to implement your own presenter which guides everything.
- * Make sure that the view will stay "dumb" (as MVP pattern describes).
- * Use dependency injection in your constructor parameters and expect at least a view object and optionally a model object.
+ * Make sure that the used view will stay "dumb" (as MVP pattern describes).
+ * Use dependency injection in your constructor parameters and expect at least one view object and optionally a model object.
  * Optional is because,
  * a model might not be necessary for static views which don't have data evaluation or access
  * (e.g. a webpage which has a simple legal note to data privacy).

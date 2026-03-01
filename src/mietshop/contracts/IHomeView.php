@@ -45,9 +45,8 @@ interface IHomeView
      *  ]
      *
      *
-     * @param string $host
      * @param array $companyData
      * @param array $categories
      */
-    public function show(string $host, array $companyData, array $categories) : void;
+    public function show(array $companyData, array $categories) : void;
 }

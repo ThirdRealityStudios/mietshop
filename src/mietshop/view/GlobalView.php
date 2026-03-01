@@ -307,7 +307,7 @@ class GlobalView implements IGlobalView
                         <div class=\"offcanvas-body bg-primary-subtle\">
                             <ul class=\"navbar-nav justify-content-end flex-grow-1 pe-3\">
                                 <li class=\"nav-item\">
-                                    <a class=\"nav-link active\" aria-current=\"page\" href=\"\">Startseite 🏠</a>
+                                    <a class=\"nav-link active\" aria-current=\"page\" href=\"/\">Startseite 🏠</a>
                                 </li>
                                 <li class=\"nav-item\">
                                     <a class=\"nav-link\" href=\"/?view=search\">Jetzt Mietobjekte entdecken 🔎</a>
@@ -379,38 +379,57 @@ class GlobalView implements IGlobalView
      */
     private function genBootstrapFooter(array $companyData): string
     {
-        $companyNameHTMLSafe = htmlspecialchars($companyData["CompanyName"][0], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-        $streetHTMLSafe = htmlspecialchars($companyData["Street"][0], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-        $zipCodeHTMLSafe = htmlspecialchars($companyData["ZipCode"][0], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-        $placeHTMLSafe = htmlspecialchars($companyData["Place"][0], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-        $emailHTMLSafe = htmlspecialchars($companyData["Email"][0], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-        $phoneNormalSafe = htmlspecialchars($companyData["PhoneNormal"][0], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-        $phoneMobileSafe = htmlspecialchars($companyData["PhoneMobile"][0], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-        $mapLocationURLSafe = htmlspecialchars($companyData["MapLocationURL"][0], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-        $facebookURLSafe = htmlspecialchars($companyData["FacebookURL"][0], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-        $instagramURLSafe = htmlspecialchars($companyData["InstagramURL"][0], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-        $whatsappURLSafe = htmlspecialchars($companyData["WhatsAppURL"][0], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-        $kleinanzeigenURLSafe = htmlspecialchars($companyData["KleinanzeigenURL"][0], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $companyNameHTMLSafe = htmlspecialchars($companyData["CompanyName"][0] ?? "", ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 
-        $contactCardText = "<p class=\"fs-4\">Kontakt:</p><br>{$streetHTMLSafe}<br>{$zipCodeHTMLSafe}&nbsp;{$placeHTMLSafe}<br><br>E-Mail:&nbsp;<a href=\"mailto:{$emailHTMLSafe}\" class=\"card-link\" title=\"E-Mail an uns senden\">$emailHTMLSafe</a><br><br>Telefon:&nbsp;<a href=\"tel:{$phoneNormalSafe}\" class=\"card-link\" title=\"Uns anrufen\">$phoneNormalSafe</a><br>Mobil:&nbsp;<a href=\"tel:$phoneMobileSafe\" class=\"card-link\" title=\"Uns anrufen\">$phoneMobileSafe</a>";
+        $mapLocationURLSafe = htmlspecialchars($companyData["MapLocationURL"][0] ?? "", ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $facebookURLSafe = htmlspecialchars($companyData["FacebookURL"][0] ?? "", ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $instagramURLSafe = htmlspecialchars($companyData["InstagramURL"][0] ?? "", ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $whatsappURLSafe = htmlspecialchars($companyData["WhatsAppURL"][0] ?? "", ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $kleinanzeigenURLSafe = htmlspecialchars($companyData["KleinanzeigenURL"][0] ?? "", ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 
-        $contactFeed = $this->genFeed(null, $contactCardText);
+        if(!empty($companyData))
+        {
+            $streetHTMLSafe = htmlspecialchars($companyData["Street"][0], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+            $zipCodeHTMLSafe = htmlspecialchars($companyData["ZipCode"][0], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+            $placeHTMLSafe = htmlspecialchars($companyData["Place"][0], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+            $emailHTMLSafe = htmlspecialchars($companyData["Email"][0], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+            $phoneNormalSafe = htmlspecialchars($companyData["PhoneNormal"][0], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+            $phoneMobileSafe = htmlspecialchars($companyData["PhoneMobile"][0], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+
+            $contactCardText = "<p class=\"fs-4\">Kontakt:</p><br>{$streetHTMLSafe}<br>{$zipCodeHTMLSafe}&nbsp;{$placeHTMLSafe}<br><br>E-Mail:&nbsp;<a href=\"mailto:{$emailHTMLSafe}\" class=\"card-link\" title=\"E-Mail an uns senden\">$emailHTMLSafe</a><br><br>Telefon:&nbsp;<a href=\"tel:{$phoneNormalSafe}\" class=\"card-link\" title=\"Uns anrufen\">$phoneNormalSafe</a><br>Mobil:&nbsp;<a href=\"tel:$phoneMobileSafe\" class=\"card-link\" title=\"Uns anrufen\">$phoneMobileSafe</a>";
+            $contactFeed = $this->genFeed(null, $contactCardText);
+        }
+        else
+        {
+            $contactFeed = "";
+        }
 
         $socialMedia = "";
-
         $socialMediaCount = 0;
 
-        $socialMedia .= "<a class=\"d-inline-block me-2 mb-2\" href=\"{$kleinanzeigenURLSafe}\"><img src=\"/img/logo/socialmedia/Kleinanzeigen.png\" alt=\"Kleinanzeigen\" title=\"Kleinanzeigen öffnen\" height=\"50\"></a>";
-        $socialMediaCount++;
+        if(!empty($kleinanzeigenURLSafe))
+        {
+            $socialMedia .= "<a class=\"d-inline-block me-2 mb-2\" href=\"{$kleinanzeigenURLSafe}\"><img src=\"/img/logo/socialmedia/Kleinanzeigen.png\" alt=\"Kleinanzeigen\" title=\"Kleinanzeigen öffnen\" height=\"50\"></a>";
+            $socialMediaCount++;
+        }
 
-        $socialMedia .= "<a class=\"d-inline-block me-2 mb-2\" href=\"$instagramURLSafe\"><img src=\"/img/logo/socialmedia/Instagram.png\" alt=\"Instagram\" title=\"Instagram öffnen\" height=\"50\"></a>";
-        $socialMediaCount++;
+        if(!empty($instagramURLSafe))
+        {
+            $socialMedia .= "<a class=\"d-inline-block me-2 mb-2\" href=\"$instagramURLSafe\"><img src=\"/img/logo/socialmedia/Instagram.png\" alt=\"Instagram\" title=\"Instagram öffnen\" height=\"50\"></a>";
+            $socialMediaCount++;
+        }
 
-        $socialMedia .= "<a class=\"d-inline-block me-2 mb-2\" href=\"$whatsappURLSafe\"><img src=\"/img/logo/socialmedia/Whatsapp.png\" alt=\"WhatsApp\" title=\"WhatsApp öffnen\" height=\"50\"></a>";
-        $socialMediaCount++;
+        if(!empty($whatsappURLSafe))
+        {
+            $socialMedia .= "<a class=\"d-inline-block me-2 mb-2\" href=\"$whatsappURLSafe\"><img src=\"/img/logo/socialmedia/Whatsapp.png\" alt=\"WhatsApp\" title=\"WhatsApp öffnen\" height=\"50\"></a>";
+            $socialMediaCount++;
+        }
 
-        $socialMedia .= "<a class=\"d-inline-block me-2 mb-2\" href=\"$facebookURLSafe\"><img src=\"/img/logo/socialmedia/Facebook.png\" alt=\"Facebook\" title=\"Facebook öffnen\" height=\"50\"></a>";
-        $socialMediaCount++;
+        if(!empty($facebookURLSafe))
+        {
+            $socialMedia .= "<a class=\"d-inline-block me-2 mb-2\" href=\"$facebookURLSafe\"><img src=\"/img/logo/socialmedia/Facebook.png\" alt=\"Facebook\" title=\"Facebook öffnen\" height=\"50\"></a>";
+            $socialMediaCount++;
+        }
 
         $optionalSocialMediaTitle = "";
 
@@ -436,19 +455,18 @@ class GlobalView implements IGlobalView
 
         $copyrightRow = $this->preGenDefaultRow("<p class=\"mb-0 text-center\">Copyright&nbsp;©&nbsp;$companyNameHTMLSafe&nbsp;-&nbsp;Alle&nbsp;Rechte&nbsp;vorbehalten.</p>", true);
 
+        $footerContent = "$contactFeed$socialMediaFeed$mapsServiceEmbedded$copyrightRow";
+
         return "
         <div class=\"container-fluid mt-5 pb-5 bg-primary-subtle border-top border-3 border-primary\">
-            $contactFeed
-            $socialMediaFeed
-            $mapsServiceEmbedded
-            $copyrightRow
+            $footerContent
         </div>
         ";
     }
 
     public function show(array $companyData, string $body): void
     {
-        $companyNameHTMLSafe = htmlspecialchars($companyData["CompanyName"][0], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $companyNameHTMLSafe = htmlspecialchars($companyData["CompanyName"][0] ?? "Internal Loading Error", ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 
         $bodyHTML = $this->genBootstrapHeader($companyNameHTMLSafe).$body.$this->genBootstrapFooter($companyData);
 

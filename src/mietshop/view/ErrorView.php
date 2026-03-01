@@ -2,9 +2,10 @@
 
 namespace src\mietshop\view;
 
+use src\mietshop\contracts\IErrorView;
 use src\mietshop\contracts\IGlobalView;
 
-class ErrorView
+class ErrorView implements IErrorView
 {
     private $globalView;
 
@@ -13,8 +14,28 @@ class ErrorView
         $this->globalView = $globalView;
     }
 
-    public function show()
+    public function show(array $companyData, string $errorFeedTitle, string $errorFeedContent) : void
     {
+        $errorFeedTitleSafe = htmlspecialchars($errorFeedTitle, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
 
+        $feedDescriptionHTML =
+        "
+        <div class=\"container-fluid\">
+            <div class=\"row mb-3\">
+                <div class=\"col-12\">
+                    <p class=\"text-center fs-2 fw-bold text-danger\">$errorFeedTitleSafe</p>
+                </div>
+            </div>
+            <div class=\"row\">
+                <div class=\"col-12\">
+                    <p class=\"text-left fs-6\">$errorFeedContent</p>
+                </div>
+            </div>
+        </div>
+        ";
+
+        $body = "<div class=\"container-fluid\">".$this->globalView->genFeed(null, $feedDescriptionHTML)."</div>";
+
+        echo $this->globalView->show($companyData, $body);
     }
 }
