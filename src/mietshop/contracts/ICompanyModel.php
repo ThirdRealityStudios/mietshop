@@ -8,8 +8,11 @@ use src\mietshop\contracts\data\ICompanyData;
  * Interface for accessing global business data.
  *
  * Covers company details (name, owner, address, contact info) and legal notes
- * (privacy policy, general business conditions). Typically, this information
- * is displayed on most views or webpages.
+ * (privacy policy, general business conditions).
+ * Typically,
+ * this information is displayed on most views or webpages.
+ * If you implement this interface,
+ * it is recommended to optimize the get functions for faster data access.
  */
 interface ICompanyModel
 {
@@ -342,4 +345,50 @@ interface ICompanyModel
      * @return bool True on success, false on failure.
      */
     public function setTermsOfService(string $termsOfService): bool;
+
+    /**
+     * Returns all data of the company,
+     * followed always by the maximum amount of characters possible.
+     * The returned array always looks like this:
+     *
+     * [
+     *
+     *  "CompanyName" => ["My company Inc.", 50],
+     *
+     *  "Owner" => ["John Smith", 40],
+     *
+     *  "Street" => ["Frankfurt Avenue 21st", 40],
+     *
+     *  "ZipCode" => ["12345", 5],
+     *
+     *  "Place" => ["German Town", 20],
+     *
+     *  "Email" => ["mymail@web.com", 100],
+     *
+     *  "PhoneMobile" => ["+49 123 4567891", 16],
+     *
+     *  "PhoneNormal" => ["123 555 4567891", 16],
+     *
+     *  "MapLocationURL" => ["https://maps.google.com/whatever", 1000],
+     *
+     *  "FacebookURL" => ["https://facebook.com/mypage", 500],
+     *
+     *  "InstagramURL" => ["https://instagram.com/mycookingpage", 200],
+     *
+     *  "WhatsAppURL" => ["https://whatsapp.com/mynumber", 150],
+     *
+     *  "KleinanzeigenURL" => ["https://kleinanzeigen.de/mysellerpage", 150],
+     *
+     *  "PrivacyPolicy" => ["We process this and this for better user experience", 65535],
+     *
+     *  "TermsOfService" => ["If you rent our objects, make sure to clean it before return", 65535]
+     *
+     * ]
+     *
+     * Instead,
+     * you could get an empty array if there was an error while fetching everything.
+     *
+     * @return array Associative array, containing all company data and maximum character limit hints. Empty array if there was an error while fetching everything.
+     */
+    public function getCompanyData() : array;
 }

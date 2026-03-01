@@ -41,7 +41,6 @@ class CompanyModel implements ICompanyModel
 			    Place VARCHAR(20) NOT NULL DEFAULT \"Musterstadt\",
 			    
 			    Email VARCHAR(100) NOT NULL DEFAULT \"mail@website.com\",
-			    
 			    PhoneMobile VARCHAR(16) NOT NULL DEFAULT \"+49 123 45678\",
 			    PhoneNormal VARCHAR(16) NOT NULL DEFAULT \"12345 6789123\",
 			    
@@ -64,6 +63,7 @@ class CompanyModel implements ICompanyModel
 
     /**
      * Creates a default dataset if not yet created.
+     * Is only called in the constructor.
      *
      * @return void
      * @throws PDOException
@@ -93,6 +93,7 @@ class CompanyModel implements ICompanyModel
         {
             $columnNames = $this->databaseAdapter->readColumnNames("CompanyModel");
 
+            // If the name is known in the DB table as a column AND if the data was not fetched yet for the array.
             if(in_array($name, $columnNames))
             {
                 $dataFetched = $this->databaseAdapter->fetch("SELECT $name FROM CompanyModel");
@@ -488,6 +489,84 @@ class CompanyModel implements ICompanyModel
         else
         {
             return false;
+        }
+    }
+
+    public function getCompanyData(): array
+    {
+        $sql =
+        "
+            SELECT MIN(CompanyModel.ID) AS MinimumID FROM CompanyModel
+        ";
+
+        try
+        {
+            $result = $this->databaseAdapter->fetch($sql);
+
+            if(isset($result[0]["MinimumID"]))
+            {
+                $minimumID = $result[0]["MinimumID"];
+
+                $sql =
+                "
+                    SELECT * FROM CompanyModel WHERE CompanyModel.ID = ?
+                ";
+
+                $result = $this->databaseAdapter->fetch($sql, [$minimumID]);
+
+                if(isset($result[0]))
+                {
+                    $columnNames = $this->databaseAdapter->readColumnNames("CompanyModel");
+
+                    if(sizeof($columnNames) > 0)
+                    {
+                        $companyData = [];
+
+                        for($i = 0; $i < sizeof($columnNames); $i++)
+                        {
+                            $columnName = $columnNames[$i];
+
+                            if(isset($result[0][$columnName]))
+                            {
+                                $maximumCharacterLimit = $this->databaseAdapter->readCharacterLimit("CompanyModel", $columnName);
+
+                                if($maximumCharacterLimit >= 0)
+                                {
+                                    $companyValue = $result[0][$columnName];
+
+                                    $companyData[$columnName] = [$companyValue, $maximumCharacterLimit];
+                                }
+                                else
+                                {
+                                    return [];
+                                }
+                            }
+                            else
+                            {
+                                return [];
+                            }
+                        }
+
+                        return $companyData;
+                    }
+                    else
+                    {
+                        return [];
+                    }
+                }
+                else
+                {
+                    return [];
+                }
+            }
+            else
+            {
+                return [];
+            }
+        }
+        catch(PDOException $e)
+        {
+            return [];
         }
     }
 }

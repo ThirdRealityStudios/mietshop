@@ -14,7 +14,7 @@ class HomeView implements IHomeView
         $this->globalView = $globalView;
     }
 
-    public function show(string $host, string $companyName, string $companyOwner, string $street, string $zipCode, string $place, string $email, string $phoneMobile, string $phoneNormal, string $mapLocationURL, string $facebookURL, string $instagramURL, string $whatsappURL, string $kleinanzeigenURL, string $privacyPolicy, string $termsOfService, array $categories): void
+    public function show(string $host, array $companyData, array $categories): void
     {
         $body = "";
 
@@ -76,6 +76,6 @@ class HomeView implements IHomeView
 
         $body .= "<div class=\"container-fluid\">{$this->globalView->genFeed(null, $ourRentalObjectsHTMLContent)}</div>";
 
-        $this->globalView->show($host, $companyName, $companyOwner, $street, $zipCode, $place, $email, $phoneMobile, $phoneNormal, $mapLocationURL, $facebookURL, $instagramURL, $whatsappURL, $kleinanzeigenURL, $privacyPolicy, $termsOfService, $body);
+        $this->globalView->show($host, $companyData["CompanyName"][0], $companyData["Owner"][0], $companyData["Street"][0], $companyData["ZipCode"][0], $companyData["Place"][0], $companyData["Email"][0], $companyData["PhoneMobile"][0], $companyData["PhoneNormal"][0], $companyData["MapLocationURL"][0], $companyData["FacebookURL"][0], $companyData["InstagramURL"][0], $companyData["WhatsAppURL"][0], $companyData["KleinanzeigenURL"][0], $companyData["PrivacyPolicy"][0], $companyData["TermsOfService"][0], $body);
     }
 }

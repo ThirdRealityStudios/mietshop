@@ -31,32 +31,19 @@ class HomePresenter implements IPresenter
             // $this->companyModel->setCompanyName("Sehr cooles Unternehmen GmbH");
             // $this->companyModel->setOwner("Gutfried Alman");
 
-            $companyName = $this->companyModel->getCompanyName();
-            $owner = $this->companyModel->getOwner();
+            // $this->companyModel->setStreet("Kurwa Mac Str. 3a");
 
-            $this->companyModel->setStreet("Kurwa Mac Str. 3a");
-
-            $street = $this->companyModel->getStreet();
-            $zipCode = $this->companyModel->getZipCode();
-            $place = $this->companyModel->getPlace();
-
-            $email = $this->companyModel->getEmail();
-
-            $companyPhoneMobile = $this->companyModel->getPhoneMobile();
-            $phoneNormal = $this->companyModel->getPhoneNormal();
-
-            $mapLocationURL = $this->companyModel->getMapLocationURL();
-            $facebookURL = $this->companyModel->getFacebookURL();
-            $instagramURL = $this->companyModel->getInstagramURL();
-            $whatsAppURL = $this->companyModel->getWhatsAppURL();
-            $kleinanzeigenURL = $this->companyModel->getKleinanzeigenURL();
-
-            $privacyPolicy = $this->companyModel->getPrivacyPolicy();
-            $termsOfService = $this->companyModel->getTermsOfService();
-
+            $companyData = $this->companyModel->getCompanyData();
             $categories = $this->categoryModel->readAllCategories();
 
-            $this->view->show($host, $companyName, $owner, $street, $zipCode, $place, $email, $companyPhoneMobile, $phoneNormal, $mapLocationURL, $facebookURL, $instagramURL, $whatsAppURL, $kleinanzeigenURL, $privacyPolicy, $termsOfService, $categories);
+            // var_dump($companyData);
+
+            if(empty($companyData))
+            {
+                return;
+            }
+
+            $this->view->show($host, $companyData, $categories);
         }
     }
 }
