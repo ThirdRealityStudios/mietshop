@@ -76,6 +76,6 @@ class HomeView implements IHomeView
 
         $body .= "<div class=\"container-fluid\">{$this->globalView->genFeed(null, $ourRentalObjectsHTMLContent)}</div>";
 
-        $this->globalView->show($host, $companyData["CompanyName"][0], $companyData["Owner"][0], $companyData["Street"][0], $companyData["ZipCode"][0], $companyData["Place"][0], $companyData["Email"][0], $companyData["PhoneMobile"][0], $companyData["PhoneNormal"][0], $companyData["MapLocationURL"][0], $companyData["FacebookURL"][0], $companyData["InstagramURL"][0], $companyData["WhatsAppURL"][0], $companyData["KleinanzeigenURL"][0], $companyData["PrivacyPolicy"][0], $companyData["TermsOfService"][0], $body);
+        $this->globalView->show($companyData, $body);
     }
 }

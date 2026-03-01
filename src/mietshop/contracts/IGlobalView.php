@@ -39,25 +39,9 @@ interface IGlobalView
      * the associative values can be an empty string
      * (which will, depending on the value, determine the exact view output).
      *
-     *
-     * @param string $host
-     * @param string $companyName
-     * @param string $companyOwner
-     * @param string $street
-     * @param string $zipCode
-     * @param string $place
-     * @param string $email
-     * @param string $phoneMobile
-     * @param string $phoneNormal
-     * @param string $mapLocationURL
-     * @param string $facebookURL
-     * @param string $instagramURL
-     * @param string $whatsappURL
-     * @param string $kleinanzeigenURL
-     * @param string $privacyPolicy
-     * @param string $termsOfService
+     * @param array $companyData Array as described in ICompanyModel by function getCompanyData()
      * @param string $body
      * @return void
      */
-    public function show(string $host, string $companyName, string $companyOwner, string $street, string $zipCode, string $place, string $email, string $phoneMobile, string $phoneNormal, string $mapLocationURL, string $facebookURL, string $instagramURL, string $whatsappURL, string $kleinanzeigenURL, string $privacyPolicy, string $termsOfService, string $body) : void;
+    public function show(array $companyData, string $body) : void;
 }
