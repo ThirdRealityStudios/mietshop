@@ -12,10 +12,12 @@ use src\mietshop\model\CompanyModel;
 use src\mietshop\presenter\ErrorPresenter;
 use src\mietshop\presenter\HomePresenter;
 use src\mietshop\presenter\ImprintPresenter;
+use src\mietshop\presenter\TermsOfServicePresenter;
 use src\mietshop\view\ErrorView;
 use src\mietshop\view\GlobalView;
 use src\mietshop\view\HomeView;
 use src\mietshop\view\ImprintView;
+use src\mietshop\view\TermsOfServiceView;
 
 class Router implements IRouter
 {
@@ -51,6 +53,12 @@ class Router implements IRouter
                     $imprintView = new ImprintView($globalView);
                     $imprintPresenter = new ImprintPresenter($errorView, $imprintView, $companyModel);
                     $imprintPresenter->process();
+                }
+                else if(strcmp($viewValue, "termsofservice") === 0)
+                {
+                    $termsOfServiceView = new TermsOfServiceView($globalView);
+                    $termsOfServicePresenter = new TermsOfServicePresenter($errorView, $termsOfServiceView, $companyModel);
+                    $termsOfServicePresenter->process();
                 }
                 else
                 {

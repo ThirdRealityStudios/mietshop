@@ -17,6 +17,7 @@ class ErrorView implements IErrorView
     public function show(array $companyData, string $errorFeedTitle, string $errorFeedContent) : void
     {
         $errorFeedTitleSafe = htmlspecialchars($errorFeedTitle, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
+        $errorFeedContentSafe = htmlspecialchars($errorFeedContent, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
 
         $feedDescriptionHTML =
         "
@@ -28,7 +29,7 @@ class ErrorView implements IErrorView
             </div>
             <div class=\"row\">
                 <div class=\"col-12\">
-                    <p class=\"text-left fs-6\">$errorFeedContent</p>
+                    <p class=\"text-left fs-6\">$errorFeedContentSafe</p>
                 </div>
             </div>
         </div>
