@@ -50,6 +50,8 @@ class ImprintView implements IImprintView
 
         $feedHTML = $this->globalView->genFeed(null, $imprintContentHTML);
 
-        $this->globalView->show($companyData, $feedHTML);
+        $body = "<div class=\"container-fluid\">$feedHTML</div>";
+
+        $this->globalView->show($companyData, $body);
     }
 }
