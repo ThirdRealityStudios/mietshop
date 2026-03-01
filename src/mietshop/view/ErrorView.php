@@ -36,6 +36,6 @@ class ErrorView implements IErrorView
 
         $body = "<div class=\"container-fluid\">".$this->globalView->genFeed(null, $feedDescriptionHTML)."</div>";
 
-        echo $this->globalView->show($companyData, $body);
+        $this->globalView->show($companyData, $body);
     }
 }

@@ -284,9 +284,7 @@ class GlobalView implements IGlobalView
 
         return $popupPageDetailHTML;
     }
-
-
-
+    
     /////////////////////////////////////////////////////////////////////////////////////////////////
     /// HTML Doc Basic Functions
 

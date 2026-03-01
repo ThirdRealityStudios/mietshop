@@ -2,18 +2,29 @@
 
 namespace src\mietshop\infrastructure\router;
 
+use src\mietshop\contracts\ICompanyModel;
+use src\mietshop\contracts\IErrorView;
 use src\mietshop\infrastructure\database\MySQLAdapter;
+use src\mietshop\infrastructure\http\HTTPRequest;
 use src\mietshop\infrastructure\http\IHTTPRequest;
 use src\mietshop\model\CategoryModel;
 use src\mietshop\model\CompanyModel;
 use src\mietshop\presenter\ErrorPresenter;
 use src\mietshop\presenter\HomePresenter;
+use src\mietshop\presenter\ImprintPresenter;
 use src\mietshop\view\ErrorView;
 use src\mietshop\view\GlobalView;
 use src\mietshop\view\HomeView;
+use src\mietshop\view\ImprintView;
 
 class Router implements IRouter
 {
+    private function chooseErrorPresenter(IErrorView $errorView, ICompanyModel $companyModel, HTTPRequest $request) : void
+    {
+        $errorPresenter = new ErrorPresenter($errorView, $companyModel);
+        $errorPresenter->process($request);
+    }
+
     public function route(IHTTPRequest $request) : void
     {
         $databaseAdapter = new MySQLAdapter();
@@ -31,8 +42,25 @@ class Router implements IRouter
         }
         else
         {
-            $errorPresenter = new ErrorPresenter($errorView, $companyModel);
-            $errorPresenter->process($request);
+            if(in_array("view", $request->getQueryKeys()))
+            {
+                $viewValue = $request->getQueryValue("view");
+
+                if(strcmp($viewValue, "imprint") === 0)
+                {
+                    $imprintView = new ImprintView($globalView);
+                    $imprintPresenter = new ImprintPresenter($errorView, $imprintView, $companyModel);
+                    $imprintPresenter->process();
+                }
+                else
+                {
+                    $this->chooseErrorPresenter($errorView, $companyModel, $request);
+                }
+            }
+            else
+            {
+                $this->chooseErrorPresenter($errorView, $companyModel, $request);
+            }
         }
     }
 }
