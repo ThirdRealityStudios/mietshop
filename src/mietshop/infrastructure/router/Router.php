@@ -12,11 +12,13 @@ use src\mietshop\model\CompanyModel;
 use src\mietshop\presenter\ErrorPresenter;
 use src\mietshop\presenter\HomePresenter;
 use src\mietshop\presenter\ImprintPresenter;
+use src\mietshop\presenter\PrivacyPolicyPresenter;
 use src\mietshop\presenter\TermsOfServicePresenter;
 use src\mietshop\view\ErrorView;
 use src\mietshop\view\GlobalView;
 use src\mietshop\view\HomeView;
 use src\mietshop\view\ImprintView;
+use src\mietshop\view\PrivacyPolicyView;
 use src\mietshop\view\TermsOfServiceView;
 
 class Router implements IRouter
@@ -59,6 +61,12 @@ class Router implements IRouter
                     $termsOfServiceView = new TermsOfServiceView($globalView);
                     $termsOfServicePresenter = new TermsOfServicePresenter($errorView, $termsOfServiceView, $companyModel);
                     $termsOfServicePresenter->process();
+                }
+                else if(strcmp($viewValue, "privacypolicy") === 0)
+                {
+                    $privacyPolicyView = new PrivacyPolicyView($globalView);
+                    $privacyPolicyPresenter = new PrivacyPolicyPresenter($privacyPolicyView, $errorView, $companyModel);
+                    $privacyPolicyPresenter->process();
                 }
                 else
                 {

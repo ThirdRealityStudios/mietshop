@@ -24,13 +24,17 @@ class TermsOfServicePresenter implements ITermsOfServicePresenter
     {
         $companyData = $this->companyModel->getCompanyData();
 
-        if(!empty($companyData))
+        if(!empty($companyData) && !empty($companyData["TermsOfService"][0]))
         {
             $this->termsOfServiceView->show($companyData);
         }
+        else if(!empty($companyData) && empty($companyData["TermsOfService"][0]))
+        {
+            $this->errorView->show([], "Fehler","Es scheint so, als ob die AGBs noch nicht festgelegt worden sind.");
+        }
         else
         {
-            $this->errorView->show([], "Internal Loading Error","Could not fetch basic information about the website. Please visit us again a little later. We are working on it.");
+            $this->errorView->show([], "Internal Loading Error","Could not fetch terms of service of the website. Please visit us again a little later. We are working on it.");
         }
     }
 }

@@ -16,29 +16,24 @@ class TermsOfServiceView implements ITermsOfServiceView
 
     public function show(array $companyData): void
     {
-        $termsOfServiceText = $companyData['TermsOfService'][0] ?? "";
-
-        if(empty($termsOfServiceText))
+        if(isset($companyData["TermsOfService"][0]) && is_string($companyData["TermsOfService"][0]))
         {
-            $termsOfServiceText = "Es wurden noch keine Allgemeinen Geschäftsbedingungen eingestellt oder es liegt derzeit ein technischer Abfragefehler vor. Bitte versuchen Sie es später erneut.";
+            $termsOfServiceText = $companyData["TermsOfService"][0];
+        }
+        else
+        {
+            $termsOfServiceText = "Derzeit gibt es keine Allgemeinen Geschäfsbedingungen. Entweder ist dies ein technischer Fehler oder es wurden noch keine AGBs festgelegt.";
         }
 
         $termsOfServiceTextHTMLSafe = htmlspecialchars($termsOfServiceText, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
 
         $feed =
         "
-        <div class=\"container-fluid\">
-            <div class=\"row mb-3\">
-                <div class=\"col-12\">
-                    <p class=\"text-center fs-1\">Allgemeine Geschäftsbedingungen</p>
-                </div>
-            </div>
-            <div class=\"row\">
-                <div class=\"col-12\">
-                    <p class=\"text-left fs-6\">$termsOfServiceTextHTMLSafe</p>
-                </div>
-            </div>
-        </div>
+        <span class=\"fs-6 text-center\" style=\"white-space: pre-line;\">
+            <p class=\"fs-1\">Allgemeine Geschäftsbedingungen</p>
+        </span>
+        <p class=\"fs-6 mb-4\">$termsOfServiceTextHTMLSafe</p>
+        <a class=\"btn btn-primary mb-3\" href=\"/\">Zur Startseite</a>
         ";
 
         $feedHTML = $this->globalView->genFeed(null, $feed);
