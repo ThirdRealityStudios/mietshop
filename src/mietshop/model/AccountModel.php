@@ -47,19 +47,22 @@ class AccountModel implements IAccountModel
     {
         $sql =
         "
-            SELECT COUNT(PermissionLevel) FROM AccountModel WHERE PermissionLevel = 5
+            SELECT COUNT(PermissionLevel) AS Amount FROM AccountModel WHERE PermissionLevel = 5
         ";
 
-        // TODO Check if there is at least one admin account. If so, then create one.. below..
+        $result = $this->databaseAdapter->fetch($sql);
 
-        $sql =
-        "
-            INSERT IGNORE INTO AccountModel(Email, PasswordHash, PermissionLevel) VALUES('admin@admin.admin', ?, 5)
-        ";
+        if(isset($result[0]["Amount"]) && $result[0]["Amount"] === 0)
+        {
+            $sql =
+            "
+                INSERT INTO AccountModel(Email, PasswordHash, PermissionLevel) VALUES('admin@admin.admin', ?, 5)
+            ";
 
-        $passwordHashed = password_hash("Admin2026!", PASSWORD_DEFAULT);
+            $passwordHashed = password_hash("Admin2026!", PASSWORD_DEFAULT);
 
-        $this->databaseAdapter->execute($sql, [$passwordHashed]);
+            $this->databaseAdapter->execute($sql, [$passwordHashed]);
+        }
     }
 
     public function createAccount(string $email, string $password, int $permissionLevel): bool
@@ -146,7 +149,48 @@ class AccountModel implements IAccountModel
 
     public function updatePassword(string $email, string $oldPassword, string $newPassword): bool
     {
-        // TODO: Implement updatePassword() method.
+        // Check permission for password change
+
+        try
+        {
+            $sql =
+            "
+                SELECT PasswordHash FROM AccountModel WHERE Email = ?
+            ";
+
+            $fetchData = $this->databaseAdapter->fetch($sql, [$email]);
+
+            if(isset($fetchData[0]["PasswordHash"]) && is_string($fetchData[0]["PasswordHash"]))
+            {
+                $currentPasswordHashed = $fetchData[0]["PasswordHash"];
+
+                if(password_verify($oldPassword, $currentPasswordHashed))
+                {
+                    // Now allowed to change password.
+
+                    $sql =
+                    "
+                        UPDATE AccountModel SET PasswordHash = ? WHERE Email = ?
+                    ";
+
+                    $passwordNewHashed = password_hash($newPassword, PASSWORD_DEFAULT);
+
+                    return $this->databaseAdapter->execute($sql, [$passwordNewHashed, $email]) === 1;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+        catch(PDOException $e)
+        {
+            return false;
+        }
     }
 
     public function updateEmail(string $currentPassword, string $currentEmail, string $newEmail): bool
