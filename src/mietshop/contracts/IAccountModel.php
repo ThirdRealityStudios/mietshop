@@ -4,19 +4,23 @@ namespace src\mietshop\contracts;
 
 /**
  * This interface describes the behavior of how accounts should be managed.
+ *
+ * The email of an account replaces the need of a numerical ID for every account (recommended).
+ *
  * There are supervisors (the owner and admin) who can give permission levels to users.
  *
  * The following permission levels do exist:
+ * -----------------------------------------
  *
- * 0 is guest level (no account permissions - like watching the website without account)
+ * - 0 is guest level (no account permissions - like watching the website without account)
  *
- * 1 is moderator level (create, edit or delete articles but NO feeds)
+ * - 1 is moderator level (create, edit or delete articles but NO feeds)
  *
- * 2 is supporter level (create, edit or delete feeds and articles)
+ * - 2 is supporter level (create, edit or delete feeds and articles)
  *
- * 3 is owner level (manage all your website content, but no database management tools - for safety reasons)
+ * - 3 is owner level (manage all your website content, but no database management tools - for safety reasons)
  *
- * 4 is root / admin permission (manage all website content and database management tools).
+ * - 4 is root / admin permission (manage all website content and database management tools).
  */
 interface IAccountModel
 {
