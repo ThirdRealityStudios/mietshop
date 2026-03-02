@@ -2,8 +2,6 @@
 
 namespace src\mietshop\contracts;
 
-use src\mietshop\contracts\data\ICompanyData;
-
 /**
  * Interface for accessing global business data.
  *
