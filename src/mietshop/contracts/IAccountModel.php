@@ -69,6 +69,16 @@ interface IAccountModel
     public function readAccount(string $email) : array;
 
     /**
+     * Returns the permission level of an (existing) account.
+     * If the account does not exist (mostly) or if execution fails generally,
+     * then -1 is returned.
+     *
+     * @param string $email Email of the account to get permission level from.
+     * @return int The permission level (0 to 5) or -1 if the given account does not exist (mostly) or if there was an execution error.
+     */
+    public function readPermissionLevel(string $email) : int;
+
+    /**
      * Updates the password of a given account with the email address given.
      * Expects the current password in clear-text and the new password in clear-text.
      * If the given password matches the current password stored,

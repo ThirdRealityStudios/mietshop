@@ -147,6 +147,32 @@ class AccountModel implements IAccountModel
         }
     }
 
+    public function readPermissionLevel(string $email): int
+    {
+        $sql =
+        "
+            SELECT PermissionLevel FROM AccountModel WHERE Email = ?
+        ";
+
+        try
+        {
+            $result = $this->databaseAdapter->fetch($sql, [$email]);
+
+            if(sizeof($result) === 1 && isset($result[0]["PermissionLevel"]) && is_numeric($result[0]["PermissionLevel"]))
+            {
+                return $result[0]["PermissionLevel"];
+            }
+            else
+            {
+                return -1;
+            }
+        }
+        catch(PDOException $e)
+        {
+            return -1;
+        }
+    }
+
     public function updatePassword(string $email, string $oldPassword, string $newPassword): bool
     {
         // Check permission for password change
