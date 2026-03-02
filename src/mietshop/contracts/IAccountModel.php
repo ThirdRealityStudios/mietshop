@@ -123,6 +123,7 @@ interface IAccountModel
      * Deletes an account,
      * linked to the email given.
      * The deletion is successful when the supervisor credentials get verified.
+     * It is not possible that a supervisor deletes his own account (for safety reasons).
      *
      * @param string $supervisorEmail Email address of supervisor.
      * @param string $supervisorPassword Clear-text password of supervisor.

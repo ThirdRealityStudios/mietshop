@@ -195,21 +195,196 @@ class AccountModel implements IAccountModel
 
     public function updateEmail(string $currentPassword, string $currentEmail, string $newEmail): bool
     {
-        // TODO: Implement updateEmail() method.
+        // First check permission
+
+        $sql =
+        "
+            SELECT PasswordHash FROM AccountModel WHERE Email = ?
+        ";
+
+        try
+        {
+            $result = $this->databaseAdapter->fetch($sql, [$currentEmail]);
+
+            if(isset($result[0]["PasswordHash"]) && is_string($result[0]["PasswordHash"]))
+            {
+                $passwordHash = $result[0]["PasswordHash"];
+
+                if(password_verify($currentPassword, $passwordHash))
+                {
+                    // Password verified. Now can change email.
+
+                    $sql =
+                    "
+                        UPDATE AccountModel SET Email = ? WHERE Email = ?
+                    ";
+
+                    return $this->databaseAdapter->execute($sql, [$newEmail, $currentEmail]) === 1;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+        catch(PDOException $e)
+        {
+            return false;
+        }
     }
 
     public function updatePermissionLevel(string $supervisorEmail, string $supervisorPassword, string $email, int $permissionLevel): bool
     {
-        // TODO: Implement updatePermissionLevel() method.
+        $sql =
+        "
+            SELECT PasswordHash FROM AccountModel WHERE Email = ?
+        ";
+
+        try
+        {
+            $result = $this->databaseAdapter->fetch($sql, [$supervisorEmail]);
+
+            if(isset($result[0]["PasswordHash"]) && is_string($result[0]["PasswordHash"]))
+            {
+                $supervisorPasswordHash = $result[0]["PasswordHash"];
+
+                if(password_verify($supervisorPassword, $supervisorPasswordHash))
+                {
+                    // Supervisor access was verified to change the permission level of an account.
+
+                    $sql =
+                    "
+                        UPDATE AccountModel SET PermissionLevel = ? WHERE Email = ?
+                    ";
+
+                    return $this->databaseAdapter->execute($sql, [$permissionLevel, $email]) === 1;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+        catch(PDOException $e)
+        {
+            return false;
+        }
+
     }
 
     public function deleteAccount(string $email, string $password): bool
     {
-        // TODO: Implement deleteAccount() method.
+        $sql =
+        "
+            SELECT PermissionLevel FROM AccountModel WHERE Email = ?
+        ";
+
+        try
+        {
+            $result = $this->databaseAdapter->fetch($sql, [$email]);
+
+            // Make sure there is no admin who accidentally deletes his account
+            // (it is not dramatic because it gets automatically re-created - but then it has reset credentials which is e.g. a security risk)
+            if(isset($result[0]["PermissionLevel"]) && ($result[0]["PermissionLevel"] < 5))
+            {
+                $sql =
+                "
+                    SELECT PasswordHash FROM AccountModel WHERE Email = ?
+                ";
+
+                $result = $this->databaseAdapter->fetch($sql, [$email]);
+
+                if(isset($result[0]["PasswordHash"]) && is_string($result[0]["PasswordHash"]))
+                {
+                    $passwordHashed = $result[0]["PasswordHash"];
+
+                    if(password_verify($password, $passwordHashed))
+                    {
+                        // User could be verified successfully.
+                        // Now the user can delete his account.
+
+                        $sql =
+                        "
+                            DELETE FROM AccountModel WHERE Email = ?
+                        ";
+
+                        return $this->databaseAdapter->execute($sql, [$email]) === 1;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+        catch(PDOException $e)
+        {
+            return false;
+        }
     }
 
     public function deleteAccountBySupervisor(string $supervisorEmail, string $supervisorPassword, string $email): bool
     {
-        // TODO: Implement deleteAccountBySupervisor() method.
+        // Make sure a supervisor does not want to delete his own account.
+        if(strcmp($supervisorEmail, $email) !== 0)
+        {
+            $sql =
+            "
+                SELECT PasswordHash FROM AccountModel WHERE Email = ?
+            ";
+
+            try
+            {
+                $result = $this->databaseAdapter->fetch($sql, [$supervisorEmail]);
+
+                if(isset($result[0]["PasswordHash"]) && is_string($result[0]["PasswordHash"]))
+                {
+                    $supervisorPasswordHash = $result[0]["PasswordHash"];
+
+                    // Make sure the supervisor can verify himself to delete the other account.
+                    if(password_verify($supervisorPassword, $supervisorPasswordHash))
+                    {
+                        $sql =
+                        "
+                            DELETE FROM AccountModel WHERE Email = ?
+                        ";
+
+                        return $this->databaseAdapter->execute($sql, [$email]) === 1;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch(PDOException $e)
+            {
+                return false;
+            }
+        }
+        else
+        {
+            return false;
+        }
     }
 }
