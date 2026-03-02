@@ -24,7 +24,7 @@ class AccountModel implements IAccountModel
             (
                 Email VARCHAR(100) UNIQUE PRIMARY_KEY NOT NULL,
                 PasswordHash VARCHAR(255) NOT NULL,
-                PermissionLevel INT(2) NOT NULL DEFAULT '0'
+                PermissionLevel INT(1) NOT NULL DEFAULT 0
             );
         ";
 
@@ -282,12 +282,25 @@ class AccountModel implements IAccountModel
                 {
                     // Supervisor access was verified to change the permission level of an account.
 
-                    $sql =
-                    "
-                        UPDATE AccountModel SET PermissionLevel = ? WHERE Email = ?
-                    ";
+                    $supervisorPermissionLevel = $this->readPermissionLevel($supervisorEmail);
 
-                    return $this->databaseAdapter->execute($sql, [$permissionLevel, $email]) === 1;
+                    // Make sure the supervisor cannot give a higher permission level than his own.
+                    if($supervisorPermissionLevel > -1 && $permissionLevel <= $supervisorPermissionLevel)
+                    {
+                        // Make sure with "PermissionLevel < 5" that no supervisor can degrade admin accounts (also for safety reasons).
+                        // Imagine the website buyer does not want to use an owner account but an admin account.
+                        // In this case, it would be a security risk if an owner could degrade an admin account.
+                        $sql =
+                        "
+                            UPDATE AccountModel SET PermissionLevel = ? WHERE Email = ? AND PermissionLevel < 5
+                        ";
+
+                        return $this->databaseAdapter->execute($sql, [$permissionLevel, $email]) === 1;
+                    }
+                    else
+                    {
+                        return false;
+                    }
                 }
                 else
                 {
@@ -372,7 +385,7 @@ class AccountModel implements IAccountModel
         {
             $sql =
             "
-                SELECT PasswordHash FROM AccountModel WHERE Email = ?
+                SELECT PasswordHash FROM AccountModel WHERE Email = ? AND PermissionLevel >= 4
             ";
 
             try
@@ -386,12 +399,23 @@ class AccountModel implements IAccountModel
                     // Make sure the supervisor can verify himself to delete the other account.
                     if(password_verify($supervisorPassword, $supervisorPasswordHash))
                     {
-                        $sql =
-                        "
-                            DELETE FROM AccountModel WHERE Email = ?
-                        ";
+                        $supervisorPermissionLevel = $this->readPermissionLevel($supervisorEmail);
+                        $userPermissionLevel = $this->readPermissionLevel($email);
 
-                        return $this->databaseAdapter->execute($sql, [$email]) === 1;
+                        // Make sure the supervisor always has a higher permission level than the account to delete (for safety reasons)
+                        if($supervisorPermissionLevel >-1 && $userPermissionLevel > -1 && $supervisorPermissionLevel > $userPermissionLevel)
+                        {
+                            $sql =
+                            "
+                                DELETE FROM AccountModel WHERE Email = ?
+                            ";
+
+                            return $this->databaseAdapter->execute($sql, [$email]) === 1;
+                        }
+                        else
+                        {
+                            return false;
+                        }
                     }
                     else
                     {
