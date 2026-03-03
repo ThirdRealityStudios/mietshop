@@ -20,9 +20,9 @@ class AccountModel implements IAccountModel
 
         $sql =
         "
-            CREATE IF NOT EXISTS AccountModel
+            CREATE TABLE IF NOT EXISTS AccountModel
             (
-                Email VARCHAR(100) UNIQUE PRIMARY_KEY NOT NULL,
+                Email VARCHAR(100) UNIQUE PRIMARY KEY,
                 PasswordHash VARCHAR(255) NOT NULL,
                 PermissionLevel INT(1) NOT NULL DEFAULT 0
             );
