@@ -10,10 +10,10 @@ use src\mietshop\infrastructure\http\IHTTPRequest;
 use src\mietshop\model\AccountModel;
 use src\mietshop\model\CategoryModel;
 use src\mietshop\model\CompanyModel;
-use src\mietshop\presenter\ErrorPresenter;
+use src\mietshop\presenter\ErrorNotFoundPresenter;
 use src\mietshop\presenter\HomePresenter;
 use src\mietshop\presenter\ImprintPresenter;
-use src\mietshop\presenter\LoginPresenter;
+use src\mietshop\presenter\AuthPresenter;
 use src\mietshop\presenter\PrivacyPolicyPresenter;
 use src\mietshop\presenter\TermsOfServicePresenter;
 use src\mietshop\view\ErrorView;
@@ -26,9 +26,9 @@ use src\mietshop\view\TermsOfServiceView;
 
 class Router implements IRouter
 {
-    private function chooseErrorPresenter(IErrorView $errorView, ICompanyModel $companyModel, HTTPRequest $request) : void
+    private function chooseErrorNotFoundPresenter(IErrorView $errorView, ICompanyModel $companyModel, HTTPRequest $request) : void
     {
-        $errorPresenter = new ErrorPresenter($errorView, $companyModel);
+        $errorPresenter = new ErrorNotFoundPresenter($errorView, $companyModel);
         $errorPresenter->process($request);
     }
 
@@ -41,6 +41,8 @@ class Router implements IRouter
         $globalView = new GlobalView();
         $errorView = new ErrorView($globalView);
 
+        $sessionValues = $_SESSION ?? [];
+
         if(sizeof($request->getQueryKeys()) === 0)
         {
             $homeView = new HomeView($globalView);
@@ -49,6 +51,10 @@ class Router implements IRouter
         }
         else
         {
+            $loginView = new LoginView($globalView);
+            $accountModel = new AccountModel($databaseAdapter);
+            $authPresenter = new AuthPresenter($companyModel, $accountModel, $loginView, $errorView);
+
             if(in_array("view", $request->getQueryKeys()))
             {
                 $viewValue = $request->getQueryValue("view");
@@ -73,19 +79,17 @@ class Router implements IRouter
                 }
                 else if(strcmp($viewValue, "login") === 0)
                 {
-                    $loginView = new LoginView($globalView);
-                    $accountModel = new AccountModel($databaseAdapter);
-                    $loginPresenter = new LoginPresenter($companyModel, $accountModel, $loginView, $errorView);
-                    $loginPresenter->process();
+                    // Show the login page, authenticate or redirect (using $sessionValues - if the user is yet logged in)
+                    $authPresenter->process($request, $sessionValues);
                 }
                 else
                 {
-                    $this->chooseErrorPresenter($errorView, $companyModel, $request);
+                    $this->chooseErrorNotFoundPresenter($errorView, $companyModel, $request);
                 }
             }
             else
             {
-                $this->chooseErrorPresenter($errorView, $companyModel, $request);
+                $this->chooseErrorNotFoundPresenter($errorView, $companyModel, $request);
             }
         }
     }

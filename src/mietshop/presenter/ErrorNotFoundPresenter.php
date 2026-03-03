@@ -12,7 +12,7 @@ use src\mietshop\model\CompanyModel;
  * Decides error message should be displayed,
  * using an IErrorView.
  */
-class ErrorPresenter implements IPresenter
+class ErrorNotFoundPresenter implements IPresenter
 {
     private IErrorView $errorView;
     private ICompanyModel $companyModel;

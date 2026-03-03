@@ -22,7 +22,7 @@ class LoginView implements ILoginView
             <div class=\"row text-center mb-3\">
                 <span class=\"fs-1 fw-bold\">Anmelden</span>
             </div>
-            <form class=\"form\" action=\"/\" method=\"post\">
+            <form class=\"form\" action=\"/?view=login\" method=\"post\">
                 <div class=\"mb-3\">
                     <label for=\"Email\" class=\"form-label\">E-Mail: </label>
                     <input class=\"form-control\" type=\"email\" placeholder=\"E-Mail-Adresse eingeben ...\" name=\"Email\" required>

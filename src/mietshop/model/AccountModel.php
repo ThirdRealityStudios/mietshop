@@ -122,9 +122,13 @@ class AccountModel implements IAccountModel
             {
                 if(isset($fetchData[0]["Email"]) && isset($fetchData[0]["PasswordHash"]) && isset($fetchData[0]["PermissionLevel"]))
                 {
-                    if(is_string($fetchData[0]["Email"]) && is_string($fetchData[0]["PasswordHash"]) && is_numeric($fetchData[0]["PermissionLevel"]))
+                    $datasetEmail = $fetchData[0]["Email"];
+                    $datasetPasswordHash = $fetchData[0]["PasswordHash"];
+                    $datasetPermissionLevel = $fetchData[0]["PermissionLevel"];
+
+                    if(is_string($datasetEmail) && is_string($datasetPasswordHash) && is_numeric($datasetPermissionLevel))
                     {
-                        return [$fetchData[0]["Email"], $fetchData[0]["PasswordHash"], $fetchData[0]["PermissionLevel"]];
+                        return ["Email" => $datasetEmail, "PasswordHash" => $datasetPasswordHash, "PermissionLevel" => $datasetPermissionLevel];
                     }
                     else
                     {

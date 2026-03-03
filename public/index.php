@@ -15,6 +15,10 @@ function autoloader(string $class) : void
 
 function run()
 {
+    // Start a session and set a cookie called "VisitorID".
+    session_name('VisitorID');
+    session_start();
+
     spl_autoload_register("autoloader");
 
     $request = new HTTPRequest($_GET, $_POST, $_COOKIE, $_SERVER);
