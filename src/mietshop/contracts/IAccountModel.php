@@ -24,6 +24,12 @@ namespace src\mietshop\contracts;
  */
 interface IAccountModel
 {
+    public const ROLE_GUEST = 0;
+    public const ROLE_MODERATOR = 1;
+    public const ROLE_SUPPORTER = 2;
+    public const ROLE_OWNER = 3;
+    public const ROLE_ADMIN = 4;
+
     /**
      * Creates an account with the email and password given.
      * Also,

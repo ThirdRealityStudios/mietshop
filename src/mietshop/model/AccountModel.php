@@ -24,11 +24,11 @@ class AccountModel implements IAccountModel
             (
                 Email VARCHAR(100) UNIQUE PRIMARY KEY,
                 PasswordHash VARCHAR(255) NOT NULL,
-                PermissionLevel INT(1) NOT NULL DEFAULT 0
+                PermissionLevel INT(1) NOT NULL DEFAULT ?
             );
         ";
 
-        $this->databaseAdapter->execute($sql);
+        $this->databaseAdapter->execute($sql, [IAccountModel::ROLE_GUEST]);
 
         $this->ensureDefaultAdminAccount();
     }
@@ -45,29 +45,26 @@ class AccountModel implements IAccountModel
      */
     private function ensureDefaultAdminAccount()
     {
-        $sql =
-        "
-            SELECT COUNT(PermissionLevel) AS Amount FROM AccountModel WHERE PermissionLevel = 5
-        ";
+        $sql = "SELECT COUNT(PermissionLevel) AS Amount FROM AccountModel WHERE PermissionLevel = ?";
 
-        $result = $this->databaseAdapter->fetch($sql);
+        $result = $this->databaseAdapter->fetch($sql, [IAccountModel::ROLE_ADMIN]);
 
         if(isset($result[0]["Amount"]) && $result[0]["Amount"] === 0)
         {
             $sql =
             "
-                INSERT INTO AccountModel(Email, PasswordHash, PermissionLevel) VALUES('admin@admin.admin', ?, 5)
+                INSERT INTO AccountModel(Email, PasswordHash, PermissionLevel) VALUES('janek.piekarski.postfach@gmail.com', ?, ?)
             ";
 
             $passwordHashed = password_hash("Admin2026!", PASSWORD_DEFAULT);
 
-            $this->databaseAdapter->execute($sql, [$passwordHashed]);
+            $this->databaseAdapter->execute($sql, [$passwordHashed, IAccountModel::ROLE_ADMIN]);
         }
     }
 
     public function createAccount(string $email, string $password, int $permissionLevel): bool
     {
-        if($permissionLevel >= 0 && $permissionLevel <= 5)
+        if($permissionLevel >= IAccountModel::ROLE_GUEST && $permissionLevel <= IAccountModel::ROLE_ADMIN)
         {
             $emailFormatValidationResult = filter_var($email, FILTER_VALIDATE_EMAIL);
 
@@ -78,9 +75,9 @@ class AccountModel implements IAccountModel
                 if(is_string($passwordHashed))
                 {
                     $sql =
-                        "
-                    INSERT INTO AccountModel(Email, PasswordHash, PermissionLevel) VALUES(?, ?, ?)
-                ";
+                    "
+                        INSERT INTO AccountModel(Email, PasswordHash, PermissionLevel) VALUES(?, ?, ?)
+                    ";
 
                     try
                     {
@@ -291,15 +288,15 @@ class AccountModel implements IAccountModel
                     // Make sure the supervisor cannot give a higher permission level than his own.
                     if($supervisorPermissionLevel > -1 && $permissionLevel <= $supervisorPermissionLevel)
                     {
-                        // Make sure with "PermissionLevel < 5" that no supervisor can degrade admin accounts (also for safety reasons).
+                        // Make sure with "PermissionLevel < IAccountModel::ROLE_ADMIN" that no supervisor can degrade admin accounts (also for safety reasons).
                         // Imagine the website buyer does not want to use an owner account but an admin account.
                         // In this case, it would be a security risk if an owner could degrade an admin account.
                         $sql =
                         "
-                            UPDATE AccountModel SET PermissionLevel = ? WHERE Email = ? AND PermissionLevel < 5
+                            UPDATE AccountModel SET PermissionLevel = ? WHERE Email = ? AND PermissionLevel < ?
                         ";
 
-                        return $this->databaseAdapter->execute($sql, [$permissionLevel, $email]) === 1;
+                        return $this->databaseAdapter->execute($sql, [$permissionLevel, $email, IAccountModel::ROLE_ADMIN]) === 1;
                     }
                     else
                     {
@@ -336,7 +333,7 @@ class AccountModel implements IAccountModel
 
             // Make sure there is no admin who accidentally deletes his account
             // (it is not dramatic because it gets automatically re-created - but then it has reset credentials which is e.g. a security risk)
-            if(isset($result[0]["PermissionLevel"]) && ($result[0]["PermissionLevel"] < 5))
+            if(isset($result[0]["PermissionLevel"]) && ($result[0]["PermissionLevel"] < IAccountModel::ROLE_ADMIN))
             {
                 $sql =
                 "
@@ -389,25 +386,25 @@ class AccountModel implements IAccountModel
         {
             $sql =
             "
-                SELECT PasswordHash FROM AccountModel WHERE Email = ? AND PermissionLevel >= 4
+                SELECT PasswordHash FROM AccountModel WHERE Email = ? AND PermissionLevel >= ?
             ";
 
             try
             {
-                $result = $this->databaseAdapter->fetch($sql, [$supervisorEmail]);
+                $result = $this->databaseAdapter->fetch($sql, [$supervisorEmail, IAccountModel::ROLE_OWNER]);
 
-                if(isset($result[0]["PasswordHash"]) && is_string($result[0]["PasswordHash"]))
+                if(isset($result[0]["PasswordHash"]) && is_string($result[0]["PasswordHash"])) // password of supervisor can be read, so the action is generally granted (still need to check if the user has the correct password below).
                 {
                     $supervisorPasswordHash = $result[0]["PasswordHash"];
 
                     // Make sure the supervisor can verify himself to delete the other account.
-                    if(password_verify($supervisorPassword, $supervisorPasswordHash))
+                    if(password_verify($supervisorPassword, $supervisorPasswordHash)) // the deletion action is now granted, judging by the supervisor account itself (access verification and permission level)
                     {
                         $supervisorPermissionLevel = $this->readPermissionLevel($supervisorEmail);
                         $userPermissionLevel = $this->readPermissionLevel($email);
 
                         // Make sure the supervisor always has a higher permission level than the account to delete (for safety reasons)
-                        if($supervisorPermissionLevel >-1 && $userPermissionLevel > -1 && $supervisorPermissionLevel > $userPermissionLevel)
+                        if($supervisorPermissionLevel > $userPermissionLevel)
                         {
                             $sql =
                             "
@@ -418,27 +415,27 @@ class AccountModel implements IAccountModel
                         }
                         else
                         {
-                            return false;
+                            return false; // you are not allowed to delete the given user (you need a higher rank).
                         }
                     }
                     else
                     {
-                        return false;
+                        return false; // you cannot verify the credentials of the supervisor for deletion.
                     }
                 }
                 else
                 {
-                    return false;
+                    return false; // The performing user is no supervisor (because the user is not at least an owner or even admin). Hence, action was denied.
                 }
             }
             catch(PDOException $e)
             {
-                return false;
+                return false; // The supervisor is actually no supervisor because the permission level is not even an owner or even admin. Hence, action denied.
             }
         }
         else
         {
-            return false;
+            return false; // A supervisor cannot delete his own account (at least not with this function)
         }
     }
 }

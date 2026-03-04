@@ -2,7 +2,7 @@
 
 namespace src\mietshop\contracts;
 
-use src\mietshop\infrastructure\http\HTTPRequest;
+use src\mietshop\infrastructure\http\IHTTPRequest;
 
 /**
  * You can use this interface to implement your own presenter which guides everything.
@@ -34,8 +34,8 @@ interface IPresenter
      * you could easily implement everything in a different language too.
      * You only have to adjust the creation ob a HTTPRequest object.
      *
-     * @param HTTPRequest $request
+     * @param IHTTPRequest $request
      * @return void
      */
-    public function process(HTTPRequest $request) : void;
+    public function process(IHTTPRequest $request) : void;
 }

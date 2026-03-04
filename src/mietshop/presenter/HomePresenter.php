@@ -7,7 +7,7 @@ use src\mietshop\contracts\ICompanyModel;
 use src\mietshop\contracts\IErrorView;
 use src\mietshop\contracts\IHomeView;
 use src\mietshop\contracts\IPresenter;
-use src\mietshop\infrastructure\http\HTTPRequest;
+use src\mietshop\infrastructure\http\IHTTPRequest;
 
 class HomePresenter implements IPresenter
 {
@@ -24,7 +24,7 @@ class HomePresenter implements IPresenter
         $this->errorView = $errorView;
     }
 
-    public function process(HTTPRequest $request): void
+    public function process(IHTTPRequest $request): void
     {
         // $this->companyModel->setCompanyName("Sehr cooles Unternehmen GmbH");
         // $this->companyModel->setOwner("Gutfried Alman");

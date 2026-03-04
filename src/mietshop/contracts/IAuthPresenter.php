@@ -2,7 +2,7 @@
 
 namespace src\mietshop\contracts;
 
-use src\mietshop\infrastructure\http\HTTPRequest;
+use src\mietshop\infrastructure\http\IHTTPRequest;
 
 interface IAuthPresenter
 {
@@ -29,9 +29,9 @@ interface IAuthPresenter
      *
      * ]
      *
-     * @param array $httpRequest
+     * @param IHTTPRequest $httpRequest
      * @param array $sessionValues (passed-by-reference)
      * @return void
      */
-    public function process(HTTPRequest $httpRequest, array $sessionValues) : void;
+    public function process(IHTTPRequest &$httpRequest, array &$sessionValues) : void;
 }

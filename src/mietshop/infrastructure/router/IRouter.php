@@ -2,6 +2,7 @@
 
 namespace src\mietshop\infrastructure\router;
 
+use src\mietshop\infrastructure\database\IDatabaseAdapter;
 use src\mietshop\infrastructure\http\IHTTPRequest;
 
 /**
@@ -16,7 +17,9 @@ interface IRouter
      * Processes an HTTP request object and calls the correct presenter object.
      *
      * @param IHTTPRequest $request
+     * @param array $sessionValues (passed-by-reference)
+     * @param IDatabaseAdapter $databaseAdapter
      * @return void
      */
-    public function route(IHTTPRequest $request) : void;
+    public function route(IHTTPRequest $request, array &$sessionValues, IDatabaseAdapter $databaseAdapter) : void;
 }

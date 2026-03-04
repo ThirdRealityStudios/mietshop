@@ -14,13 +14,24 @@ class LoginView implements ILoginView
         $this->globalView = $globalView;
     }
 
-    public function show(array $companyData): void
+    public function show(array $companyData, ?string $optionalErrorMessage): void
     {
+        if(is_string($optionalErrorMessage))
+        {
+            $safeOptionalErrorMessage = htmlspecialchars($optionalErrorMessage, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
+        }
+        else
+        {
+            $safeOptionalErrorMessage = "&nbsp;";
+        }
+
         $feedContent =
         "
         <div class=\"container-fluid\">
             <div class=\"row text-center mb-3\">
-                <span class=\"fs-1 fw-bold\">Anmelden</span>
+                <div class=\"col-12\">
+                    <span class=\"fs-1 fw-bold\">Anmelden</span>
+                </div>
             </div>
             <form class=\"form\" action=\"/?view=login\" method=\"post\">
                 <div class=\"mb-3\">
@@ -33,6 +44,11 @@ class LoginView implements ILoginView
                 </div>
                 <input class=\"btn btn-primary mb-3\" type=\"submit\" value=\"Anmelden\">
             </form>
+            <div class=\"row text-left mb-3\">
+                <div class=\"col-12\">
+                    <span class=\"fs-6 text-danger text-decoration-underline\">{$safeOptionalErrorMessage}</span>
+                </div>
+            </div>
         </div>    
         ";
 
