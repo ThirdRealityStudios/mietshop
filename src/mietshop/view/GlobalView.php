@@ -464,6 +464,8 @@ class GlobalView implements IGlobalView
 
     public function show(array $companyData, string $body): void
     {
+        // TODO Check if cookies and services accepted. Otherwise, show fullscreen cookie popup.
+
         $companyNameHTMLSafe = htmlspecialchars($companyData["CompanyName"][0] ?? "Internal Loading Error", ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 
         $bodyHTML = $this->genBootstrapHeader($companyNameHTMLSafe).$body.$this->genBootstrapFooter($companyData);
