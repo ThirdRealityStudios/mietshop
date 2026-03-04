@@ -77,9 +77,9 @@ class Router implements IRouter
                     $privacyPolicyPresenter = new PrivacyPolicyPresenter($privacyPolicyView, $errorView, $companyModel);
                     $privacyPolicyPresenter->process();
                 }
-                else if(strcmp($viewValue, "login") === 0)
+                else if(strcmp($viewValue, "login") === 0 || strcmp($viewValue, "account") === 0)
                 {
-                    // Show the login page, authenticate or redirect (using $sessionValues - if the user is yet logged in)
+                    // Show the login page or account page, authenticate or redirect (if the user is yet logged in)
                     $authPresenter->process($request, $sessionValues);
                 }
                 else

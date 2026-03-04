@@ -36,52 +36,85 @@ class AuthPresenter implements IAuthPresenter
         exit(0);
     }
 
+    private function redirectToLogin() : void
+    {
+        header('Location: /?view=login');
+        exit(0);
+    }
+
     public function process(HTTPRequest $httpRequest, array $sessionValues): void
     {
         $companyData = $this->companyModel->getCompanyData();
+        $queryViewValue = $httpRequest->getQueryValue("view");
 
-        $postEmail = $httpRequest->getPOSTValue("Email");
-        $postPassword = $httpRequest->getPOSTValue("Password");
-
-        $isLoggedIn = isset($sessionValues["Email"]);
-        $isLoggingIn = is_string($postEmail) && is_string($postPassword);
-        $isNotLoggedIn = !isset($sessionValues["Email"]);
-
-        if(!empty($companyData))
+        if(!empty($companyData) && is_string($queryViewValue))
         {
-            if($isLoggedIn)
+            if(strcmp($queryViewValue, "login") === 0)
             {
-                $this->redirectToAccount();
-            }
-            else if($isLoggingIn)
-            {
-                // Verify credentials and if so, start session
-                $accountData = $this->accountModel->readAccount($postEmail);
+                $possiblePOSTEmail = $httpRequest->getPOSTValue("Email");
+                $possiblePOSTPassword = $httpRequest->getPOSTValue("Password");
 
-                if(!empty($accountData))
+                if(isset($sessionValues["Email"])) // Am I logged in yet?
                 {
-                    if(password_verify($postPassword, $accountData["PasswordHash"]))
+                    // Then redirect to the account page.
+                    $this->redirectToAccount();
+                }
+                else if(is_string($possiblePOSTEmail) && is_string($possiblePOSTPassword)) // Am I logging in after credentials submitted before?
+                {
+                    // Then verify credentials and save the login status
+
+                    // Try to find an account in the system, related to that email given.
+                    $accountData = $this->accountModel->readAccount($possiblePOSTEmail);
+
+                    if(!empty($accountData)) // Does the account exist?
                     {
-                        // Login could be verified successfully
+                        // Then the account exists
 
-                        // Remember the logged in user now:
-                        $_SESSION["Email"] = $postEmail;
+                        if(password_verify($possiblePOSTPassword, $accountData["PasswordHash"])) // Is the password correct?
+                        {
+                            // Then the password is correct.
 
-                        $this->redirectToAccount();
+                            // Remember the logged in user (login status)
+                            $_SESSION["Email"] = $possiblePOSTEmail;
+
+                            // Show the account page
+                            $this->redirectToAccount();
+                        }
+                        else
+                        {
+                            // Then the password is not correct.
+                            $this->showErrorServiceNotAvailable();
+                        }
                     }
                     else
                     {
+                        // Then the account does not exist
                         $this->showErrorServiceNotAvailable();
                     }
+                }
+                else if(!isset($sessionValues["Email"])) // Am I not logged in yet?
+                {
+                    // Then show the login page.
+                    $this->loginView->show($companyData);
                 }
                 else
                 {
                     $this->showErrorServiceNotAvailable();
                 }
             }
-            else if($isNotLoggedIn)
+            else if(strcmp($queryViewValue, "account") === 0)
             {
-                $this->loginView->show($companyData);
+                if(isset($sessionValues["Email"])) // Am I logged in yet?
+                {
+                    // Then I am allowed to visit the account page
+                    echo "Logged in";
+                }
+                else
+                {
+                    // Then I am not allowed to see the account page (I need to login)
+                    $this->redirectToLogin();
+                    exit(0);
+                }
             }
             else
             {
