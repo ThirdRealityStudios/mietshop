@@ -54,28 +54,28 @@ class AccountPresenter implements IAccountPresenter
 
                     if(!empty($accountData)) // Does the login status belong to an existing account still?
                     {
-                        $determindRole = "Loading Error";
+                        $determinedRole = "Loading Error";
 
                         switch($accountData["PermissionLevel"])
                         {
                             case IAccountModel::ROLE_ADMIN:
-                                $determindRole = "Admin";
+                                $determinedRole = "Admin";
                                 break;
 
                             case IAccountModel::ROLE_OWNER:
-                                $determindRole = "Owner";
+                                $determinedRole = "Owner";
                                 break;
 
                             case IAccountModel::ROLE_SUPPORTER:
-                                $determindRole = "Supporter";
+                                $determinedRole = "Supporter";
                                 break;
 
                             case IAccountModel::ROLE_MODERATOR:
-                                $determindRole = "Moderator";
+                                $determinedRole = "Moderator";
                                 break;
 
                             case IAccountModel::ROLE_GUEST:
-                                $determindRole = "Guest";
+                                $determinedRole = "Guest";
                                 break;
 
                             default:
@@ -83,7 +83,9 @@ class AccountPresenter implements IAccountPresenter
                                 exit(0);
                         }
 
-                        $this->accountView->show($companyData, ["Email" => $sessionValues["Email"], "PermissionRole" => $determindRole]);
+                        $canManageAccounts = $this->accountModel->canManageAccounts($sessionValues["Email"]);
+
+                        $this->accountView->show($companyData, ["Email" => $sessionValues["Email"], "PermissionRole" => $determinedRole, "CanManageAccounts" => $canManageAccounts]);
                     }
                     else // For some reason the account does not exist anymore, although you have a verified session access generally to an account (most likely deleted by admin meanwhile).
                     {

@@ -141,7 +141,7 @@ interface IDatabaseAdapter
      *
      * @param string $sql    SQL statement, optionally containing ? placeholders for parameters.
      * @param array  $params Optional array of parameters to replace the ? placeholders.
-     * @return array         Resulting rows as an array of associative arrays.
+     * @return array         Resulting rows as an array of associative arrays (each row / associative array accessible numerically from 0 to ...).
      * @throws PDOException  If connection fails or SQL execution fails.
      */
     public function fetch(string $sql, array $params = []): array;

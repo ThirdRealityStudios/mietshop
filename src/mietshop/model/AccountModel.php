@@ -148,6 +148,49 @@ class AccountModel implements IAccountModel
         }
     }
 
+    public function readAccounts(int $page) : array
+    {
+        $sql =
+        "
+            SELECT * FROM AccountModel LIMIT ? OFFSET ?
+        ";
+
+        try
+        {
+            return $this->databaseAdapter->fetch($sql, [IAccountModel::ACCOUNTS_PER_PAGE, $page * IAccountModel::ACCOUNTS_PER_PAGE]);
+        }
+        catch(PDOException $e)
+        {
+            return [];
+        }
+    }
+
+    public function readAmountOfPages() : int
+    {
+        $sql =
+        "
+            SELECT COUNT(*) AS DatasetAmount FROM AccountModel
+        ";
+
+        try
+        {
+            $fetchData = $this->databaseAdapter->fetch($sql);
+
+            if(isset($fetchData[0]["DatasetAmount"]))
+            {
+                return $fetchData[0]["DatasetAmount"];
+            }
+            else
+            {
+                return 0;
+            }
+        }
+        catch(PDOException $e)
+        {
+            return 0;
+        }
+    }
+
     public function readPermissionLevel(string $email): int
     {
         $sql =
@@ -437,5 +480,10 @@ class AccountModel implements IAccountModel
         {
             return false; // A supervisor cannot delete his own account (at least not with this function)
         }
+    }
+
+    public function canManageAccounts(string $email) : bool
+    {
+        return $this->readPermissionLevel($email) >= IAccountModel::ROLE_OWNER;
     }
 }

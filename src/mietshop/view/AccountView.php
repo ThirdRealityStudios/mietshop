@@ -2,6 +2,7 @@
 
 namespace src\mietshop\view;
 
+use src\mietshop\contracts\IAccountModel;
 use src\mietshop\contracts\IAccountView;
 use src\mietshop\contracts\IGlobalView;
 
@@ -30,10 +31,26 @@ class AccountView implements IAccountView
 
         $accountEmailSafe = htmlspecialchars($accountEmailLimited, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
 
+        if($accountData["CanManageAccounts"])
+        {
+            $optionalManageAccountsButton =
+            "
+                <div class=\"row mt-4\">
+                    <div class=\"col-12\">
+                        <a class=\"btn btn-primary w-100\" href=\"/?view=accounts\">Kontos verwalten 👥</a>
+                    </div>
+                </div>
+            ";
+        }
+        else
+        {
+            $optionalManageAccountsButton = "";
+        }
+
         $feedContent =
         "
             <div class=\"container-fluid\">
-                <div class=\"row\">
+                <div class=\"row mt-3\">
                     <div class=\"col-2\" style=\"background-image: url('/img/symbol/person-square.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\"></div>
                     <div class=\"col-10\">
                         <div class=\"container-fluid\">
@@ -50,9 +67,14 @@ class AccountView implements IAccountView
                         </div>
                     </div>
                 </div>
-                <div class=\"row pt-4\">
+                <div class=\"row mt-4\">
                     <div class=\"col-12\">
                         <a class=\"btn btn-primary w-100\" href=\"/?view=account&action=logout\">Abmelden 🔐</a>
+                    </div>
+                </div>
+                $optionalManageAccountsButton
+                <div class=\"row mt-3\">
+                    <div class=\"col-12\">
                     </div>
                 </div>
             </div>

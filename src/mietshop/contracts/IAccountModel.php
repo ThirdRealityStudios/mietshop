@@ -31,6 +31,15 @@ interface IAccountModel
     public const ROLE_ADMIN = 4;
 
     /**
+     * Describes how many accounts should be shown at once per page when loading them somewhere,
+     * e.g. in an account management area.
+     * This will lower the load on the database if you manage a lot of accounts.
+     * Instead,
+     * you will have multiple pages and not all accounts shown at once which do exist.
+     */
+    public const ACCOUNTS_PER_PAGE = 5;
+
+    /**
      * Creates an account with the email and password given.
      * Also,
      * a permission level is expected:
@@ -63,7 +72,7 @@ interface IAccountModel
      *
      *  "Email" => "mymail@web.com",
      *
-     *  "Password" => "1fe12as9129fd129sadk123",
+     *  "PasswordHash" => "1fe12as9129fd129sadk123",
      *
      *  "PermissionLevel" => 0
      *
@@ -73,6 +82,41 @@ interface IAccountModel
      * @return array Account dataset as an associative array. Empty array if fetching fails technically or account does not exist.
      */
     public function readAccount(string $email) : array;
+
+    /**
+     * Returns an array of all accounts with all dataset information.
+     * The amount of accounts read can be or is limited with the constant ACCOUNTS_PER_PAGE.
+     * Hence,
+     * you need to specify the "page" you want to look at.
+     * This way,
+     * heavy load on the database is reduced if a lot of accounts do exist.
+     *
+     * The returned array will look like this:
+     *
+     * [
+     *
+     *  0 => ["Email" => "mine@website.com", "PasswordHash" => "ad12aabdc123adef", "PermissionLevel" => 0, ...],
+     *
+     *  1 => ["Email" => "minetoo@website.com", "PasswordHash" => "bf12aabdc123edcc", "PermissionLevel" => 4, ...],
+     *
+     *  2 => ["Email" => "this@and.that", "PasswordHash" => "bf12aabdc123edcc", "PermissionLevel" => 3, ...]
+     *
+     * ]
+     *
+     * @param int $page Specify here the page you want to load (everything from 0 is valid as the first page - a value beyond existing pages will not break it but will return an empty array instead with no results)
+     * @return array Array of all accounts. Empty array if execution went wrong, no results or something else.
+     */
+    public function readAccounts(int $page) : array;
+
+    /**
+     * This function will tell you the amount of pages,
+     * based on the constant ACCOUNTS_PER_PAGE.
+     * If no accounts do exist,
+     * then 0 will be returned for zero pages (obviously).
+     *
+     * @return int The amount of pages which do exist.
+     */
+    public function readAmountOfPages() : int;
 
     /**
      * Returns the permission level of an (existing) account.
@@ -147,4 +191,13 @@ interface IAccountModel
      * @return bool True if the account could be deleted successfully. Otherwise, false (mostly if the supervisor credentials are incorrect - but could also be an execution error).
      */
     public function deleteAccountBySupervisor(string $supervisorEmail, string $supervisorPassword, string $email) : bool;
+
+    /**
+     * Tells you if a given user has basically the permission to manage accounts
+     * (e.g. create new accounts, delete accounts, edit permission levels etc.)
+     *
+     * @param string $email Email of the account
+     * @return bool True if the user can generally do account management. Otherwise, false (also if the given account does not exist or if there is an execution error)
+     */
+    public function canManageAccounts(string $email) : bool;
 }
