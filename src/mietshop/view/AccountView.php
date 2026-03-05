@@ -50,6 +50,11 @@ class AccountView implements IAccountView
                         </div>
                     </div>
                 </div>
+                <div class=\"row pt-4\">
+                    <div class=\"col-12\">
+                        <a class=\"btn btn-primary w-100\" href=\"/?view=account&action=logout\">Abmelden 🔐</a>
+                    </div>
+                </div>
             </div>
         ";
 

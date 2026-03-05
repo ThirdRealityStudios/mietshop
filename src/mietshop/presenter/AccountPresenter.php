@@ -35,52 +35,61 @@ class AccountPresenter implements IAccountPresenter
     {
         $companyData = $this->companyModel->getCompanyData();
         $queryViewValue = $httpRequest->getQueryValue("view");
+        $queryActionValue = $httpRequest->getQueryValue("action");
 
         if(!empty($companyData) && is_string($queryViewValue) && strcmp($queryViewValue, "account") === 0)
         {
             if(isset($sessionValues["Email"]) && is_string($sessionValues["Email"])) // Am I logged in yet?
             {
-                // Then I am logged (at least judging server-side - maybe the account does not exist anymore because an admin deleted it)
+                // Then I am logged in (at least judging server-side - maybe the account does not exist anymore because an admin deleted it)
 
-                $accountData = $this->accountModel->readAccount($sessionValues["Email"]);
-
-                if(!empty($accountData)) // Does the login status belong to an existing account still?
+                if(is_string($queryActionValue) && strcmp($queryActionValue, "logout") === 0) // Does the user want to logout?
                 {
-                    $determindRole = "Loading Error";
-
-                    switch($accountData["PermissionLevel"])
-                    {
-                        case IAccountModel::ROLE_ADMIN:
-                            $determindRole = "Admin";
-                            break;
-
-                        case IAccountModel::ROLE_OWNER:
-                            $determindRole = "Owner";
-                            break;
-
-                        case IAccountModel::ROLE_SUPPORTER:
-                            $determindRole = "Supporter";
-                            break;
-
-                        case IAccountModel::ROLE_MODERATOR:
-                            $determindRole = "Moderator";
-                            break;
-
-                        case IAccountModel::ROLE_GUEST:
-                            $determindRole = "Guest";
-                            break;
-
-                        default:
-                            $this->errorView->show($companyData, "Integritätsfehler", "Ihre Befugnisse scheinen ungültig zu sein."); // Else there is a bug because more roles do not exist ("Loading Error")
-                            exit(0);
-                    }
-
-                    $this->accountView->show($companyData, ["Email" => $sessionValues["Email"], "PermissionRole" => $determindRole]);
-                }
-                else // For some reason the account does not exist anymore, although you have a verified session access generally to an account (most likely deleted by admin meanwhile).
-                {
-                    $this->errorView->show($companyData, "Integritätsfehler", "Ihre Anmeldung ist nicht mehr gültig. Bitte melden Sie sich erneut an. Sollte das Problem weiterhin bestehen, wenden Sie sich an den Support.");
                     session_destroy();
+                    $this->redirectToLogin();
+                }
+                else // Else the user just wants to see his account page
+                {
+                    $accountData = $this->accountModel->readAccount($sessionValues["Email"]);
+
+                    if(!empty($accountData)) // Does the login status belong to an existing account still?
+                    {
+                        $determindRole = "Loading Error";
+
+                        switch($accountData["PermissionLevel"])
+                        {
+                            case IAccountModel::ROLE_ADMIN:
+                                $determindRole = "Admin";
+                                break;
+
+                            case IAccountModel::ROLE_OWNER:
+                                $determindRole = "Owner";
+                                break;
+
+                            case IAccountModel::ROLE_SUPPORTER:
+                                $determindRole = "Supporter";
+                                break;
+
+                            case IAccountModel::ROLE_MODERATOR:
+                                $determindRole = "Moderator";
+                                break;
+
+                            case IAccountModel::ROLE_GUEST:
+                                $determindRole = "Guest";
+                                break;
+
+                            default:
+                                $this->errorView->show($companyData, "Integritätsfehler", "Ihre Befugnisse scheinen ungültig zu sein."); // Else there is a bug because more roles do not exist ("Loading Error")
+                                exit(0);
+                        }
+
+                        $this->accountView->show($companyData, ["Email" => $sessionValues["Email"], "PermissionRole" => $determindRole]);
+                    }
+                    else // For some reason the account does not exist anymore, although you have a verified session access generally to an account (most likely deleted by admin meanwhile).
+                    {
+                        $this->errorView->show($companyData, "Integritätsfehler", "Ihre Anmeldung ist nicht mehr gültig. Bitte melden Sie sich erneut an. Sollte das Problem weiterhin bestehen, wenden Sie sich an den Support.");
+                        session_destroy();
+                    }
                 }
             }
             else
