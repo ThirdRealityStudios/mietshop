@@ -4,7 +4,7 @@ namespace src\mietshop\contracts;
 
 use src\mietshop\infrastructure\http\IHTTPRequest;
 
-interface IAuthPresenter
+interface ILoginPresenter
 {
     /**
      * Handles the login or authentification.

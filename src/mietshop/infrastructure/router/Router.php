@@ -9,10 +9,11 @@ use src\mietshop\infrastructure\http\IHTTPRequest;
 use src\mietshop\model\AccountModel;
 use src\mietshop\model\CategoryModel;
 use src\mietshop\model\CompanyModel;
+use src\mietshop\presenter\AccountPresenter;
 use src\mietshop\presenter\ErrorNotFoundPresenter;
 use src\mietshop\presenter\HomePresenter;
 use src\mietshop\presenter\ImprintPresenter;
-use src\mietshop\presenter\AuthPresenter;
+use src\mietshop\presenter\LoginPresenter;
 use src\mietshop\presenter\PrivacyPolicyPresenter;
 use src\mietshop\presenter\TermsOfServicePresenter;
 use src\mietshop\view\AccountView;
@@ -26,10 +27,9 @@ use src\mietshop\view\TermsOfServiceView;
 
 class Router implements IRouter
 {
-    private function chooseErrorNotFoundPresenter(IErrorView $errorView, ICompanyModel $companyModel, IHTTPRequest $request) : void
+    private function showPageNotFoundError(IErrorView $errorView, ICompanyModel $companyModel) : void
     {
-        $errorPresenter = new ErrorNotFoundPresenter($errorView, $companyModel);
-        $errorPresenter->process($request);
+        $errorView->show($companyModel->getCompanyData(), "Seite existiert nicht", "Entweder haben Sie sich vertippt oder derzeit gibt es technische Probleme. Bitte versuchen Sie es später erneut.");
     }
 
     public function route(IHTTPRequest $request, array &$sessionValues, IDatabaseAdapter $databaseAdapter) : void
@@ -50,7 +50,8 @@ class Router implements IRouter
             $loginView = new LoginView($globalView);
             $accountView = new AccountView($globalView);
             $accountModel = new AccountModel($databaseAdapter);
-            $authPresenter = new AuthPresenter($companyModel, $accountModel, $loginView, $accountView, $errorView);
+            $loginPresenter = new LoginPresenter($companyModel, $accountModel, $loginView, $accountView, $errorView);
+            $accountPresenter = new AccountPresenter($companyModel, $accountModel, $accountView, $errorView);
 
             if(in_array("view", $request->getQueryKeys()))
             {
@@ -74,19 +75,24 @@ class Router implements IRouter
                     $privacyPolicyPresenter = new PrivacyPolicyPresenter($privacyPolicyView, $errorView, $companyModel);
                     $privacyPolicyPresenter->process();
                 }
-                else if(strcmp($viewValue, "login") === 0 || strcmp($viewValue, "account") === 0)
+                else if(strcmp($viewValue, "login") === 0)
                 {
-                    // Show the login page or account page, authenticate or redirect (if the user is yet logged in)
-                    $authPresenter->process($request, $sessionValues);
+                    // Show the login page or authenticate and then redirect (if the user is yet logged in)
+                    $loginPresenter->process($request, $sessionValues);
+                }
+                else if(strcmp($viewValue, "account") === 0)
+                {
+                    // Show the account page (will check if you are authorized or logged in yet)
+                    $accountPresenter->process($request, $sessionValues);
                 }
                 else
                 {
-                    $this->chooseErrorNotFoundPresenter($errorView, $companyModel, $request);
+                    $this->showPageNotFoundError($errorView, $companyModel);
                 }
             }
             else
             {
-                $this->chooseErrorNotFoundPresenter($errorView, $companyModel, $request);
+                $this->showPageNotFoundError($errorView, $companyModel);
             }
         }
     }

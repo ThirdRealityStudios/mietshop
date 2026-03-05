@@ -311,7 +311,7 @@ class GlobalView implements IGlobalView
                                     <a class=\"nav-link\" href=\"/?view=search\">Jetzt Mietobjekte entdecken 🔎</a>
                                 </li>
                                 <li class=\"nav-item\">
-                                    <a class=\"nav-link\" href=\"/?view=login\">Anmelden</a>
+                                    <a class=\"nav-link\" href=\"/?view=login\">Konto 👤</a>
                                 </li>
                                 <li class=\"nav-item\">
                                     <a class=\"nav-link\" href=\"/?view=termsofservice\">AGBs</a>
