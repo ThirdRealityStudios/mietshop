@@ -16,9 +16,12 @@ class LoginView implements ILoginView
 
     public function show(array $companyData, ?string $optionalErrorMessage): void
     {
+        $inputFieldsInvalidClass = "";
+
         if(is_string($optionalErrorMessage))
         {
             $safeOptionalErrorMessage = htmlspecialchars($optionalErrorMessage, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
+            $inputFieldsInvalidClass = " is-invalid";
         }
         else
         {
@@ -36,11 +39,11 @@ class LoginView implements ILoginView
             <form class=\"form\" action=\"/?view=login\" method=\"post\">
                 <div class=\"mb-3\">
                     <label for=\"Email\" class=\"form-label\">E-Mail: </label>
-                    <input class=\"form-control\" type=\"email\" placeholder=\"E-Mail-Adresse eingeben ...\" name=\"Email\" required>
+                    <input class=\"form-control$inputFieldsInvalidClass\" type=\"email\" placeholder=\"E-Mail-Adresse eingeben ...\" name=\"Email\" required>
                 </div>
                 <div class=\"mb-3\">
                     <label for=\"Password\" class=\"form-label\">Passwort:</label>
-                    <input class=\"form-control\" type=\"password\" name=\"Password\" placeholder=\"Passwort eingeben ...\" required>
+                    <input class=\"form-control$inputFieldsInvalidClass\" type=\"password\" name=\"Password\" placeholder=\"Passwort eingeben ...\" required>
                 </div>
                 <input class=\"btn btn-primary mb-3\" type=\"submit\" value=\"Anmelden\">
             </form>
