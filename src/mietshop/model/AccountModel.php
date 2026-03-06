@@ -150,14 +150,17 @@ class AccountModel implements IAccountModel
 
     public function readAccounts(int $page) : array
     {
+        $accountsPerPage = IAccountModel::ACCOUNTS_PER_PAGE;
+        $pageCalculated = $page * IAccountModel::ACCOUNTS_PER_PAGE;
+
         $sql =
         "
-            SELECT * FROM AccountModel LIMIT ? OFFSET ?
+            SELECT * FROM AccountModel LIMIT $accountsPerPage OFFSET $pageCalculated
         ";
 
         try
         {
-            return $this->databaseAdapter->fetch($sql, [IAccountModel::ACCOUNTS_PER_PAGE, $page * IAccountModel::ACCOUNTS_PER_PAGE]);
+            return $this->databaseAdapter->fetch($sql);
         }
         catch(PDOException $e)
         {

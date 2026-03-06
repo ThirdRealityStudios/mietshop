@@ -2,7 +2,6 @@
 
 namespace src\mietshop\view;
 
-use src\mietshop\contracts\IAccountModel;
 use src\mietshop\contracts\IAccountView;
 use src\mietshop\contracts\IGlobalView;
 
@@ -37,7 +36,7 @@ class AccountView implements IAccountView
             "
                 <div class=\"row mt-4\">
                     <div class=\"col-12\">
-                        <a class=\"btn btn-primary w-100\" href=\"/?view=accounts\">Konten verwalten 👥</a>
+                        <a class=\"btn btn-primary w-100\" href=\"/?view=accounts&action=all\">Konten verwalten 👥</a>
                     </div>
                 </div>
             ";
