@@ -9,6 +9,7 @@ use src\mietshop\infrastructure\http\IHTTPRequest;
 use src\mietshop\model\AccountModel;
 use src\mietshop\model\CategoryModel;
 use src\mietshop\model\CompanyModel;
+use src\mietshop\presenter\AccountManagementPresenter;
 use src\mietshop\presenter\AccountPresenter;
 use src\mietshop\presenter\ErrorNotFoundPresenter;
 use src\mietshop\presenter\HomePresenter;
@@ -16,6 +17,7 @@ use src\mietshop\presenter\ImprintPresenter;
 use src\mietshop\presenter\LoginPresenter;
 use src\mietshop\presenter\PrivacyPolicyPresenter;
 use src\mietshop\presenter\TermsOfServicePresenter;
+use src\mietshop\view\AccountManagementView;
 use src\mietshop\view\AccountView;
 use src\mietshop\view\ErrorView;
 use src\mietshop\view\GlobalView;
@@ -53,6 +55,9 @@ class Router implements IRouter
             $loginPresenter = new LoginPresenter($companyModel, $accountModel, $loginView, $accountView, $errorView);
             $accountPresenter = new AccountPresenter($companyModel, $accountModel, $accountView, $errorView);
 
+            $accountManagementView = new AccountManagementView($globalView);
+            $accountManagementPresenter = new AccountManagementPresenter($companyModel, $accountModel, $accountManagementView, $errorView);
+
             if(in_array("view", $request->getQueryKeys()))
             {
                 $viewValue = $request->getQueryValue("view");
@@ -84,6 +89,11 @@ class Router implements IRouter
                 {
                     // Show the account page (will check if you are authorized or logged in yet)
                     $accountPresenter->process($request, $sessionValues);
+                }
+                else if(strcmp($viewValue, "accounts") === 0)
+                {
+                    // Show the account management page
+                    $accountManagementPresenter->process($request, $sessionValues);
                 }
                 else
                 {
