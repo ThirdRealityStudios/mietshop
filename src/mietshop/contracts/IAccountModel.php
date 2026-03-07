@@ -110,8 +110,10 @@ interface IAccountModel
      *
      * ]
      *
+     * All accounts are sorted by their email in ascending order (alphabetically sorted ascending).
+     *
      * @param int $page Specify here the page you want to load (everything from 0 is valid as the first page - a value beyond existing pages will not break it but will return an empty array instead with no results)
-     * @return array Array of all accounts. Empty array if execution went wrong, no results or something else.
+     * @return array Array of all accounts (sorted in ascending order by the email). Empty array if execution went wrong, no results or something else.
      */
     public function readAccounts(int $page) : array;
 

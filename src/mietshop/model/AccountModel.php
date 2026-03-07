@@ -184,7 +184,7 @@ class AccountModel implements IAccountModel
 
         $sql =
         "
-            SELECT * FROM AccountModel LIMIT $accountsPerPage OFFSET $pageCalculated
+            SELECT * FROM AccountModel ORDER BY Email ASC LIMIT $accountsPerPage OFFSET $pageCalculated
         ";
 
         try
@@ -208,9 +208,24 @@ class AccountModel implements IAccountModel
         {
             $fetchData = $this->databaseAdapter->fetch($sql);
 
-            if(isset($fetchData[0]["DatasetAmount"]))
+            if(isset($fetchData[0]["DatasetAmount"]) && is_int($fetchData[0]["DatasetAmount"]))
             {
-                return ($fetchData[0]["DatasetAmount"] / IAccountModel::ACCOUNTS_PER_PAGE) + 1;
+                $accountAmount = $fetchData[0]["DatasetAmount"];
+
+                $pagesAbsolute = (int) ($accountAmount / IAccountModel::ACCOUNTS_PER_PAGE);
+                $pagesFloatingPoint = (float) $accountAmount / IAccountModel::ACCOUNTS_PER_PAGE;
+
+                if(((float) $pagesAbsolute) === $pagesFloatingPoint) // You can evenly determine the amount of pages in both cases (which means there are no partial pages left to consider at the end)
+                {
+                    $finalPagesAmount = $pagesAbsolute;
+                }
+                else
+                {
+                    // One more pages to consider to allow to load because there is a partial account page at the end.
+                    $finalPagesAmount = $pagesAbsolute + 1;
+                }
+
+                return $finalPagesAmount;
             }
             else
             {

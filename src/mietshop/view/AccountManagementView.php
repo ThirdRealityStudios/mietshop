@@ -19,7 +19,7 @@ class AccountManagementView implements IAccountManagementView
     {
         $emailSafeHTML = htmlspecialchars($email, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
 
-        $permissionRole = "Invalid";
+        $permissionRole = "&nbsp;";
         $bootstrapClass = "table-secondary";
 
         $existingPermissionLevels = array_keys(IAccountModel::PERMISSION_ROLE);
@@ -92,14 +92,9 @@ class AccountManagementView implements IAccountManagementView
                 $feedContentHTML =
                 "
                     <div class=\"container-fluid p-0\">
-                        <div class=\"row mt-3 mb-3\">
+                        <div class=\"row mt-3 mb-5\">
                             <div class=\"col-12\">
                                 <span class=\"fs-2 fw-bold\">Konten verwalten</span>
-                            </div>
-                        </div>
-                        <div class=\"row mb-5\">
-                            <div class=\"col-12\">
-                                <a class=\"btn btn-primary w-100\" href=\"/?view=account\">Zurück ⬅️</a>
                             </div>
                         </div>
                         <div class=\"row mb-3\">
@@ -117,9 +112,14 @@ class AccountManagementView implements IAccountManagementView
                                 <a class=\"btn btn-primary w-100\" href=\"/?view=accounts&action=update\">Berechtigungen bearbeiten 🚦</a>
                             </div>
                         </div>
-                        <div class=\"row mb-3\">
+                        <div class=\"row mb-5\">
                             <div class=\"col-12\">
                                 <a class=\"btn btn-primary w-100\" href=\"/?view=accounts&action=delete\">Konto löschen ❌</a>
+                            </div>
+                        </div>
+                        <div class=\"row mb-3\">
+                            <div class=\"col-12\">
+                                <a class=\"btn btn-primary w-100\" href=\"/?view=account\">Zurück ⬅️</a>
                             </div>
                         </div>
                     </div>
@@ -185,27 +185,29 @@ class AccountManagementView implements IAccountManagementView
                     $rowsHTML .= $this->genTableAccountRow($accountResult["Email"], $accountResult["PermissionLevel"]);
                 }
 
+                $emptyFillRows = (sizeof($accountResults) - IAccountModel::ACCOUNTS_PER_PAGE) * (-1);
+
+                if($emptyFillRows > 0)
+                {
+                    $rowsHTML .= str_repeat($this->genTableAccountRow("", -1), $emptyFillRows);
+                }
+
                 $pageNonIndexed = $pageIndex+1;
 
                 $feedContentHTML =
                 "
                 <div class=\"container-fluid p-0\">
-                    <div class=\"row mt-3 mb-3\">
+                    <div class=\"row mt-3 mb-5\">
                         <div class=\"col-12\">
                             <span class=\"fs-2 fw-bold\">Kontenübersicht</span>
                         </div>
                     </div>
-                    <div class=\"row mb-5\">
-                        <div class=\"col-12\">
-                            <a class=\"btn btn-primary w-100\" href=\"/?view=accounts&action=all\">Zurück ⬅️</a>
-                        </div>
-                    </div>
                     <div class=\"row mb-3\">
                         <div class=\"col-12\">
-                            <table class=\"table w-100\">
+                            <table style=\"table-layout: fixed;\" class=\"table table-responsive text-break\">
                                 <tr class=\"table-dark\">
-                                    <th>E-Mail</th>
-                                    <th>Benutzer-Level</th>
+                                    <th class=\"w-80\">E-Mail</th>
+                                    <th class=\"w-20\">Benutzer-Level</th>
                                 </tr>
                                 $rowsHTML
                             </table>
@@ -225,7 +227,6 @@ class AccountManagementView implements IAccountManagementView
                                             <input class=\"btn btn-primary\" type=\"submit\" value=\"Seite aufrufen\">
                                         </div>
                                         <div class=\"col-4\">
-                                            
                                         </div>
                                     </div>
                                     <div class=\"row mb-3\">
@@ -235,6 +236,11 @@ class AccountManagementView implements IAccountManagementView
                                     </div>
                                 </div>
                             </form>
+                        </div>
+                    </div>
+                    <div class=\"row mb-3\">
+                        <div class=\"col-12\">
+                            <a class=\"btn btn-primary w-100\" href=\"/?view=accounts&action=all\">Zurück ⬅️</a>
                         </div>
                     </div>
                 </div>
