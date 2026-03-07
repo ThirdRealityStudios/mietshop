@@ -361,6 +361,11 @@ class GlobalView implements IGlobalView
                     display: inline-block;
                     animation: spin 1.4s linear infinite;
                 }
+                
+                .darker-hover:hover
+                {
+                    filter: brightness(90%);
+                }
 		    </style>
         </head>
         ";

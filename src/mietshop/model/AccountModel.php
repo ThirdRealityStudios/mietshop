@@ -69,16 +69,19 @@ class AccountModel implements IAccountModel
     {
         $supervisorAccountData = $this->readAccount($supervisorEmail);
 
-        if(!empty($supervisorAccountData)) // Does the account exist?
+        // Does the account exist?
+        if(!empty($supervisorAccountData))
         {
-            if(password_verify($supervisorPassword, $supervisorAccountData["PasswordHash"])) // Can the person verify the action (as a supervisor or does he know the credentials at least) ?
+            // Can the person verify the action (as a supervisor or does he know the credentials at least) ?
+            if(password_verify($supervisorPassword, $supervisorAccountData["PasswordHash"]))
             {
                 // Check if the given permission level exists
-                if(in_array($permissionLevel, array_keys(IAccountModel::PERMISSION_ROLE)))
+                if($this->canManageAccounts($supervisorEmail))
                 {
                     $emailFormatValidationResult = filter_var($email, FILTER_VALIDATE_EMAIL);
 
-                    if(is_bool($emailFormatValidationResult) && $emailFormatValidationResult)
+                    // If the filtering was successful, then it is a valid email.
+                    if(!is_bool($emailFormatValidationResult))
                     {
                         $passwordHashed = password_hash($password, PASSWORD_DEFAULT);
 
@@ -95,27 +98,32 @@ class AccountModel implements IAccountModel
                             }
                             catch(PDOException $e)
                             {
+                                // Execution failed
                                 return false;
                             }
                         }
                         else
                         {
+                            // No valid Password hash was processed
                             return false;
                         }
                     }
                     else
                     {
+                        // No valid email provided
                         return false;
                     }
                 }
                 else
                 {
+                    // Cannot manage accounts!
                     return false;
                 }
             }
             else
             {
                 // Could not verify the action
+                return false;
             }
         }
         else
@@ -202,7 +210,7 @@ class AccountModel implements IAccountModel
 
             if(isset($fetchData[0]["DatasetAmount"]))
             {
-                return $fetchData[0]["DatasetAmount"];
+                return ($fetchData[0]["DatasetAmount"] / IAccountModel::ACCOUNTS_PER_PAGE) + 1;
             }
             else
             {

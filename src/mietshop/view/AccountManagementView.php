@@ -15,7 +15,7 @@ class AccountManagementView implements IAccountManagementView
         $this->globalView = $globalView;
     }
 
-    private function genTableAccountRow(string $email, int $permissionLevel)
+    private function genTableAccountRow(string $email, int $permissionLevel) : string
     {
         $emailSafeHTML = htmlspecialchars($email, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
 
@@ -43,14 +43,14 @@ class AccountManagementView implements IAccountManagementView
                 }
                 else
                 {
-                    $bootstrapClass = "table-info";
+                    $bootstrapClass = "table-secondary";
                 }
 
                 break;
             }
         }
 
-        return "<tr class=\"$bootstrapClass text-break\"><td>$emailSafeHTML</td><td>$permissionRole</td></tr>";
+        return "<tr class=\"$bootstrapClass darker-hover text-break\"><td>$emailSafeHTML</td><td>$permissionRole</td></tr>";
     }
 
     /**
@@ -59,9 +59,9 @@ class AccountManagementView implements IAccountManagementView
      *
      * @return string Form select HTML with all permission roles in ascending order.
      */
-    private function genHTMLSelectPermissionLevel()
+    private function genHTMLSelectPermissionLevel() : string
     {
-        $selectHTML = "<label class=\"form-label p-0\" for=\"PermissionLevel\">Benutzer-Level auswählen: </label><select class=\"form-select\" name=\"PermissionLevel\" id=\"PermissionLevel\">";
+        $selectHTML = "<label class=\"form-label p-0\" for=\"permissionLevelNewAccount\">Benutzer-Level auswählen: </label><select class=\"form-select\" name=\"permissionLevelNewAccount\" id=\"permissionLevelNewAccount\">";
 
         // Due to implementation detail, there can be "gaps" between permission levels in the array.
         // Hence, reading all permission levels step-by-step is safer.
@@ -144,18 +144,22 @@ class AccountManagementView implements IAccountManagementView
                                     <input type=\"hidden\" name=\"action\" value=\"create\">
                                     <div class=\"container-fluid\">
                                         <div class=\"row mb-3\">
-                                            <label class=\"form-label p-0\" for=\"Email\">E-Mail: </label>
-                                            <input class=\"form-control w-100\" type=\"email\" name=\"Email\" id=\"Email\" placeholder=\"E-Mail\">
+                                            <label class=\"form-label p-0\" for=\"emailNewAccount\">E-Mail: </label>
+                                            <input class=\"form-control w-100\" type=\"email\" name=\"emailNewAccount\" id=\"emailNewAccount\" placeholder=\"E-Mail-Adresse\">
+                                            <div class=\"row mt-2\">
+                                                <label for=\"emailNewAccount\" class=\"p-0 text-danger\">Die E-Mail-Adresse hat außer der Benutzerkennung keine weitere Funktion.</label>
+                                            </div>
                                         </div>
                                         <div class=\"row mb-3\">
-                                            <label class=\"form-label p-0\" for=\"Password\">Passwort: </label>
-                                            <input class=\"form-control w-100\" type=\"password\" name=\"Password\" id=\"Password\" placeholder=\"Passwort\">
+                                            <label class=\"form-label p-0\" for=\"passwordNewAccount\">Passwort: </label>
+                                            <input class=\"form-control w-100\" type=\"password\" name=\"passwordNewAccount\" id=\"passwordNewAccount\" placeholder=\"Passwort\">
                                         </div>
                                         <div class=\"row mb-3\">
-                                            <label for=\"Password\" class=\"p-0 text-dark\">Die E-Mail-Adresse ist lediglich ein Benutzername und dient nur zur Anmeldung. Sie hat ansonsten keine weitere Funktion.</label>
+                                            $selectPermissionLevelHTML
                                         </div>
                                         <div class=\"row mb-5\">
-                                            $selectPermissionLevelHTML
+                                            <label class=\"form-label p-0 text-danger\" for=\"passwordSupervisor\">Ihr Passwort zur Freigabe: </label>
+                                            <input class=\"form-control w-100 is-invalid\" type=\"password\" name=\"passwordSupervisor\" id=\"passwordSupervisor\" placeholder=\"Passwort zur Autorisierung\">
                                         </div>
                                         <div class=\"row mb-2\">
                                             <input type=\"submit\" class=\"btn btn-success w-100\" value=\"Konto anlegen\">
@@ -198,7 +202,7 @@ class AccountManagementView implements IAccountManagementView
                     </div>
                     <div class=\"row mb-3\">
                         <div class=\"col-12\">
-                            <table class=\"table table-bordered w-100\">
+                            <table class=\"table w-100\">
                                 <tr class=\"table-dark\">
                                     <th>E-Mail</th>
                                     <th>Benutzer-Level</th>

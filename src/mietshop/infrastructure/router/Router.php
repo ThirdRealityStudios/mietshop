@@ -11,7 +11,6 @@ use src\mietshop\model\CategoryModel;
 use src\mietshop\model\CompanyModel;
 use src\mietshop\presenter\AccountManagementPresenter;
 use src\mietshop\presenter\AccountPresenter;
-use src\mietshop\presenter\ErrorNotFoundPresenter;
 use src\mietshop\presenter\HomePresenter;
 use src\mietshop\presenter\ImprintPresenter;
 use src\mietshop\presenter\LoginPresenter;
