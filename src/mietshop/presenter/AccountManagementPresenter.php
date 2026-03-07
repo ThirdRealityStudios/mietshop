@@ -26,57 +26,68 @@ class AccountManagementPresenter implements IAccountManagementPresenter
 
     public function process(IHTTPRequest $request, array $sessionValues): void
     {
-        $companyData = $this->companyModel->getCompanyData();
-
-        $action = $request->getQueryValue("action");
-
-        if(is_string($action))
+        if(isset($sessionValues["Email"]) && is_string($sessionValues["Email"])) // Is the visitor authorized?
         {
-            if(strcmp($action, "all") === 0)
-            {
-                $this->accountManagementView->show($companyData, [], "all");
-            }
-            else if(strcmp($action, "create") === 0)
-            {
-                $this->accountManagementView->show($companyData, [], "create");
-            }
-            else if(strcmp($action, "read") === 0)
-            {
-                $pagesAmount = $this->accountModel->readAmountOfPages();
-                $pageNonIndexed = $request->getQueryValue("page");
+            $accountFetchData = $this->accountModel->readAccount($sessionValues["Email"]);
 
-                if(is_numeric($pageNonIndexed) && $pageNonIndexed >= 1 && $pageNonIndexed <= $pagesAmount)
+            if(!empty($accountFetchData)) // But does the account still exist? Maybe the session is older and the account does not exist anymore (e.g. admin deleted it or owner).
+            {
+                $companyData = $this->companyModel->getCompanyData();
+
+                $permissionRolesAscending = IAccountModel::PERMISSION_ROLE; // Copy
+                sort($permissionRolesAscending, SORT_ASC); // Roles starting with lowest, ending with the highest (admin usually).
+
+                if($request->isRequestParameterMatching("action", "all"))
                 {
-                    $accountResults = $this->accountModel->readAccounts($pageNonIndexed-1);
+                    $this->accountManagementView->show($companyData, [], [], "all");
+                }
+                else if($request->isRequestParameterMatching("action" , "create"))
+                {
+                    // TODO Determine further query action (show form or process action?)
+                    // $this->accountModel->createAccount();
+                    $this->accountManagementView->show($companyData, [], $permissionRolesAscending, "create");
+                }
+                else if($request->isRequestParameterMatching("action", "read"))
+                {
+                    $pagesAmount = $this->accountModel->readAmountOfPages();
+                    $pageNonIndexed = $request->getQueryValue("page");
 
-                    $this->accountManagementView->show($companyData, $accountResults, "read", $pageNonIndexed-1, $pagesAmount);
+                    if(is_numeric($pageNonIndexed) && $pageNonIndexed >= 1 && $pageNonIndexed <= $pagesAmount)
+                    {
+                        $accountResults = $this->accountModel->readAccounts($pageNonIndexed-1);
+
+                        $this->accountManagementView->show($companyData, $accountResults, [], "read", $pageNonIndexed-1, $pagesAmount);
+                    }
+                    else
+                    {
+                        // Invalid page number requested. Instead, show the first page by default:
+
+                        $accountResults = $this->accountModel->readAccounts(0);
+                        $this->accountManagementView->show($companyData, $accountResults, [], "read", 0, $pagesAmount);
+                    }
+                }
+                else if($request->isRequestParameterMatching("action", "update"))
+                {
+                    $this->accountManagementView->show($companyData, [], IAccountModel::PERMISSION_ROLE, "update");
+                }
+                else if($request->isRequestParameterMatching("action", "delete"))
+                {
+                    $this->accountManagementView->show($companyData, [], [], "delete");
                 }
                 else
                 {
-                    // Invalid page number requested. Instead, show the first page by default:
-
-                    $accountResults = $this->accountModel->readAccounts(0);
-                    $this->accountManagementView->show($companyData, $accountResults, "read", 0, $pagesAmount);
+                    // This feature does not exist / not implemented.
+                    $this->errorView->show($companyData, "Angeforderte Funktion ungültig", "Die angeforderte Funktion existiert nicht.");
                 }
-            }
-            else if(strcmp($action, "update") === 0)
-            {
-                $this->accountManagementView->show($companyData, [], "update");
-            }
-            else if(strcmp($action, "delete") === 0)
-            {
-                $this->accountManagementView->show($companyData, [], "delete");
             }
             else
             {
-                // This feature does not exist / not implemented.
-                $this->errorView->show($companyData, "Angeforderte Funktion ungültig", "Die angeforderte Funktion existiert nicht.");
+
             }
         }
         else
         {
-            // Invalid request because the query field "action" is always needed to specify what possible actions should be shown exactly.
-            $this->errorView->show($companyData, "Ungültige Anfrage", "Diese Anfrage wird nicht akzeptiert.");
+
         }
     }
 }

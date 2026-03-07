@@ -152,4 +152,35 @@ class HTTPRequest implements IHTTPRequest
     {
         return array_keys($this -> post);
     }
+
+    public function isRequestParameterExisting(string $requestParameterName): bool
+    {
+        $queryActionValue = $this->getQueryValue($requestParameterName);
+        $postActionValue = $this->getPostValue($requestParameterName);
+
+        return is_string($queryActionValue) || is_string($postActionValue);
+    }
+
+    public function isRequestParameterMatching(string $requestParameterName, string $checkValue): bool
+    {
+        $potentialQueryValue = $this->getQueryValue($requestParameterName);
+
+        if(is_string($potentialQueryValue) && strcmp($potentialQueryValue, $checkValue) === 0)
+        {
+            return true;
+        }
+        else
+        {
+            $potentialPostValue = $this->getPostValue($requestParameterName);
+
+            if(is_string($potentialPostValue) && strcmp($potentialPostValue, $checkValue) === 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+    }
 }

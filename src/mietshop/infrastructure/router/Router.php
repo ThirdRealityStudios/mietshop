@@ -41,7 +41,7 @@ class Router implements IRouter
         $globalView = new GlobalView();
         $errorView = new ErrorView($globalView);
 
-        if(sizeof($request->getQueryKeys()) === 0)
+        if(empty($request->getQueryKeys()) && empty($request->getPOSTKeys()))
         {
             $homeView = new HomeView($globalView);
             $homePresenter = new HomePresenter($companyModel, $categoryModel, $homeView, $errorView);
@@ -58,47 +58,38 @@ class Router implements IRouter
             $accountManagementView = new AccountManagementView($globalView);
             $accountManagementPresenter = new AccountManagementPresenter($companyModel, $accountModel, $accountManagementView, $errorView);
 
-            if(in_array("view", $request->getQueryKeys()))
+            if($request->isRequestParameterMatching("view", "imprint"))
             {
-                $viewValue = $request->getQueryValue("view");
-
-                if(strcmp($viewValue, "imprint") === 0)
-                {
-                    $imprintView = new ImprintView($globalView);
-                    $imprintPresenter = new ImprintPresenter($errorView, $imprintView, $companyModel);
-                    $imprintPresenter->process();
-                }
-                else if(strcmp($viewValue, "termsofservice") === 0)
-                {
-                    $termsOfServiceView = new TermsOfServiceView($globalView);
-                    $termsOfServicePresenter = new TermsOfServicePresenter($errorView, $termsOfServiceView, $companyModel);
-                    $termsOfServicePresenter->process();
-                }
-                else if(strcmp($viewValue, "privacypolicy") === 0)
-                {
-                    $privacyPolicyView = new PrivacyPolicyView($globalView);
-                    $privacyPolicyPresenter = new PrivacyPolicyPresenter($privacyPolicyView, $errorView, $companyModel);
-                    $privacyPolicyPresenter->process();
-                }
-                else if(strcmp($viewValue, "login") === 0)
-                {
-                    // Show the login page or authenticate and then redirect (if the user is yet logged in)
-                    $loginPresenter->process($request, $sessionValues);
-                }
-                else if(strcmp($viewValue, "account") === 0)
-                {
-                    // Show the account page (will check if you are authorized or logged in yet)
-                    $accountPresenter->process($request, $sessionValues);
-                }
-                else if(strcmp($viewValue, "accounts") === 0)
-                {
-                    // Show the account management page
-                    $accountManagementPresenter->process($request, $sessionValues);
-                }
-                else
-                {
-                    $this->showPageNotFoundError($errorView, $companyModel);
-                }
+                $imprintView = new ImprintView($globalView);
+                $imprintPresenter = new ImprintPresenter($errorView, $imprintView, $companyModel);
+                $imprintPresenter->process();
+            }
+            else if($request->isRequestParameterMatching("view", "termsofservice"))
+            {
+                $termsOfServiceView = new TermsOfServiceView($globalView);
+                $termsOfServicePresenter = new TermsOfServicePresenter($errorView, $termsOfServiceView, $companyModel);
+                $termsOfServicePresenter->process();
+            }
+            else if($request->isRequestParameterMatching("view", "privacypolicy"))
+            {
+                $privacyPolicyView = new PrivacyPolicyView($globalView);
+                $privacyPolicyPresenter = new PrivacyPolicyPresenter($privacyPolicyView, $errorView, $companyModel);
+                $privacyPolicyPresenter->process();
+            }
+            else if($request->isRequestParameterMatching("view", "login"))
+            {
+                // Show the login page or authenticate and then redirect (if the user is yet logged in)
+                $loginPresenter->process($request, $sessionValues);
+            }
+            else if($request->isRequestParameterMatching("view", "account"))
+            {
+                // Show the account page (will check if you are authorized or logged in yet)
+                $accountPresenter->process($request, $sessionValues);
+            }
+            else if($request->isRequestParameterMatching("view", "accounts"))
+            {
+                // Show the account management page
+                $accountManagementPresenter->process($request, $sessionValues);
             }
             else
             {

@@ -75,4 +75,35 @@ interface IHTTPRequest
      * @return array All keys (or an empty array)
      */
     public function getPOSTKeys(): array;
+
+    /**
+     * Checks if there is a POST or query parameter with the given name.
+     * E.g.,
+     * a post parameter with the name "target" is given.
+     * Then true will be returned.
+     * The same would be returned if there is a request parameter of type query with the same name.
+     *
+     * @param string $requestParameterName Name of the parameter
+     * @return bool True if the parameter does exist as a query parameter or post parameter. Otherwise, false.
+     */
+    public function isRequestParameterExisting(string $requestParameterName): bool;
+
+    /**
+     * Tells you if a post value or query value matches the given value.
+     * This function does not differ between post and query values.
+     * E.g.,
+     * if you have a request parameter called "target" and want to check if the value of it is "google",
+     * then it does not care if it is a post or query parameter.
+     * The function will then return true.
+     * Even if there are both post and query parameters with the same name and same value,
+     * then this function will also return true.
+     * If there is no request parameter at all with this given name,
+     * then false will be returned simply.
+     * The remaining logic or cases should be self-explanatory.
+     *
+     * @param string $requestParameterName Request parameter name (no matter if post or query parameter)
+     * @param string $checkValue The given value which should be compared to the request parameter if it equals.
+     * @return bool True if the post or query parameter value indeed matches the given value.
+     */
+    public function isRequestParameterMatching(string $requestParameterName, string $checkValue): bool;
 }

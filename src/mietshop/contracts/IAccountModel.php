@@ -24,11 +24,7 @@ namespace src\mietshop\contracts;
  */
 interface IAccountModel
 {
-    public const ROLE_GUEST = 0;
-    public const ROLE_MODERATOR = 1;
-    public const ROLE_SUPPORTER = 2;
-    public const ROLE_OWNER = 3;
-    public const ROLE_ADMIN = 4;
+    public const PERMISSION_ROLE = [ 0 => "Guest", 1 => "Moderator", 2 => "Supporter", 3 => "Owner", 4 => "Admin" ];
 
     /**
      * Describes how many accounts should be shown at once per page when loading them somewhere,
@@ -54,12 +50,23 @@ interface IAccountModel
      *
      * 4 is root / admin permission (manage all website content and database management tools).
      *
+     * Anyway,
+     * you must be a supervisor (or at least know the credentials) in order to authorize the action.
+     * Also,
+     * you can only create accounts with permission level of your own as a maximum.
+     * E.g.,
+     * if you are an owner,
+     * then you can only create accounts with the owner permission level as a maximum.
+     * An admin can create other admin accounts or accounts with less permissions.
+     *
+     * @param string $supervisorEmail Supervisor e-mail to verify the action
+     * @param string $supervisorPassword Supervisor (cleartext) password to verify the action.
      * @param string $email Email used for registration.
      * @param string $password Password in clear-text used for registration.
      * @param int $permissionLevel Permission-level as described.
      * @return bool True if account successfully created. Otherwise, false (technical issues or wrong user-input)
      */
-    public function createAccount(string $email, string $password, int $permissionLevel) : bool;
+    public function createAccount(string $supervisorEmail, string $supervisorPassword, string $email, string $password, int $permissionLevel) : bool;
 
     /**
      * Returns the dataset of the account as an associative array with that given e-mail address.

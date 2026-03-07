@@ -54,38 +54,21 @@ class AccountPresenter implements IAccountPresenter
 
                     if(!empty($accountData)) // Does the login status belong to an existing account still?
                     {
-                        $determinedRole = "Loading Error";
+                        $permissionLevel = $accountData["PermissionLevel"];
 
-                        switch($accountData["PermissionLevel"])
+                        if(key_exists($permissionLevel, IAccountModel::PERMISSION_ROLE))
                         {
-                            case IAccountModel::ROLE_ADMIN:
-                                $determinedRole = "Admin";
-                                break;
+                            $determinedRole = IAccountModel::PERMISSION_ROLE[$permissionLevel];
 
-                            case IAccountModel::ROLE_OWNER:
-                                $determinedRole = "Owner";
-                                break;
+                            $canManageAccounts = $this->accountModel->canManageAccounts($sessionValues["Email"]);
 
-                            case IAccountModel::ROLE_SUPPORTER:
-                                $determinedRole = "Supporter";
-                                break;
-
-                            case IAccountModel::ROLE_MODERATOR:
-                                $determinedRole = "Moderator";
-                                break;
-
-                            case IAccountModel::ROLE_GUEST:
-                                $determinedRole = "Guest";
-                                break;
-
-                            default:
-                                $this->errorView->show($companyData, "Integritätsfehler", "Ihre Befugnisse scheinen ungültig zu sein."); // Else there is a bug because more roles do not exist ("Loading Error")
-                                exit(0);
+                            $this->accountView->show($companyData, ["Email" => $sessionValues["Email"], "PermissionRole" => $determinedRole, "CanManageAccounts" => $canManageAccounts]);
                         }
-
-                        $canManageAccounts = $this->accountModel->canManageAccounts($sessionValues["Email"]);
-
-                        $this->accountView->show($companyData, ["Email" => $sessionValues["Email"], "PermissionRole" => $determinedRole, "CanManageAccounts" => $canManageAccounts]);
+                        else
+                        {
+                            $this->errorView->show($companyData, "Integritätsfehler", "Ihre Befugnisse scheinen ungültig zu sein."); // Else there is a bug because more roles do not exist ("Loading Error")
+                            exit(0);
+                        }
                     }
                     else // For some reason the account does not exist anymore, although you have a verified session access generally to an account (most likely deleted by admin meanwhile).
                     {

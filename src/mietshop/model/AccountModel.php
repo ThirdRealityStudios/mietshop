@@ -28,7 +28,8 @@ class AccountModel implements IAccountModel
             );
         ";
 
-        $this->databaseAdapter->execute($sql, [IAccountModel::ROLE_GUEST]);
+        // Create the account table if necessary and always give by default the lowest permission role.
+        $this->databaseAdapter->execute($sql, [min(array_keys(IAccountModel::PERMISSION_ROLE))]);
 
         $this->ensureDefaultAdminAccount();
     }
@@ -47,7 +48,9 @@ class AccountModel implements IAccountModel
     {
         $sql = "SELECT COUNT(PermissionLevel) AS Amount FROM AccountModel WHERE PermissionLevel = ?";
 
-        $result = $this->databaseAdapter->fetch($sql, [IAccountModel::ROLE_ADMIN]);
+        $maxPermissionLevel = max(array_keys(IAccountModel::PERMISSION_ROLE)); // Determine admin level (highest) because roles can be changed.
+
+        $result = $this->databaseAdapter->fetch($sql, [$maxPermissionLevel]);
 
         if(isset($result[0]["Amount"]) && $result[0]["Amount"] === 0)
         {
@@ -58,32 +61,49 @@ class AccountModel implements IAccountModel
 
             $passwordHashed = password_hash("Admin2026!", PASSWORD_DEFAULT);
 
-            $this->databaseAdapter->execute($sql, [$passwordHashed, IAccountModel::ROLE_ADMIN]);
+            $this->databaseAdapter->execute($sql, [$passwordHashed, $maxPermissionLevel]);
         }
     }
 
-    public function createAccount(string $email, string $password, int $permissionLevel): bool
+    public function createAccount(string $supervisorEmail, string $supervisorPassword, string $email, string $password, int $permissionLevel): bool
     {
-        if($permissionLevel >= IAccountModel::ROLE_GUEST && $permissionLevel <= IAccountModel::ROLE_ADMIN)
+        $supervisorAccountData = $this->readAccount($supervisorEmail);
+
+        if(!empty($supervisorAccountData)) // Does the account exist?
         {
-            $emailFormatValidationResult = filter_var($email, FILTER_VALIDATE_EMAIL);
-
-            if(is_bool($emailFormatValidationResult) && $emailFormatValidationResult)
+            if(password_verify($supervisorPassword, $supervisorAccountData["PasswordHash"])) // Can the person verify the action (as a supervisor or does he know the credentials at least) ?
             {
-                $passwordHashed = password_hash($password, PASSWORD_DEFAULT);
-
-                if(is_string($passwordHashed))
+                // Check if the given permission level exists
+                if(in_array($permissionLevel, array_keys(IAccountModel::PERMISSION_ROLE)))
                 {
-                    $sql =
-                    "
-                        INSERT INTO AccountModel(Email, PasswordHash, PermissionLevel) VALUES(?, ?, ?)
-                    ";
+                    $emailFormatValidationResult = filter_var($email, FILTER_VALIDATE_EMAIL);
 
-                    try
+                    if(is_bool($emailFormatValidationResult) && $emailFormatValidationResult)
                     {
-                        return $this->databaseAdapter->execute($sql, [$email, $passwordHashed, $permissionLevel]) === 1;
+                        $passwordHashed = password_hash($password, PASSWORD_DEFAULT);
+
+                        if(is_string($passwordHashed))
+                        {
+                            $sql =
+                            "
+                                INSERT INTO AccountModel(Email, PasswordHash, PermissionLevel) VALUES(?, ?, ?)
+                            ";
+
+                            try
+                            {
+                                return $this->databaseAdapter->execute($sql, [$email, $passwordHashed, $permissionLevel]) === 1;
+                            }
+                            catch(PDOException $e)
+                            {
+                                return false;
+                            }
+                        }
+                        else
+                        {
+                            return false;
+                        }
                     }
-                    catch(PDOException $e)
+                    else
                     {
                         return false;
                     }
@@ -95,11 +115,12 @@ class AccountModel implements IAccountModel
             }
             else
             {
-                return false;
+                // Could not verify the action
             }
         }
         else
         {
+            // Account does not exist (most likely) or execution error
             return false;
         }
     }
@@ -342,7 +363,9 @@ class AccountModel implements IAccountModel
                             UPDATE AccountModel SET PermissionLevel = ? WHERE Email = ? AND PermissionLevel < ?
                         ";
 
-                        return $this->databaseAdapter->execute($sql, [$permissionLevel, $email, IAccountModel::ROLE_ADMIN]) === 1;
+                        $adminPermissionLevel = max(array_keys(IAccountModel::PERMISSION_ROLE));
+
+                        return $this->databaseAdapter->execute($sql, [$permissionLevel, $email, $adminPermissionLevel]) === 1;
                     }
                     else
                     {
@@ -377,9 +400,11 @@ class AccountModel implements IAccountModel
         {
             $result = $this->databaseAdapter->fetch($sql, [$email]);
 
+            $adminPermissionLevel = max(array_keys(IAccountModel::PERMISSION_ROLE));
+
             // Make sure there is no admin who accidentally deletes his account
             // (it is not dramatic because it gets automatically re-created - but then it has reset credentials which is e.g. a security risk)
-            if(isset($result[0]["PermissionLevel"]) && ($result[0]["PermissionLevel"] < IAccountModel::ROLE_ADMIN))
+            if(isset($result[0]["PermissionLevel"]) && ($result[0]["PermissionLevel"] < $adminPermissionLevel))
             {
                 $sql =
                 "
@@ -435,9 +460,11 @@ class AccountModel implements IAccountModel
                 SELECT PasswordHash FROM AccountModel WHERE Email = ? AND PermissionLevel >= ?
             ";
 
+            $ownerPermissionLevel = max(array_keys(IAccountModel::PERMISSION_ROLE))-1;
+
             try
             {
-                $result = $this->databaseAdapter->fetch($sql, [$supervisorEmail, IAccountModel::ROLE_OWNER]);
+                $result = $this->databaseAdapter->fetch($sql, [$supervisorEmail, $ownerPermissionLevel]);
 
                 if(isset($result[0]["PasswordHash"]) && is_string($result[0]["PasswordHash"])) // password of supervisor can be read, so the action is generally granted (still need to check if the user has the correct password below).
                 {
@@ -487,6 +514,8 @@ class AccountModel implements IAccountModel
 
     public function canManageAccounts(string $email) : bool
     {
-        return $this->readPermissionLevel($email) >= IAccountModel::ROLE_OWNER;
+        $ownerPermissionLevel = max(array_keys(IAccountModel::PERMISSION_ROLE))-1;
+
+        return $this->readPermissionLevel($email) >= $ownerPermissionLevel;
     }
 }
