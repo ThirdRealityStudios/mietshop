@@ -64,9 +64,9 @@ interface IAccountModel
      * @param string $email Email used for registration.
      * @param string $password Password in clear-text used for registration.
      * @param int $permissionLevel Permission-level as described.
-     * @return bool True if account successfully created. Otherwise, false (technical issues or wrong user-input)
+     * @return int Tells you if the account creation was successful (then 0 is returned). Otherwise, -4 (missing permissions or technical issues), -3 (incorrect supervisor password) or -1 (incorrect email given for the new user to create)
      */
-    public function createAccount(string $supervisorEmail, string $supervisorPassword, string $email, string $password, int $permissionLevel) : bool;
+    public function createAccount(string $supervisorEmail, string $supervisorPassword, string $email, string $password, int $permissionLevel) : int;
 
     /**
      * Returns the dataset of the account as an associative array with that given e-mail address.

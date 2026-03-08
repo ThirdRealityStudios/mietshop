@@ -79,7 +79,7 @@ class AccountManagementView implements IAccountManagementView
         return "$selectHTML</select>";
     }
 
-    public function show(array $companyData, array $accountResults, array $permissionRoles, string $action, int $pageIndex = 0, int $pagesAmount = 0): void
+    public function show(array $companyData, array $accountResults, array $permissionRoles, string $action, string $messageValue = "", int $pageIndex = 0, int $pagesAmount = 0): void
     {
         if(empty($companyData))
         {
@@ -129,6 +129,54 @@ class AccountManagementView implements IAccountManagementView
             {
                 $selectPermissionLevelHTML = $this->genHTMLSelectPermissionLevel();
 
+                if(substr_count($messageValue, "-1") === 1)
+                {
+                    $emailNewAccountFieldBS = " is-invalid";
+                    $emailNewAccountLabelBS = " text-danger";
+                }
+                else if(substr_count($messageValue, "1") === 1)
+                {
+                    $emailNewAccountFieldBS = " is-valid";
+                    $emailNewAccountLabelBS = " text-success";
+                }
+                else
+                {
+                    $emailNewAccountFieldBS = "";
+                    $emailNewAccountLabelBS = "";
+                }
+
+                if(substr_count($messageValue, "-2") === 1)
+                {
+                    $passwordNewAccountFieldBS = " is-invalid";
+                    $passwordNewAccountLabelBS = " text-danger";
+                }
+                else if(substr_count($messageValue, "2") === 1)
+                {
+                    $passwordNewAccountFieldBS = " is-valid";
+                    $passwordNewAccountLabelBS = " text-success";
+                }
+                else
+                {
+                    $passwordNewAccountFieldBS = "";
+                    $passwordNewAccountLabelBS = "";
+                }
+
+                if(substr_count($messageValue, "-3") === 1)
+                {
+                    $passwordSupervisorFieldBS = " is-invalid";
+                    $passwordSupervisorLabelBS = " text-danger";
+                }
+                else if(substr_count($messageValue, "3") === 1)
+                {
+                    $passwordSupervisorFieldBS = " is-valid";
+                    $passwordSupervisorLabelBS = " text-success";
+                }
+                else
+                {
+                    $passwordSupervisorFieldBS = "";
+                    $passwordSupervisorLabelBS = "";
+                }
+
                 $feedContentHTML =
                 "
                     <div class=\"container-fluid p-0\">
@@ -144,22 +192,22 @@ class AccountManagementView implements IAccountManagementView
                                     <input type=\"hidden\" name=\"action\" value=\"create\">
                                     <div class=\"container-fluid\">
                                         <div class=\"row mb-3\">
-                                            <label class=\"form-label p-0\" for=\"emailNewAccount\">E-Mail: </label>
-                                            <input class=\"form-control w-100\" type=\"email\" name=\"emailNewAccount\" id=\"emailNewAccount\" placeholder=\"E-Mail-Adresse\">
+                                            <label class=\"form-label p-0$emailNewAccountLabelBS\" for=\"emailNewAccount\">E-Mail: </label>
+                                            <input class=\"form-control w-100$emailNewAccountFieldBS\" type=\"email\" name=\"emailNewAccount\" id=\"emailNewAccount\" placeholder=\"E-Mail-Adresse\">
                                             <div class=\"row mt-2\">
-                                                <label for=\"emailNewAccount\" class=\"p-0 text-danger\">Die E-Mail-Adresse hat außer der Benutzerkennung keine weitere Funktion.</label>
+                                                <label for=\"emailNewAccount\" class=\"p-0$emailNewAccountLabelBS\">Die E-Mail-Adresse hat außer der Benutzerkennung keine weitere Funktion.</label>
                                             </div>
                                         </div>
                                         <div class=\"row mb-3\">
-                                            <label class=\"form-label p-0\" for=\"passwordNewAccount\">Passwort: </label>
-                                            <input class=\"form-control w-100\" type=\"password\" name=\"passwordNewAccount\" id=\"passwordNewAccount\" placeholder=\"Passwort\">
+                                            <label class=\"form-label p-0$passwordNewAccountLabelBS\" for=\"passwordNewAccount\">Passwort: </label>
+                                            <input class=\"form-control w-100$passwordNewAccountFieldBS\" type=\"password\" name=\"passwordNewAccount\" id=\"passwordNewAccount\" placeholder=\"Passwort\">
                                         </div>
                                         <div class=\"row mb-3\">
                                             $selectPermissionLevelHTML
                                         </div>
                                         <div class=\"row mb-5\">
-                                            <label class=\"form-label p-0 text-danger\" for=\"passwordSupervisor\">Ihr Passwort zur Freigabe: </label>
-                                            <input class=\"form-control w-100 is-invalid\" type=\"password\" name=\"passwordSupervisor\" id=\"passwordSupervisor\" placeholder=\"Passwort zur Autorisierung\">
+                                            <label class=\"form-label p-0$passwordSupervisorLabelBS\" for=\"passwordSupervisor\">Ihr Passwort zur Freigabe: </label>
+                                            <input class=\"form-control w-100$passwordSupervisorFieldBS\" type=\"password\" name=\"passwordSupervisor\" id=\"passwordSupervisor\" placeholder=\"Passwort zur Autorisierung\">
                                         </div>
                                         <div class=\"row mb-2\">
                                             <input type=\"submit\" class=\"btn btn-success w-100\" value=\"Konto anlegen\">

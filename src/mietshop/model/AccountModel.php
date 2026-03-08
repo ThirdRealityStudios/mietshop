@@ -65,7 +65,7 @@ class AccountModel implements IAccountModel
         }
     }
 
-    public function createAccount(string $supervisorEmail, string $supervisorPassword, string $email, string $password, int $permissionLevel): bool
+    public function createAccount(string $supervisorEmail, string $supervisorPassword, string $email, string $password, int $permissionLevel) : int
     {
         $supervisorAccountData = $this->readAccount($supervisorEmail);
 
@@ -94,42 +94,42 @@ class AccountModel implements IAccountModel
 
                             try
                             {
-                                return $this->databaseAdapter->execute($sql, [$email, $passwordHashed, $permissionLevel]) === 1;
+                                return $this->databaseAdapter->execute($sql, [$email, $passwordHashed, $permissionLevel]) === 1 ? 0 : -4;
                             }
                             catch(PDOException $e)
                             {
                                 // Execution failed
-                                return false;
+                                return -4;
                             }
                         }
                         else
                         {
                             // No valid Password hash was processed
-                            return false;
+                            return -4;
                         }
                     }
                     else
                     {
                         // No valid email provided
-                        return false;
+                        return -1;
                     }
                 }
                 else
                 {
-                    // Cannot manage accounts!
-                    return false;
+                    // Cannot manage accounts! (missing permissions)
+                    return -4;
                 }
             }
             else
             {
-                // Could not verify the action
-                return false;
+                // Could not verify the action (most likely supervisor password incorrect)
+                return -3;
             }
         }
         else
         {
             // Account does not exist (most likely) or execution error
-            return false;
+            return -4;
         }
     }
 

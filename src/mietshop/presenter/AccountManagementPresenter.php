@@ -55,18 +55,9 @@ class AccountManagementPresenter implements IAccountManagementPresenter
                     // Does the user (supervisor) want to create a new account? (= a POST action)
                     if(is_string($potentialPostEmailNewAccountValue) && is_string($potentialPostPasswordNewAccountValue) && is_numeric($potentialPostPermissionLevelNewAccountValue) && is_string($potentialPostPasswordSupervisorValue))
                     {
-                        if($this->accountModel->createAccount($supervisorEmail, $potentialPostPasswordSupervisorValue, $potentialPostEmailNewAccountValue, $potentialPostPasswordNewAccountValue, $potentialPostPermissionLevelNewAccountValue))
-                        {
-                            // Account could be created successfully
-                            header("Location: /?view=accounts&action=create&message=success");
-                            exit(0);
-                        }
-                        else
-                        {
-                            // Account could not be created (most likely due to wrong email or wrong supervisor password, or because of buggy request [e.g. higher permission level than yourself for the account to create] or general execution error)
-                            header("Location: /?view=accounts&action=create&message=error");
-                            exit(0);
-                        }
+                        $responseCode = $this->accountModel->createAccount($supervisorEmail, $potentialPostPasswordSupervisorValue, $potentialPostEmailNewAccountValue, $potentialPostPasswordNewAccountValue, $potentialPostPermissionLevelNewAccountValue);
+
+                        $this->accountManagementView->show($companyData, [], $permissionRolesAscending, "create", $responseCode);
                     }
                     else // Does the supervisor only wants to see the form page? (always a GET action)
                     {
@@ -82,14 +73,14 @@ class AccountManagementPresenter implements IAccountManagementPresenter
                     {
                         $accountResults = $this->accountModel->readAccounts($pageNonIndexed-1);
 
-                        $this->accountManagementView->show($companyData, $accountResults, [], "read", $pageNonIndexed-1, $pagesAmount);
+                        $this->accountManagementView->show($companyData, $accountResults, [], "read", "", $pageNonIndexed-1, $pagesAmount);
                     }
                     else
                     {
                         // Invalid page number requested. Instead, show the first page by default:
 
                         $accountResults = $this->accountModel->readAccounts(0);
-                        $this->accountManagementView->show($companyData, $accountResults, [], "read", 0, $pagesAmount);
+                        $this->accountManagementView->show($companyData, $accountResults, [], "read", "", 0, $pagesAmount);
                     }
                 }
                 else if($request->isRequestParameterMatching("action", "update"))

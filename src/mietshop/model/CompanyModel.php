@@ -58,7 +58,14 @@ class CompanyModel implements ICompanyModel
 
         $this->databaseAdapter->execute($sql);
 
-        $this->createDefaultDataset();
+        try
+        {
+            $this->createDefaultDataset();
+        }
+        catch (PDOException $e)
+        {
+
+        }
     }
 
     /**
