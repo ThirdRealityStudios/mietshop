@@ -79,7 +79,7 @@ class AccountManagementView implements IAccountManagementView
         return "$selectHTML</select>";
     }
 
-    public function show(array $companyData, array $accountResults, array $permissionRoles, string $action, string $messageValue = "", int $pageIndex = 0, int $pagesAmount = 0): void
+    public function show(array $companyData, array $accountResults, array $permissionRoles, string $action, int $messageValue = 0, int $pageIndex = 0, int $pagesAmount = 0): void
     {
         if(empty($companyData))
         {
@@ -119,7 +119,7 @@ class AccountManagementView implements IAccountManagementView
                         </div>
                         <div class=\"row mb-3\">
                             <div class=\"col-12\">
-                                <a class=\"btn btn-primary w-100\" href=\"/?view=account\">Zurück ⬅️</a>
+                                <a class=\"btn btn-secondary w-100\" href=\"/?view=account\">Zurück</a>
                             </div>
                         </div>
                     </div>
@@ -127,58 +127,57 @@ class AccountManagementView implements IAccountManagementView
             }
             else if(strcmp($action, "create") === 0)
             {
-                $selectPermissionLevelHTML = $this->genHTMLSelectPermissionLevel();
+                // Is only the normal account creation page requested? (without field validation or hints)
+                // Or did something go wrong after submit? (a field was incorrect or creation failed generally)
+                if($messageValue <= 0)
+                {
+                    $selectPermissionLevelHTML = $this->genHTMLSelectPermissionLevel();
 
-                if(substr_count($messageValue, "-1") === 1)
-                {
-                    $emailNewAccountFieldBS = " is-invalid";
-                    $emailNewAccountLabelBS = " text-danger";
-                }
-                else if(substr_count($messageValue, "1") === 1)
-                {
-                    $emailNewAccountFieldBS = " is-valid";
-                    $emailNewAccountLabelBS = " text-success";
-                }
-                else
-                {
-                    $emailNewAccountFieldBS = "";
-                    $emailNewAccountLabelBS = "";
-                }
+                    if($messageValue === -1)
+                    {
+                        $emailNewAccountFieldBS = " is-invalid";
+                        $emailNewAccountLabelBS = " text-danger";
+                        $emailNewAccountLabelText = "Bitte geben Sie eine gültige E-Mail-Adresse ein!";
+                    }
+                    else if($messageValue === -4)
+                    {
+                        $emailNewAccountFieldBS = " is-invalid";
+                        $emailNewAccountLabelBS = " text-danger";
+                        $emailNewAccountLabelText = "Dieser Account scheint schon zu existieren!";
+                    }
+                    else
+                    {
+                        $emailNewAccountFieldBS = "";
+                        $emailNewAccountLabelBS = "";
+                        $emailNewAccountLabelText = "Die E-Mail-Adresse hat außer der Benutzerkennung keine weitere Funktion.";
+                    }
 
-                if(substr_count($messageValue, "-2") === 1)
-                {
-                    $passwordNewAccountFieldBS = " is-invalid";
-                    $passwordNewAccountLabelBS = " text-danger";
-                }
-                else if(substr_count($messageValue, "2") === 1)
-                {
-                    $passwordNewAccountFieldBS = " is-valid";
-                    $passwordNewAccountLabelBS = " text-success";
-                }
-                else
-                {
-                    $passwordNewAccountFieldBS = "";
-                    $passwordNewAccountLabelBS = "";
-                }
+                    if($messageValue === -2)
+                    {
+                        $passwordNewAccountFieldBS = " is-invalid";
+                        $passwordNewAccountLabelBS = " text-danger";
+                    }
+                    else
+                    {
+                        $passwordNewAccountFieldBS = "";
+                        $passwordNewAccountLabelBS = "";
+                    }
 
-                if(substr_count($messageValue, "-3") === 1)
-                {
-                    $passwordSupervisorFieldBS = " is-invalid";
-                    $passwordSupervisorLabelBS = " text-danger";
-                }
-                else if(substr_count($messageValue, "3") === 1)
-                {
-                    $passwordSupervisorFieldBS = " is-valid";
-                    $passwordSupervisorLabelBS = " text-success";
-                }
-                else
-                {
-                    $passwordSupervisorFieldBS = "";
-                    $passwordSupervisorLabelBS = "";
-                }
+                    if($messageValue === -3)
+                    {
+                        $passwordSupervisorFieldBS = " is-invalid";
+                        $passwordSupervisorLabelBS = " text-danger";
+                        $passwordSupervisorLabelText = "Bitte autorisieren Sie die Aktion mit Ihrem Kennwort";
+                    }
+                    else
+                    {
+                        $passwordSupervisorFieldBS = "";
+                        $passwordSupervisorLabelBS = "";
+                        $passwordSupervisorLabelText = "&nbsp;";
+                    }
 
-                $feedContentHTML =
-                "
+                    $feedContentHTML =
+                    "
                     <div class=\"container-fluid p-0\">
                         <div class=\"row mt-3 mb-5\">
                             <div class=\"col-12\">
@@ -193,21 +192,24 @@ class AccountManagementView implements IAccountManagementView
                                     <div class=\"container-fluid\">
                                         <div class=\"row mb-3\">
                                             <label class=\"form-label p-0$emailNewAccountLabelBS\" for=\"emailNewAccount\">E-Mail: </label>
-                                            <input class=\"form-control w-100$emailNewAccountFieldBS\" type=\"email\" name=\"emailNewAccount\" id=\"emailNewAccount\" placeholder=\"E-Mail-Adresse\">
+                                            <input value=\"\" class=\"form-control w-100$emailNewAccountFieldBS\" type=\"email\" name=\"emailNewAccount\" id=\"emailNewAccount\" placeholder=\"E-Mail-Adresse\">
                                             <div class=\"row mt-2\">
-                                                <label for=\"emailNewAccount\" class=\"p-0$emailNewAccountLabelBS\">Die E-Mail-Adresse hat außer der Benutzerkennung keine weitere Funktion.</label>
+                                                <label for=\"emailNewAccount\" class=\"p-0$emailNewAccountLabelBS\">$emailNewAccountLabelText</label>
                                             </div>
                                         </div>
                                         <div class=\"row mb-3\">
                                             <label class=\"form-label p-0$passwordNewAccountLabelBS\" for=\"passwordNewAccount\">Passwort: </label>
-                                            <input class=\"form-control w-100$passwordNewAccountFieldBS\" type=\"password\" name=\"passwordNewAccount\" id=\"passwordNewAccount\" placeholder=\"Passwort\">
+                                            <input value=\"\" class=\"form-control w-100$passwordNewAccountFieldBS\" type=\"password\" name=\"passwordNewAccount\" id=\"passwordNewAccount\" placeholder=\"Passwort\">
                                         </div>
                                         <div class=\"row mb-3\">
                                             $selectPermissionLevelHTML
                                         </div>
-                                        <div class=\"row mb-5\">
+                                        <div class=\"row mb-3\">
                                             <label class=\"form-label p-0$passwordSupervisorLabelBS\" for=\"passwordSupervisor\">Ihr Passwort zur Freigabe: </label>
-                                            <input class=\"form-control w-100$passwordSupervisorFieldBS\" type=\"password\" name=\"passwordSupervisor\" id=\"passwordSupervisor\" placeholder=\"Passwort zur Autorisierung\">
+                                            <input value=\"\" class=\"form-control w-100$passwordSupervisorFieldBS\" type=\"password\" name=\"passwordSupervisor\" id=\"passwordSupervisor\" placeholder=\"Passwort zur Autorisierung\">
+                                            <div class=\"row mt-2\">
+                                                <label for=\"passwordSupervisor\" class=\"p-0 fw-bold$passwordSupervisorLabelBS\">$passwordSupervisorLabelText</label>
+                                            </div>
                                         </div>
                                         <div class=\"row mb-2\">
                                             <input type=\"submit\" class=\"btn btn-success w-100\" value=\"Konto anlegen\">
@@ -222,7 +224,32 @@ class AccountManagementView implements IAccountManagementView
                             </div>
                         </div>
                     </div>
-                ";
+                    ";
+                }
+                else if($messageValue === 1) // Was the account creation successful?
+                {
+                    $feedContentHTML =
+                        "
+                    <div class=\"container-fluid p-0\">
+                        <div class=\"row mt-3 mb-5\">
+                            <div class=\"col-2\" style=\"background-image: url('/img/symbol/person-fill-check.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\"></div>
+                            <div class=\"col-10\">
+                                <span class=\"fs-2 fw-bold text-success\">Konto erfolgreich erstellt</span>
+                            </div>
+                        </div>
+                        <div class=\"row mb-3\">
+                            <div class=\"col-12\">
+                                <a class=\"btn btn-success w-100\" href=\"/?view=accounts&action=create\">Weiteres Konto anlegen</a>
+                            </div>
+                        </div>
+                        <div class=\"row mb-3\">
+                            <div class=\"col-12\">
+                                <a class=\"btn btn-secondary w-100\" href=\"/?view=accounts&action=all\">Zur Übersicht</a>
+                            </div>
+                        </div>
+                    </div>
+                    ";
+                }
             }
             else if(strcmp($action, "read") === 0)
             {
@@ -288,7 +315,7 @@ class AccountManagementView implements IAccountManagementView
                     </div>
                     <div class=\"row mb-3\">
                         <div class=\"col-12\">
-                            <a class=\"btn btn-primary w-100\" href=\"/?view=accounts&action=all\">Zurück ⬅️</a>
+                            <a class=\"btn btn-secondary w-100\" href=\"/?view=accounts&action=all\">Zurück</a>
                         </div>
                     </div>
                 </div>

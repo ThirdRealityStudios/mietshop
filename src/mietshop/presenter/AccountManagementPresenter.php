@@ -73,14 +73,14 @@ class AccountManagementPresenter implements IAccountManagementPresenter
                     {
                         $accountResults = $this->accountModel->readAccounts($pageNonIndexed-1);
 
-                        $this->accountManagementView->show($companyData, $accountResults, [], "read", "", $pageNonIndexed-1, $pagesAmount);
+                        $this->accountManagementView->show($companyData, $accountResults, [], "read", 0, $pageNonIndexed-1, $pagesAmount);
                     }
                     else
                     {
                         // Invalid page number requested. Instead, show the first page by default:
 
                         $accountResults = $this->accountModel->readAccounts(0);
-                        $this->accountManagementView->show($companyData, $accountResults, [], "read", "", 0, $pagesAmount);
+                        $this->accountManagementView->show($companyData, $accountResults, [], "read", 0, 0, $pagesAmount);
                     }
                 }
                 else if($request->isRequestParameterMatching("action", "update"))

@@ -94,7 +94,7 @@ class AccountModel implements IAccountModel
 
                             try
                             {
-                                return $this->databaseAdapter->execute($sql, [$email, $passwordHashed, $permissionLevel]) === 1 ? 0 : -4;
+                                return $this->databaseAdapter->execute($sql, [$email, $passwordHashed, $permissionLevel]) === 1 ? 1 : -4;
                             }
                             catch(PDOException $e)
                             {
