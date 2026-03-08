@@ -16,42 +16,45 @@ class LoginView implements ILoginView
 
     public function show(array $companyData, ?string $optionalErrorMessage): void
     {
-        $inputFieldsInvalidClass = "";
-
         if(is_string($optionalErrorMessage))
         {
             $safeOptionalErrorMessage = htmlspecialchars($optionalErrorMessage, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
+            $inputLabelsInvalidClass = " text-danger";
             $inputFieldsInvalidClass = " is-invalid";
         }
         else
         {
             $safeOptionalErrorMessage = "&nbsp;";
+            $inputLabelsInvalidClass = "";
+            $inputFieldsInvalidClass = "";
         }
 
         $feedContent =
         "
         <div class=\"container-fluid\">
-            <div class=\"row text-center mb-3\">
-                <div class=\"col-12\">
-                    <span class=\"fs-1 fw-bold\">Anmelden</span>
+            <div class=\"row mb-5\">
+                <div class=\"col-12 text-center fs-1\">
+                    <span class=\"fw-bold\">Anmelden</span>&nbsp;<div class=\"d-inline-block\" style=\"background-image: url('/img/symbol/box-arrow-in-right.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\">&nbsp;&nbsp;&nbsp;&nbsp;</div>
                 </div>
             </div>
             <form class=\"form\" action=\"/?view=login\" method=\"post\">
                 <div class=\"mb-3\">
-                    <label for=\"Email\" class=\"form-label\">E-Mail: </label>
-                    <input class=\"form-control$inputFieldsInvalidClass\" type=\"email\" placeholder=\"E-Mail-Adresse eingeben ...\" name=\"Email\" required>
+                    <label for=\"Email\" class=\"form-label$inputLabelsInvalidClass\">E-Mail: </label>
+                    <input class=\"form-control$inputFieldsInvalidClass\" type=\"email\" placeholder=\"E-Mail-Adresse eingeben ...\" id=\"Email\" name=\"Email\" required>
                 </div>
                 <div class=\"mb-3\">
-                    <label for=\"Password\" class=\"form-label\">Passwort:</label>
-                    <input class=\"form-control$inputFieldsInvalidClass\" type=\"password\" name=\"Password\" placeholder=\"Passwort eingeben ...\" required>
+                    <label for=\"Password\" class=\"form-label$inputLabelsInvalidClass\">Passwort:</label>
+                    <input class=\"form-control$inputFieldsInvalidClass\" type=\"password\" id=\"Password\" name=\"Password\" placeholder=\"Passwort eingeben ...\" required>
                 </div>
-                <input class=\"btn btn-primary mb-3\" type=\"submit\" value=\"Anmelden\">
+                <div class=\"row text-left mb-3\">
+                    <div class=\"col-12\">
+                        <span class=\"fs-6 text-danger fw-bold\">{$safeOptionalErrorMessage}</span>
+                    </div>
+                </div>
+                <div class=\"mb-3\">
+                    <input class=\"btn btn-primary\" type=\"submit\" value=\"Anmelden\">
+                </div>
             </form>
-            <div class=\"row text-left mb-3\">
-                <div class=\"col-12\">
-                    <span class=\"fs-6 text-danger text-decoration-underline\">{$safeOptionalErrorMessage}</span>
-                </div>
-            </div>
         </div>    
         ";
 

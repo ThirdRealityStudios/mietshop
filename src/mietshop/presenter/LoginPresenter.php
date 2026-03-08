@@ -62,32 +62,23 @@ class LoginPresenter implements ILoginPresenter
                 // Try to find an account in the system, related to that email given.
                 $accountData = $this->accountModel->readAccount($possiblePOSTEmail);
 
-                if(!empty($accountData)) // Does the account exist?
+                // Does the account exist and is the password correct?
+                if(!empty($accountData) && password_verify($possiblePOSTPassword, $accountData["PasswordHash"])) // Is the password correct?
                 {
-                    // Then the account exists
+                    // Then the password is correct.
 
-                    if(password_verify($possiblePOSTPassword, $accountData["PasswordHash"])) // Is the password correct?
-                    {
-                        // Then the password is correct.
+                    session_regenerate_id(true);
 
-                        session_regenerate_id(true);
+                    // Remember the logged in user (login status)
+                    $sessionValues["Email"] = $possiblePOSTEmail;
 
-                        // Remember the logged in user (login status)
-                        $sessionValues["Email"] = $possiblePOSTEmail;
-
-                        // Show the account page
-                        $this->redirectToAccount();
-                    }
-                    else
-                    {
-                        // Then the password is not correct.
-                        $this->loginView->show($companyData, "Credentials invalid");
-                    }
+                    // Show the account page
+                    $this->redirectToAccount();
                 }
                 else
                 {
-                    // Then the account does not exist
-                    $this->loginView->show($companyData, "Credentials invalid");
+                    // Then the password is not correct.
+                    $this->loginView->show($companyData, "Anmeldedaten ungültig");
                 }
             }
             else // Then I am not valid logged in yet.
