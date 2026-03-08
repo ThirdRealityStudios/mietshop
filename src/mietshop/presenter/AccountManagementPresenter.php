@@ -32,14 +32,12 @@ class AccountManagementPresenter implements IAccountManagementPresenter
 
             // But does the account still exist? Maybe the session is older and the account does not exist anymore (e.g. admin deleted it or owner).
             // Also check (if the account exists) if the user may manage accounts to give access.
-            if(!empty($accountFetchData) && $this->accountModel->canManageAccounts($sessionValues["Email"]))
+            if(!empty($accountFetchData) && isset($accountFetchData["PermissionLevel"]) && $this->accountModel->canManageAccounts($sessionValues["Email"]))
             {
                 $supervisorEmail = $sessionValues["Email"];
+                $supervisorPermissionLevel = $accountFetchData["PermissionLevel"];
 
                 $companyData = $this->companyModel->getCompanyData();
-
-                $permissionRolesAscending = IAccountModel::PERMISSION_ROLE; // Copy
-                sort($permissionRolesAscending, SORT_ASC); // Roles starting with lowest, ending with the highest (admin usually).
 
                 if($request->isRequestParameterMatching("action", "all"))
                 {
@@ -47,6 +45,18 @@ class AccountManagementPresenter implements IAccountManagementPresenter
                 }
                 else if($request->isRequestParameterMatching("action" , "create"))
                 {
+                    $permissionRolesAscending = IAccountModel::PERMISSION_ROLE; // Copy
+                    sort($permissionRolesAscending, SORT_ASC); // Roles starting with lowest, ending with the highest (admin usually).
+
+                    // Remove permission levels you can't set (will be checked anyway in backend but anyway important to remove for best user experience and no error messages)
+                    foreach($permissionRolesAscending as $existingPermissionLevel)
+                    {
+                        if($supervisorPermissionLevel < $existingPermissionLevel)
+                        {
+                            unset($permissionRolesAscending[$existingPermissionLevel]);
+                        }
+                    }
+
                     $potentialPostEmailNewAccountValue = $request->getPOSTValue("emailNewAccount");
                     $potentialPostPasswordNewAccountValue = $request->getPOSTValue("passwordNewAccount");
                     $potentialPostPermissionLevelNewAccountValue = $request->getPOSTValue("permissionLevelNewAccount");
@@ -57,7 +67,7 @@ class AccountManagementPresenter implements IAccountManagementPresenter
                     {
                         $responseCode = $this->accountModel->createAccount($supervisorEmail, $potentialPostPasswordSupervisorValue, $potentialPostEmailNewAccountValue, $potentialPostPasswordNewAccountValue, $potentialPostPermissionLevelNewAccountValue);
 
-                        $this->accountManagementView->show($companyData, [], $permissionRolesAscending, "create", $responseCode);
+                        $this->accountManagementView->show($companyData, [], [], "create", $responseCode); // before: $permissionRolesAscending for $permissionRoles
                     }
                     else // Does the supervisor only wants to see the form page? (always a GET action)
                     {

@@ -75,11 +75,13 @@ class AccountModel implements IAccountModel
             // Can the person verify the action (as a supervisor or does he know the credentials at least) ?
             if(password_verify($supervisorPassword, $supervisorAccountData["PasswordHash"]))
             {
+                $accountPermissionLevel = $this->readPermissionLevel($supervisorEmail);
+
                 // Check if the given permission level exists
-                if($this->canManageAccounts($supervisorEmail))
+                if($this->canManageAccounts($supervisorEmail) && $accountPermissionLevel >= $permissionLevel)
                 {
                     $emailFormatValidationResult = filter_var($email, FILTER_VALIDATE_EMAIL);
-
+                    
                     // If the filtering was successful, then it is a valid email.
                     if(!is_bool($emailFormatValidationResult))
                     {
@@ -104,7 +106,7 @@ class AccountModel implements IAccountModel
                         }
                         else
                         {
-                            // No valid Password hash was processed
+                            // No valid Password hash was processed (execution error)
                             return -4;
                         }
                     }
@@ -117,7 +119,7 @@ class AccountModel implements IAccountModel
                 else
                 {
                     // Cannot manage accounts! (missing permissions)
-                    return -4;
+                    return -5;
                 }
             }
             else
