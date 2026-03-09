@@ -64,7 +64,7 @@ class AccountManagementPresenter implements IAccountManagementPresenter
 
             // But does the account still exist? Maybe the session is older and the account does not exist anymore (e.g. admin deleted it or owner).
             // Also check (if the account exists) if the user may manage accounts to give access.
-            if(!empty($accountFetchData) && isset($accountFetchData["PermissionLevel"]) && $this->accountModel->canManageAccounts($sessionValues["Email"]))
+            if(!empty($accountFetchData) && isset($accountFetchData["PermissionLevel"]) && is_numeric($accountFetchData["PermissionLevel"]) && $this->accountModel->canManageAccounts($sessionValues["Email"]))
             {
                 $supervisorEmail = $sessionValues["Email"];
                 $supervisorPermissionLevel = $accountFetchData["PermissionLevel"];
@@ -117,11 +117,15 @@ class AccountManagementPresenter implements IAccountManagementPresenter
                 }
                 else if($request->isRequestParameterMatching("action", "update"))
                 {
-                    $this->accountManagementView->show($companyData, [], IAccountModel::PERMISSION_ROLE, "update");
+                    $filteredPermissionRoleArray = $this->filterDeniedRoles($supervisorPermissionLevel, IAccountModel::PERMISSION_ROLE);
+
+                    $this->accountManagementView->show($companyData, [], $filteredPermissionRoleArray, "update");
                 }
                 else if($request->isRequestParameterMatching("action", "delete"))
                 {
-                    $this->accountManagementView->show($companyData, [], [], "delete");
+                    $filteredPermissionRoleArray = $this->filterDeniedRoles($supervisorPermissionLevel, IAccountModel::PERMISSION_ROLE);
+
+                    $this->accountManagementView->show($companyData, [], $filteredPermissionRoleArray, "delete");
                 }
                 else
                 {
