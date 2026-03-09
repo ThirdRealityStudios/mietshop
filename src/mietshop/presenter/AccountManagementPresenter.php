@@ -134,8 +134,6 @@ class AccountManagementPresenter implements IAccountManagementPresenter
                     {
                         $this->accountManagementView->show($companyData, [], $filteredPermissionRoleArray, "update");
                     }
-
-                    $this->accountManagementView->show($companyData, [], $filteredPermissionRoleArray, "update");
                 }
                 else if($request->isRequestParameterMatching("action", "delete"))
                 {

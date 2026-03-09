@@ -71,6 +71,7 @@ class AccountManagementView implements IAccountManagementView
         for($i = 0; $i < sizeof($permissionLevelKeys); $i++)
         {
             $permissionLevel = $permissionLevelKeys[$i];
+
             $permissionRoleName = $permissionRoles[$permissionLevel];
             $permissionRoleSafeHTML = htmlspecialchars($permissionRoleName, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
 
@@ -468,7 +469,7 @@ class AccountManagementView implements IAccountManagementView
                         </div>
                         <div class=\"row mb-5\">
                             <div class=\"col-12\">
-                                <span class=\"fs-6 w-100\">Es scheint so, als sei die Anfrage ungültig, da die vergebene Berechtigung höher ist als Ihre eigene oder weil das Zielkonto durch gleiche oder höhere Rechte geschützt ist vor Änderungen.</span>
+                                <span class=\"fs-6 w-100\">Es scheint so, als sei die Anfrage ungültig, da z.B. die vergebene Berechtigung höher ist als Ihre eigene oder weil das Zielkonto durch gleiche oder höhere Rechte geschützt ist vor Änderungen.</span>
                             </div>
                         </div>
                         <div class=\"row mb-3\">
