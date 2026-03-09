@@ -57,21 +57,22 @@ class AccountManagementView implements IAccountManagementView
      * Generates and returns a submittable form select list which contains all permission roles in ascending order
      * (lowest role first at the top, highest role - usually admin - last in list).
      *
+     * @param array $permissionRoles
      * @return string Form select HTML with all permission roles in ascending order.
      */
-    private function genHTMLSelectPermissionLevel() : string
+    private function genHTMLSelectPermissionLevel(array $permissionRoles) : string
     {
         $selectHTML = "<label class=\"form-label p-0\" for=\"permissionLevelNewAccount\">Benutzer-Level auswählen: </label><select class=\"form-select\" name=\"permissionLevelNewAccount\" id=\"permissionLevelNewAccount\">";
 
         // Due to implementation detail, there can be "gaps" between permission levels in the array.
         // Hence, reading all permission levels step-by-step is safer.
-        $permissionLevels = array_keys(IAccountModel::PERMISSION_ROLE);
+        $permissionLevelKeys = array_keys($permissionRoles);
 
-        for($i = 0; $i < sizeof($permissionLevels); $i++)
+        for($i = 0; $i < sizeof($permissionLevelKeys); $i++)
         {
-            $permissionLevel = $permissionLevels[$i];
-            $permissionRole = IAccountModel::PERMISSION_ROLE[$i];
-            $permissionRoleSafeHTML = htmlspecialchars($permissionRole, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
+            $permissionLevel = $permissionLevelKeys[$i];
+            $permissionRoleName = $permissionRoles[$permissionLevel];
+            $permissionRoleSafeHTML = htmlspecialchars($permissionRoleName, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
 
             $selectHTML .= "<option value=\"{$permissionLevel}\">$permissionRoleSafeHTML</option>";
         }
@@ -131,7 +132,7 @@ class AccountManagementView implements IAccountManagementView
                 // Or did something go wrong after submit? (a field was incorrect or creation failed generally)
                 if($messageValue >= -4 && $messageValue <= 0)
                 {
-                    $selectPermissionLevelHTML = $this->genHTMLSelectPermissionLevel();
+                    $selectPermissionLevelHTML = $this->genHTMLSelectPermissionLevel($permissionRoles);
 
                     if($messageValue === -1)
                     {

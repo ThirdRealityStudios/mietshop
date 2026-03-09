@@ -24,6 +24,38 @@ class AccountManagementPresenter implements IAccountManagementPresenter
         $this->errorView = $errorView;
     }
 
+    /**
+     * Filters all elements (roles, e.g. the element 1 => "Moderator") from a given permission role array.
+     * The given permission role array should look like (!),
+     * as described in IAccountModel::PERMISSION_ROLE.
+     *
+     * @param int $maxPermissionLevel The maximum permission level to allow.
+     * @param array $permissionRoles The provided permission roles.
+     * @return array The array of permission roles (filtered and also sorted ascending by permission level).
+     */
+    private function filterDeniedRoles(int $maxPermissionLevel, array $permissionRoles) : array
+    {
+        sort($permissionRoles, SORT_NUMERIC); // Roles starting with lowest, ending with the highest (admin usually).
+
+        $permissionRoleLevels = array_keys($permissionRoles);
+
+        $onlyPermittedPermissionLevels = [];
+
+        // Remove permission levels you can't set (will be checked anyway in backend but anyway important to remove for best user experience and no error messages)
+        for($i = 0; $i < sizeof($permissionRoleLevels); $i++)
+        {
+            $existingPermissionLevel = $permissionRoleLevels[$i];
+
+            if($maxPermissionLevel >= $existingPermissionLevel)
+            {
+                // Add suitable permission role
+                $onlyPermittedPermissionLevels[$existingPermissionLevel] = $permissionRoles[$existingPermissionLevel];
+            }
+        }
+
+        return $onlyPermittedPermissionLevels;
+    }
+
     public function process(IHTTPRequest $request, array $sessionValues): void
     {
         if(isset($sessionValues["Email"]) && is_string($sessionValues["Email"])) // Is the visitor logged in?
@@ -45,17 +77,7 @@ class AccountManagementPresenter implements IAccountManagementPresenter
                 }
                 else if($request->isRequestParameterMatching("action" , "create"))
                 {
-                    $permissionRolesAscending = IAccountModel::PERMISSION_ROLE; // Copy
-                    sort($permissionRolesAscending, SORT_ASC); // Roles starting with lowest, ending with the highest (admin usually).
-
-                    // Remove permission levels you can't set (will be checked anyway in backend but anyway important to remove for best user experience and no error messages)
-                    foreach($permissionRolesAscending as $existingPermissionLevel)
-                    {
-                        if($supervisorPermissionLevel < $existingPermissionLevel)
-                        {
-                            unset($permissionRolesAscending[$existingPermissionLevel]);
-                        }
-                    }
+                    $filteredPermissionRoleArray = $this->filterDeniedRoles($supervisorPermissionLevel, IAccountModel::PERMISSION_ROLE);
 
                     $potentialPostEmailNewAccountValue = $request->getPOSTValue("emailNewAccount");
                     $potentialPostPasswordNewAccountValue = $request->getPOSTValue("passwordNewAccount");
@@ -67,11 +89,11 @@ class AccountManagementPresenter implements IAccountManagementPresenter
                     {
                         $responseCode = $this->accountModel->createAccount($supervisorEmail, $potentialPostPasswordSupervisorValue, $potentialPostEmailNewAccountValue, $potentialPostPasswordNewAccountValue, $potentialPostPermissionLevelNewAccountValue);
 
-                        $this->accountManagementView->show($companyData, [], [], "create", $responseCode); // before: $permissionRolesAscending for $permissionRoles
+                        $this->accountManagementView->show($companyData, [], [], "create", $responseCode);
                     }
                     else // Does the supervisor only wants to see the form page? (always a GET action)
                     {
-                        $this->accountManagementView->show($companyData, [], $permissionRolesAscending, "create");
+                        $this->accountManagementView->show($companyData, [], $filteredPermissionRoleArray, "create");
                     }
                 }
                 else if($request->isRequestParameterMatching("action", "read"))
