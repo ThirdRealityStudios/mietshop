@@ -81,7 +81,7 @@ class AccountModel implements IAccountModel
                 if($this->canManageAccounts($supervisorEmail) && $accountPermissionLevel >= $permissionLevel)
                 {
                     $emailFormatValidationResult = filter_var($email, FILTER_VALIDATE_EMAIL);
-                    
+
                     // If the filtering was successful, then it is a valid email.
                     if(!is_bool($emailFormatValidationResult))
                     {
@@ -356,7 +356,7 @@ class AccountModel implements IAccountModel
         }
     }
 
-    public function updatePermissionLevel(string $supervisorEmail, string $supervisorPassword, string $email, int $permissionLevel): bool
+    public function updatePermissionLevel(string $supervisorEmail, string $supervisorPassword, string $email, int $newPermissionLevel): int
     {
         $sql =
         "
@@ -367,51 +367,86 @@ class AccountModel implements IAccountModel
         {
             $result = $this->databaseAdapter->fetch($sql, [$supervisorEmail]);
 
-            if(isset($result[0]["PasswordHash"]) && is_string($result[0]["PasswordHash"]))
+            if(!empty($result))
             {
-                $supervisorPasswordHash = $result[0]["PasswordHash"];
-
-                if(password_verify($supervisorPassword, $supervisorPasswordHash))
+                if(isset($result[0]["PasswordHash"]) && is_string($result[0]["PasswordHash"]))
                 {
-                    // Supervisor access was verified to change the permission level of an account.
+                    $supervisorPasswordHash = $result[0]["PasswordHash"];
 
-                    $supervisorPermissionLevel = $this->readPermissionLevel($supervisorEmail);
-
-                    // Make sure the supervisor cannot give a higher permission level than his own.
-                    if($supervisorPermissionLevel > -1 && $permissionLevel <= $supervisorPermissionLevel)
+                    if(password_verify($supervisorPassword, $supervisorPasswordHash))
                     {
-                        // Make sure with "PermissionLevel < IAccountModel::ROLE_ADMIN" that no supervisor can degrade admin accounts (also for safety reasons).
-                        // Imagine the website buyer does not want to use an owner account but an admin account.
-                        // In this case, it would be a security risk if an owner could degrade an admin account.
-                        $sql =
-                        "
-                            UPDATE AccountModel SET PermissionLevel = ? WHERE Email = ? AND PermissionLevel < ?
-                        ";
+                        // Supervisor access was verified to change the permission level of an account.
 
-                        $adminPermissionLevel = max(array_keys(IAccountModel::PERMISSION_ROLE));
+                        $supervisorCurrentPermissionLevel = $this->readPermissionLevel($supervisorEmail);
+                        $targetAccountCurrentPermissionLevel = $this->readPermissionLevel($email);
 
-                        return $this->databaseAdapter->execute($sql, [$permissionLevel, $email, $adminPermissionLevel]) === 1;
+                        if($targetAccountCurrentPermissionLevel > -1)
+                        {
+                            // Make sure the user is generally permitted (a verified supervisor) and cannot give a higher permission level than his own.
+                            // Also make sure you cannot modify ranks of accounts with the same permission level.
+                            $canManageAccounts = $this->canManageAccounts($supervisorEmail);
+                            $isNewPermissionLevelOK = $newPermissionLevel <= $supervisorCurrentPermissionLevel;
+                            $isTargetAccountLowerRank = $supervisorCurrentPermissionLevel > $targetAccountCurrentPermissionLevel;
+
+                            /*
+                            echo "canManageAccounts: ";
+                            var_dump($canManageAccounts); echo "<br>";
+                            echo "isNewPermissionLevelOK: ";
+                            var_dump($isNewPermissionLevelOK); echo "<br>";
+                            echo "isTargetAccountLowerRank: ";
+                            var_dump($isTargetAccountLowerRank); echo "<br>";
+                            die();
+                            */
+
+                            if($canManageAccounts && $isNewPermissionLevelOK && $isTargetAccountLowerRank)
+                            {
+                                $adminPermissionLevel = max(array_keys(IAccountModel::PERMISSION_ROLE));
+
+                                // Make sure with "PermissionLevel < IAccountModel::ROLE_ADMIN" that no supervisor can degrade admin accounts (also for safety reasons).
+                                // Imagine the website buyer does not want to use an owner account but an admin account.
+                                // In this case, it would be a security risk if an owner could degrade an admin account.
+                                $sql =
+                                "
+                                    UPDATE AccountModel SET PermissionLevel = ? WHERE Email = ? AND PermissionLevel < ?
+                                ";
+
+                                return $this->databaseAdapter->execute($sql, [$newPermissionLevel, $email, $adminPermissionLevel]) === 1 ? 1 : -4;
+                            }
+                            else
+                            {
+                                // Insufficient permissions.
+                                return -5;
+                            }
+                        }
+                        else
+                        {
+                            // Account most likely does not exist (or general execution error)
+                            return -2;
+                        }
                     }
                     else
                     {
-                        return false;
+                        // Could not verify the action (most likely supervisor password incorrect)
+                        return -3;
                     }
                 }
                 else
                 {
-                    return false;
+                    // No valid Password hash was processed (execution error)
+                    return -4;
                 }
             }
             else
             {
-                return false;
+                // Account does not exist (most likely)
+                return -2;
             }
         }
         catch(PDOException $e)
         {
-            return false;
+            // Account does not exist (most likely) or execution error
+            return -4;
         }
-
     }
 
     public function deleteAccount(string $email, string $password): bool

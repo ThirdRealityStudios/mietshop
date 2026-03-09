@@ -79,15 +79,15 @@ class AccountManagementPresenter implements IAccountManagementPresenter
                 {
                     $filteredPermissionRoleArray = $this->filterDeniedRoles($supervisorPermissionLevel, IAccountModel::PERMISSION_ROLE);
 
-                    $potentialPostEmailNewAccountValue = $request->getPOSTValue("emailNewAccount");
+                    $postEmailAccountValue = $request->getPOSTValue("emailNewAccount");
                     $potentialPostPasswordNewAccountValue = $request->getPOSTValue("passwordNewAccount");
-                    $potentialPostPermissionLevelNewAccountValue = $request->getPOSTValue("permissionLevelNewAccount");
-                    $potentialPostPasswordSupervisorValue = $request->getPOSTValue("passwordSupervisor");
+                    $postPermissionLevelAccountValue = $request->getPOSTValue("permissionLevelOptions");
+                    $postPasswordSupervisorValue = $request->getPOSTValue("passwordSupervisor");
 
                     // Does the user (supervisor) want to create a new account? (= a POST action)
-                    if(is_string($potentialPostEmailNewAccountValue) && is_string($potentialPostPasswordNewAccountValue) && is_numeric($potentialPostPermissionLevelNewAccountValue) && is_string($potentialPostPasswordSupervisorValue))
+                    if(is_string($postEmailAccountValue) && is_string($potentialPostPasswordNewAccountValue) && is_numeric($postPermissionLevelAccountValue) && is_string($postPasswordSupervisorValue))
                     {
-                        $responseCode = $this->accountModel->createAccount($supervisorEmail, $potentialPostPasswordSupervisorValue, $potentialPostEmailNewAccountValue, $potentialPostPasswordNewAccountValue, $potentialPostPermissionLevelNewAccountValue);
+                        $responseCode = $this->accountModel->createAccount($supervisorEmail, $postPasswordSupervisorValue, $postEmailAccountValue, $potentialPostPasswordNewAccountValue, $postPermissionLevelAccountValue);
 
                         $this->accountManagementView->show($companyData, [], [], "create", $responseCode);
                     }
@@ -118,6 +118,22 @@ class AccountManagementPresenter implements IAccountManagementPresenter
                 else if($request->isRequestParameterMatching("action", "update"))
                 {
                     $filteredPermissionRoleArray = $this->filterDeniedRoles($supervisorPermissionLevel, IAccountModel::PERMISSION_ROLE);
+
+                    $postEmailAccountValue = $request->getPOSTValue("emailAccount");
+                    $postPermissionLevelAccountValue = $request->getPOSTValue("permissionLevelOptions");
+                    $postPasswordSupervisorValue = $request->getPOSTValue("passwordSupervisor");
+
+                    // Does the user (supervisor) want to create a new account? (= a POST action)
+                    if(is_string($postEmailAccountValue) && is_numeric($postPermissionLevelAccountValue) && is_string($postPasswordSupervisorValue))
+                    {
+                        $responseCode = $this->accountModel->updatePermissionLevel($supervisorEmail, $postPasswordSupervisorValue, $postEmailAccountValue, $postPermissionLevelAccountValue);
+
+                        $this->accountManagementView->show($companyData, [], $filteredPermissionRoleArray, "update", $responseCode);
+                    }
+                    else // Does the supervisor only wants to see the form page? (always a GET action)
+                    {
+                        $this->accountManagementView->show($companyData, [], $filteredPermissionRoleArray, "update");
+                    }
 
                     $this->accountManagementView->show($companyData, [], $filteredPermissionRoleArray, "update");
                 }

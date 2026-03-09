@@ -172,10 +172,10 @@ interface IAccountModel
      * @param string $supervisorEmail Email address of that supervisor.
      * @param string $supervisorPassword Clear-text password of that supervisor.
      * @param string $email Email address of the account to change the permission level for.
-     * @param int $permissionLevel Permission level (numerical, at least 0 - maximum level is the supervisor level 4 or 5)
-     * @return bool True if permission level could be set successfully. Otherwise, false (mostly if supervisor credentials are wrong - but can also be a wrong permission level or execution error)
+     * @param int $newPermissionLevel Permission level (numerical, at least 0 - maximum level is the supervisor level 4 or 5)
+     * @return int 1 if permission level could be set successfully. Otherwise, a negative value (-5 = insufficient permissions - e.g. because you tried to modify the rank of an account with the same permission level / because you tried to give a higher rank than your own / because you have generally no supervisor permissions, -4 = general processing error, -3 = incorrect supervisor password, -2 = most likely just the account does not exist)
      */
-    public function updatePermissionLevel(string $supervisorEmail, string $supervisorPassword, string $email, int $permissionLevel) : bool;
+    public function updatePermissionLevel(string $supervisorEmail, string $supervisorPassword, string $email, int $newPermissionLevel) : int;
 
     /**
      * Deletes an account,

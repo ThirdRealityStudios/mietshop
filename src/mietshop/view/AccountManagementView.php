@@ -62,7 +62,7 @@ class AccountManagementView implements IAccountManagementView
      */
     private function genHTMLSelectPermissionLevel(array $permissionRoles) : string
     {
-        $selectHTML = "<label class=\"form-label p-0\" for=\"permissionLevelNewAccount\">Benutzer-Level auswählen: </label><select class=\"form-select\" name=\"permissionLevelNewAccount\" id=\"permissionLevelNewAccount\">";
+        $selectHTML = "<label class=\"form-label p-0\" for=\"permissionLevelOptions\">Benutzer-Level auswählen: </label><select class=\"form-select\" name=\"permissionLevelOptions\" id=\"permissionLevelOptions\">";
 
         // Due to implementation detail, there can be "gaps" between permission levels in the array.
         // Hence, reading all permission levels step-by-step is safer.
@@ -136,21 +136,21 @@ class AccountManagementView implements IAccountManagementView
 
                     if($messageValue === -1)
                     {
-                        $emailNewAccountFieldBS = " is-invalid";
-                        $emailNewAccountLabelBS = " text-danger";
-                        $emailNewAccountLabelText = "Bitte geben Sie eine gültige E-Mail-Adresse ein!";
+                        $emailAccountFieldBS = " is-invalid";
+                        $emailAccountLabelBS = " text-danger";
+                        $emailAccountLabelText = "Bitte geben Sie eine gültige E-Mail-Adresse ein!";
                     }
                     else if($messageValue === -4)
                     {
-                        $emailNewAccountFieldBS = " is-invalid";
-                        $emailNewAccountLabelBS = " text-danger";
-                        $emailNewAccountLabelText = "Dieser Account scheint schon zu existieren!";
+                        $emailAccountFieldBS = " is-invalid";
+                        $emailAccountLabelBS = " text-danger";
+                        $emailAccountLabelText = "Bitte geben Sie einen gültigen Account ein!";
                     }
                     else
                     {
-                        $emailNewAccountFieldBS = "";
-                        $emailNewAccountLabelBS = "";
-                        $emailNewAccountLabelText = "Die E-Mail-Adresse hat außer der Benutzerkennung keine weitere Funktion.";
+                        $emailAccountFieldBS = "";
+                        $emailAccountLabelBS = "";
+                        $emailAccountLabelText = "Die E-Mail-Adresse hat außer der Benutzerkennung keine weitere Funktion.";
                     }
 
                     if($messageValue === -2)
@@ -168,7 +168,7 @@ class AccountManagementView implements IAccountManagementView
                     {
                         $passwordSupervisorFieldBS = " is-invalid";
                         $passwordSupervisorLabelBS = " text-danger";
-                        $passwordSupervisorLabelText = "Bitte autorisieren Sie die Aktion mit Ihrem Kennwort";
+                        $passwordSupervisorLabelText = "Bitte autorisieren Sie die Aktion mit Ihrem gültigen Kennwort";
                     }
                     else
                     {
@@ -192,10 +192,10 @@ class AccountManagementView implements IAccountManagementView
                                     <input type=\"hidden\" name=\"action\" value=\"create\">
                                     <div class=\"container-fluid\">
                                         <div class=\"row mb-3\">
-                                            <label class=\"form-label p-0$emailNewAccountLabelBS\" for=\"emailNewAccount\">E-Mail: </label>
-                                            <input value=\"\" class=\"form-control w-100$emailNewAccountFieldBS\" type=\"email\" name=\"emailNewAccount\" id=\"emailNewAccount\" placeholder=\"E-Mail-Adresse\">
+                                            <label class=\"form-label p-0$emailAccountLabelBS\" for=\"emailNewAccount\">E-Mail: </label>
+                                            <input value=\"\" class=\"form-control w-100$emailAccountFieldBS\" type=\"email\" name=\"emailNewAccount\" id=\"emailNewAccount\" placeholder=\"E-Mail-Adresse\">
                                             <div class=\"row mt-2\">
-                                                <label for=\"emailNewAccount\" class=\"p-0$emailNewAccountLabelBS\">$emailNewAccountLabelText</label>
+                                                <label for=\"emailNewAccount\" class=\"p-0$emailAccountLabelBS\">$emailAccountLabelText</label>
                                             </div>
                                         </div>
                                         <div class=\"row mb-3\">
@@ -349,10 +349,132 @@ class AccountManagementView implements IAccountManagementView
             }
             else if(strcmp($action, "update") === 0)
             {
-                $feedContentHTML =
-                "
-                    update
-                ";
+                // Is only the normal account permission update page requested? (without field validation or hints)
+                // Or did something go wrong after submit? (a field was incorrect or permission update failed generally)
+                if($messageValue === -3 || $messageValue === -2 || $messageValue === 0)
+                {
+                    $selectPermissionLevelHTML = $this->genHTMLSelectPermissionLevel($permissionRoles);
+
+                    if($messageValue === -2)
+                    {
+                        $emailAccountFieldBS = " is-invalid";
+                        $emailAccountLabelBS = " text-danger";
+                        $emailAccountLabelText = "Bitte geben Sie einen gültigen Account ein!";
+                    }
+                    else
+                    {
+                        $emailAccountFieldBS = "";
+                        $emailAccountLabelBS = "";
+                        $emailAccountLabelText = "";
+                    }
+
+                    if($messageValue === -3)
+                    {
+                        $passwordSupervisorFieldBS = " is-invalid";
+                        $passwordSupervisorLabelBS = " text-danger";
+                        $passwordSupervisorLabelText = "Bitte autorisieren Sie die Aktion mit Ihrem gültigen Kennwort";
+                    }
+                    else
+                    {
+                        $passwordSupervisorFieldBS = "";
+                        $passwordSupervisorLabelBS = "";
+                        $passwordSupervisorLabelText = "&nbsp;";
+                    }
+
+                    $feedContentHTML =
+                    "
+                    <div class=\"container-fluid p-0\">
+                        <div class=\"row mt-3 mb-5\">
+                            <div class=\"col-12\">
+                                <span class=\"fs-2 fw-bold\">Berechtigung aktualisieren</span>
+                            </div>
+                        </div>
+                        <div class=\"row mb-3\">
+                            <div class=\"col-12\">
+                                <form class=\"form\" action=\"/\" method=\"post\">
+                                    <input type=\"hidden\" name=\"view\" value=\"accounts\">
+                                    <input type=\"hidden\" name=\"action\" value=\"update\">
+                                    <div class=\"container-fluid\">
+                                        <div class=\"row mb-3\">
+                                            <label class=\"form-label p-0$emailAccountLabelBS\" for=\"emailAccount\">E-Mail des Kontos: </label>
+                                            <input value=\"\" class=\"form-control w-100$emailAccountFieldBS\" type=\"email\" name=\"emailAccount\" id=\"emailAccount\" placeholder=\"E-Mail-Adresse\">
+                                            <div class=\"row mt-2\">
+                                                <label for=\"emailAccount\" class=\"p-0$emailAccountLabelBS\">$emailAccountLabelText</label>
+                                            </div>
+                                        </div>
+                                        <div class=\"row mb-3\">
+                                            $selectPermissionLevelHTML
+                                        </div>
+                                        <div class=\"row mb-3\">
+                                            <label class=\"form-label p-0$passwordSupervisorLabelBS\" for=\"passwordSupervisor\">Ihr Passwort zur Freigabe: </label>
+                                            <input value=\"\" class=\"form-control w-100$passwordSupervisorFieldBS\" type=\"password\" name=\"passwordSupervisor\" id=\"passwordSupervisor\" placeholder=\"Passwort zur Autorisierung\">
+                                            <div class=\"row mt-2\">
+                                                <label for=\"passwordSupervisor\" class=\"p-0 fw-bold$passwordSupervisorLabelBS\">$passwordSupervisorLabelText</label>
+                                            </div>
+                                        </div>
+                                        <div class=\"row mb-2\">
+                                            <input type=\"submit\" class=\"btn btn-success w-100\" value=\"Berechtigung anpassen\">
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class=\"row mb-3\">
+                            <div class=\"col-12\">
+                                <a class=\"btn btn-danger w-100\" href=\"/?view=accounts&action=all\">Abbrechen</a>
+                            </div>
+                        </div>
+                    </div>
+                    ";
+                }
+                else if($messageValue === -5 || $messageValue === -4) // Do I have insufficient permissions to update the permissions of this account? (most likely because a higher permission level was provided than the supervisor has)
+                {
+                    $feedContentHTML =
+                    "
+                    <div class=\"container-fluid p-0\">
+                        <div class=\"row mt-3 mb-5\">
+                            <div class=\"col-2\" style=\"background-image: url('/img/symbol/person-fill-slash.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\"></div>
+                            <div class=\"col-10\">
+                                <span class=\"fs-2 fw-bold text-danger\">Unzureichende Befugnisse</span>
+                            </div>
+                        </div>
+                        <div class=\"row mb-5\">
+                            <div class=\"col-12\">
+                                <span class=\"fs-6 w-100\">Es scheint so, als sei die Anfrage ungültig, da die vergebene Berechtigung höher ist als Ihre eigene oder weil das Zielkonto durch gleiche oder höhere Rechte geschützt ist vor Änderungen.</span>
+                            </div>
+                        </div>
+                        <div class=\"row mb-3\">
+                            <div class=\"col-12\">
+                                <a class=\"btn btn-secondary w-100\" href=\"/?view=accounts&action=all\">Zur Übersicht</a>
+                            </div>
+                        </div>
+                    </div>
+                    ";
+                }
+                else if($messageValue === 1) // Was the account permission update successful?
+                {
+                    $feedContentHTML =
+                    "
+                    <div class=\"container-fluid p-0\">
+                        <div class=\"row mt-3 mb-5\">
+                            <div class=\"col-2\" style=\"background-image: url('/img/symbol/person-fill-check.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\"></div>
+                            <div class=\"col-10\">
+                                <span class=\"fs-2 fw-bold text-success\">Berechtigung erfolgreich aktualisiert</span>
+                            </div>
+                        </div>
+                        <div class=\"row mb-3\">
+                            <div class=\"col-12\">
+                                <a class=\"btn btn-success w-100\" href=\"/?view=accounts&action=create\">Weitere Berechtigung ändern</a>
+                            </div>
+                        </div>
+                        <div class=\"row mb-3\">
+                            <div class=\"col-12\">
+                                <a class=\"btn btn-secondary w-100\" href=\"/?view=accounts&action=all\">Zur Übersicht</a>
+                            </div>
+                        </div>
+                    </div>
+                    ";
+                }
             }
             else if(strcmp($action, "delete") === 0)
             {
