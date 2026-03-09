@@ -85,29 +85,36 @@ class AccountModel implements IAccountModel
                     // If the filtering was successful, then it is a valid email.
                     if(!is_bool($emailFormatValidationResult))
                     {
-                        $passwordHashed = password_hash($password, PASSWORD_DEFAULT);
-
-                        if(is_string($passwordHashed))
+                        if(strlen($password) > 0)
                         {
-                            $sql =
-                            "
+                            $passwordHashed = password_hash($password, PASSWORD_DEFAULT);
+
+                            if(is_string($passwordHashed))
+                            {
+                                $sql =
+                                    "
                                 INSERT INTO AccountModel(Email, PasswordHash, PermissionLevel) VALUES(?, ?, ?)
                             ";
 
-                            try
-                            {
-                                return $this->databaseAdapter->execute($sql, [$email, $passwordHashed, $permissionLevel]) === 1 ? 1 : -4;
+                                try
+                                {
+                                    return $this->databaseAdapter->execute($sql, [$email, $passwordHashed, $permissionLevel]) === 1 ? 1 : -4;
+                                }
+                                catch(PDOException $e)
+                                {
+                                    // Execution failed
+                                    return -4;
+                                }
                             }
-                            catch(PDOException $e)
+                            else
                             {
-                                // Execution failed
+                                // No valid Password hash was processed (execution error)
                                 return -4;
                             }
                         }
                         else
                         {
-                            // No valid Password hash was processed (execution error)
-                            return -4;
+                            return -2;
                         }
                     }
                     else
@@ -386,7 +393,7 @@ class AccountModel implements IAccountModel
                             // Also make sure you cannot modify ranks of accounts with the same permission level.
                             $canManageAccounts = $this->canManageAccounts($supervisorEmail);
                             $isNewPermissionLevelOK = $newPermissionLevel <= $supervisorCurrentPermissionLevel;
-                            $isTargetAccountLowerRank = $supervisorCurrentPermissionLevel > $targetAccountCurrentPermissionLevel;
+                            $isTargetAccountLowerRank = $targetAccountCurrentPermissionLevel < $supervisorCurrentPermissionLevel;
 
                             /*
                             echo "canManageAccounts: ";
@@ -402,7 +409,7 @@ class AccountModel implements IAccountModel
                             {
                                 $adminPermissionLevel = max(array_keys(IAccountModel::PERMISSION_ROLE));
 
-                                // Make sure with "PermissionLevel < IAccountModel::ROLE_ADMIN" that no supervisor can degrade admin accounts (also for safety reasons).
+                                // Make sure with "PermissionLevel < IAccountModel::PERMISSION_ROLE" that no supervisor can degrade admin accounts (also for safety reasons).
                                 // Imagine the website buyer does not want to use an owner account but an admin account.
                                 // In this case, it would be a security risk if an owner could degrade an admin account.
                                 $sql =
@@ -410,7 +417,7 @@ class AccountModel implements IAccountModel
                                     UPDATE AccountModel SET PermissionLevel = ? WHERE Email = ? AND PermissionLevel < ?
                                 ";
 
-                                return $this->databaseAdapter->execute($sql, [$newPermissionLevel, $email, $adminPermissionLevel]) === 1 ? 1 : -4;
+                                return $this->databaseAdapter->execute($sql, [$newPermissionLevel, $email, $adminPermissionLevel]) === 1 ? 1 : 1;
                             }
                             else
                             {

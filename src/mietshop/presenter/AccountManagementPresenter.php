@@ -89,7 +89,7 @@ class AccountManagementPresenter implements IAccountManagementPresenter
                     {
                         $responseCode = $this->accountModel->createAccount($supervisorEmail, $postPasswordSupervisorValue, $postEmailAccountValue, $potentialPostPasswordNewAccountValue, $postPermissionLevelAccountValue);
 
-                        $this->accountManagementView->show($companyData, [], [], "create", $responseCode);
+                        $this->accountManagementView->show($companyData, [], $filteredPermissionRoleArray, "create", $responseCode);
                     }
                     else // Does the supervisor only wants to see the form page? (always a GET action)
                     {

@@ -144,7 +144,7 @@ class AccountManagementView implements IAccountManagementView
                     {
                         $emailAccountFieldBS = " is-invalid";
                         $emailAccountLabelBS = " text-danger";
-                        $emailAccountLabelText = "Bitte geben Sie einen gültigen Account ein!";
+                        $emailAccountLabelText = "Bitte geben Sie einen gültigen, nicht existierenden Account ein!";
                     }
                     else
                     {
@@ -157,11 +157,13 @@ class AccountManagementView implements IAccountManagementView
                     {
                         $passwordNewAccountFieldBS = " is-invalid";
                         $passwordNewAccountLabelBS = " text-danger";
+                        $passwordNewAccountLabelText = "Das Passwort darf nicht leer sein!";
                     }
                     else
                     {
                         $passwordNewAccountFieldBS = "";
                         $passwordNewAccountLabelBS = "";
+                        $passwordNewAccountLabelText = "Beliebige Zeichen für Passwort erlaubt - darf nur nicht leer sein.";
                     }
 
                     if($messageValue === -3)
@@ -201,6 +203,9 @@ class AccountManagementView implements IAccountManagementView
                                         <div class=\"row mb-3\">
                                             <label class=\"form-label p-0$passwordNewAccountLabelBS\" for=\"passwordNewAccount\">Passwort: </label>
                                             <input value=\"\" class=\"form-control w-100$passwordNewAccountFieldBS\" type=\"password\" name=\"passwordNewAccount\" id=\"passwordNewAccount\" placeholder=\"Passwort\">
+                                            <div class=\"row mt-2\">
+                                                <label for=\"passwordNewAccount\" class=\"p-0$passwordNewAccountLabelBS\">$passwordNewAccountLabelText</label>
+                                            </div>
                                         </div>
                                         <div class=\"row mb-3\">
                                             $selectPermissionLevelHTML
@@ -345,7 +350,6 @@ class AccountManagementView implements IAccountManagementView
                     </div>
                 </div>
                 ";
-
             }
             else if(strcmp($action, "update") === 0)
             {
@@ -427,10 +431,34 @@ class AccountManagementView implements IAccountManagementView
                     </div>
                     ";
                 }
-                else if($messageValue === -5 || $messageValue === -4) // Do I have insufficient permissions to update the permissions of this account? (most likely because a higher permission level was provided than the supervisor has)
+                else if($messageValue === -4) // Is there a general processing error? Maybe it is a bug?
                 {
                     $feedContentHTML =
                     "
+                    <div class=\"container-fluid p-0\">
+                        <div class=\"row mt-3 mb-5\">
+                            <div class=\"col-2\" style=\"background-image: url('/img/symbol/cpu-fill.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\"></div>
+                            <div class=\"col-10\">
+                                <span class=\"fs-2 fw-bold text-danger\">Allgemeiner Verarbeitungsfehler</span>
+                            </div>
+                        </div>
+                        <div class=\"row mb-5\">
+                            <div class=\"col-12\">
+                                <span class=\"fs-6 w-100\">Es scheint so, als wäre die Verarbeitung gerade nicht möglich. Bitte versuchen Sie es später erneut!</span>
+                            </div>
+                        </div>
+                        <div class=\"row mb-3\">
+                            <div class=\"col-12\">
+                                <a class=\"btn btn-secondary w-100\" href=\"/?view=accounts&action=all\">Zur Übersicht</a>
+                            </div>
+                        </div>
+                    </div>
+                    ";
+                }
+                else if($messageValue === -5) // Do I have insufficient permissions to update the permissions of this account? (most likely because a higher permission level was provided than the supervisor has)
+                {
+                    $feedContentHTML =
+                        "
                     <div class=\"container-fluid p-0\">
                         <div class=\"row mt-3 mb-5\">
                             <div class=\"col-2\" style=\"background-image: url('/img/symbol/person-fill-slash.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\"></div>
