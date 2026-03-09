@@ -493,7 +493,7 @@ class AccountManagementView implements IAccountManagementView
                         </div>
                         <div class=\"row mb-3\">
                             <div class=\"col-12\">
-                                <a class=\"btn btn-success w-100\" href=\"/?view=accounts&action=create\">Weitere Berechtigung ändern</a>
+                                <a class=\"btn btn-success w-100\" href=\"/?view=accounts&action=update\">Weitere Berechtigung ändern</a>
                             </div>
                         </div>
                         <div class=\"row mb-3\">
@@ -507,10 +507,127 @@ class AccountManagementView implements IAccountManagementView
             }
             else if(strcmp($action, "delete") === 0)
             {
-                $feedContentHTML =
-                "
-                    delete
-                ";
+                // Is only the normal account permission update page requested? (without field validation or hints)
+                // Or did something go wrong after submit? (a field was incorrect or permission update failed generally)
+                if($messageValue === -1 || $messageValue === -3 || $messageValue === 0)
+                {
+                    if($messageValue === -1)
+                    {
+                        $emailAccountFieldBS = " is-invalid";
+                        $emailAccountLabelBS = " text-danger";
+                        $emailAccountLabelText = "Bitte geben Sie einen gültigen zu löschenden Account ein!";
+                    }
+                    else
+                    {
+                        $emailAccountFieldBS = "";
+                        $emailAccountLabelBS = "";
+                        $emailAccountLabelText = "";
+                    }
+
+                    if($messageValue === -3)
+                    {
+                        $passwordSupervisorFieldBS = " is-invalid";
+                        $passwordSupervisorLabelBS = " text-danger";
+                        $passwordSupervisorLabelText = "Bitte autorisieren Sie die Aktion mit Ihrem gültigen Kennwort";
+                    }
+                    else
+                    {
+                        $passwordSupervisorFieldBS = "";
+                        $passwordSupervisorLabelBS = "";
+                        $passwordSupervisorLabelText = "&nbsp;";
+                    }
+
+                    $feedContentHTML =
+                    "
+                    <div class=\"container-fluid p-0\">
+                        <div class=\"row mt-3 mb-5\">
+                            <div class=\"col-12\">
+                                <span class=\"fs-2 fw-bold\">Konto löschen</span>
+                            </div>
+                        </div>
+                        <div class=\"row mb-3\">
+                            <div class=\"col-12\">
+                                <form class=\"form\" action=\"/\" method=\"post\">
+                                    <input type=\"hidden\" name=\"view\" value=\"accounts\">
+                                    <input type=\"hidden\" name=\"action\" value=\"delete\">
+                                    <div class=\"container-fluid\">
+                                        <div class=\"row mb-3\">
+                                            <label class=\"form-label p-0$emailAccountLabelBS\" for=\"emailAccount\">E-Mail des Kontos: </label>
+                                            <input value=\"\" class=\"form-control w-100$emailAccountFieldBS\" type=\"email\" name=\"emailAccount\" id=\"emailAccount\" placeholder=\"E-Mail-Adresse\">
+                                            <div class=\"row mt-2\">
+                                                <label for=\"emailAccount\" class=\"p-0$emailAccountLabelBS\">$emailAccountLabelText</label>
+                                            </div>
+                                        </div>
+                                        <div class=\"row mb-3\">
+                                            <label class=\"form-label p-0$passwordSupervisorLabelBS\" for=\"passwordSupervisor\">Ihr Passwort zur Freigabe: </label>
+                                            <input value=\"\" class=\"form-control w-100$passwordSupervisorFieldBS\" type=\"password\" name=\"passwordSupervisor\" id=\"passwordSupervisor\" placeholder=\"Passwort\">
+                                            <div class=\"row mt-2\">
+                                                <label for=\"passwordSupervisor\" class=\"p-0 fw-bold$passwordSupervisorLabelBS\">$passwordSupervisorLabelText</label>
+                                            </div>
+                                        </div>
+                                        <div class=\"row mb-2\">
+                                            <input type=\"submit\" class=\"btn btn-success w-100\" value=\"Konto endgültig löschen\">
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class=\"row mb-3\">
+                            <div class=\"col-12\">
+                                <a class=\"btn btn-danger w-100\" href=\"/?view=accounts&action=all\">Abbrechen</a>
+                            </div>
+                        </div>
+                    </div>
+                    ";
+                }
+                else if($messageValue === -5) // Do I have insufficient permissions to delete the account?
+                {
+                    $feedContentHTML =
+                    "
+                    <div class=\"container-fluid p-0\">
+                        <div class=\"row mt-3 mb-5\">
+                            <div class=\"col-2\" style=\"background-image: url('/img/symbol/person-fill-slash.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\"></div>
+                            <div class=\"col-10\">
+                                <span class=\"fs-2 fw-bold text-danger\">Unzureichende Befugnisse</span>
+                            </div>
+                        </div>
+                        <div class=\"row mb-5\">
+                            <div class=\"col-12\">
+                                <span class=\"fs-6 w-100\">Sie scheinen zu wenig Befugnisse zu haben, um diese Aktion durchzuführen.</span>
+                            </div>
+                        </div>
+                        <div class=\"row mb-3\">
+                            <div class=\"col-12\">
+                                <a class=\"btn btn-secondary w-100\" href=\"/?view=accounts&action=all\">Zur Übersicht</a>
+                            </div>
+                        </div>
+                    </div>
+                    ";
+                }
+                else if($messageValue === 1) // Was the account deletion successful?
+                {
+                    $feedContentHTML =
+                    "
+                    <div class=\"container-fluid p-0\">
+                        <div class=\"row mt-3 mb-5\">
+                            <div class=\"col-2\" style=\"background-image: url('/img/symbol/trash-fill.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\"></div>
+                            <div class=\"col-10\">
+                                <span class=\"fs-2 fw-bold text-success\">Konto erfolgreich gelöscht!</span>
+                            </div>
+                        </div>
+                        <div class=\"row mb-3\">
+                            <div class=\"col-12\">
+                                <a class=\"btn btn-success w-100\" href=\"/?view=accounts&action=delete\">Weiteres Konto löschen</a>
+                            </div>
+                        </div>
+                        <div class=\"row mb-3\">
+                            <div class=\"col-12\">
+                                <a class=\"btn btn-secondary w-100\" href=\"/?view=accounts&action=all\">Zur Übersicht</a>
+                            </div>
+                        </div>
+                    </div>
+                    ";
+                }
             }
             else
             {

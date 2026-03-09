@@ -197,9 +197,9 @@ interface IAccountModel
      * @param string $supervisorEmail Email address of supervisor.
      * @param string $supervisorPassword Clear-text password of supervisor.
      * @param string $email Email address of the account to delete.
-     * @return bool True if the account could be deleted successfully. Otherwise, false (mostly if the supervisor credentials are incorrect - but could also be an execution error).
+     * @return int 1 if the account could be deleted successfully. Otherwise, a negative value (-1 if target account email is invalid, -3 if supervisor password incorrect, -5 if missing permissions for that action).
      */
-    public function deleteAccountBySupervisor(string $supervisorEmail, string $supervisorPassword, string $email) : bool;
+    public function deleteAccountBySupervisor(string $supervisorEmail, string $supervisorPassword, string $email) : int;
 
     /**
      * Tells you if a given user has basically the permission to manage accounts

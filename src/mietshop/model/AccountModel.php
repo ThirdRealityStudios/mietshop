@@ -507,7 +507,7 @@ class AccountModel implements IAccountModel
         }
     }
 
-    public function deleteAccountBySupervisor(string $supervisorEmail, string $supervisorPassword, string $email): bool
+    public function deleteAccountBySupervisor(string $supervisorEmail, string $supervisorPassword, string $email) : int
     {
         // Make sure a supervisor does not want to delete his own account.
         if(strcmp($supervisorEmail, $email) !== 0)
@@ -533,39 +533,46 @@ class AccountModel implements IAccountModel
                         $supervisorPermissionLevel = $this->readPermissionLevel($supervisorEmail);
                         $userPermissionLevel = $this->readPermissionLevel($email);
 
-                        // Make sure the supervisor always has a higher permission level than the account to delete (for safety reasons)
-                        if($supervisorPermissionLevel > $userPermissionLevel)
+                        if($userPermissionLevel > -1) // Does the account exist with that email?
                         {
-                            $sql =
-                            "
-                                DELETE FROM AccountModel WHERE Email = ?
-                            ";
+                            // Make sure the supervisor always has a higher permission level than the account to delete (for safety reasons)
+                            if($supervisorPermissionLevel > $userPermissionLevel)
+                            {
+                                $sql =
+                                "
+                                    DELETE FROM AccountModel WHERE Email = ?
+                                ";
 
-                            return $this->databaseAdapter->execute($sql, [$email]) === 1;
+                                return $this->databaseAdapter->execute($sql, [$email]) === 1 ? 1 : -1;
+                            }
+                            else
+                            {
+                                return -5; // you are not allowed to delete the given user (you need a higher rank).
+                            }
                         }
                         else
                         {
-                            return false; // you are not allowed to delete the given user (you need a higher rank).
+                            return -1; // Email-related account not found, so the email is incorrect
                         }
                     }
                     else
                     {
-                        return false; // you cannot verify the credentials of the supervisor for deletion.
+                        return -3; // you cannot verify the credentials of the supervisor for deletion.
                     }
                 }
                 else
                 {
-                    return false; // The performing user is no supervisor (because the user is not at least an owner or even admin). Hence, action was denied.
+                    return -5; // The performing user is no supervisor (because the user is not at least an owner or even admin). Hence, action was denied.
                 }
             }
             catch(PDOException $e)
             {
-                return false; // The supervisor is actually no supervisor because the permission level is not even an owner or even admin. Hence, action denied.
+                return -5; // The supervisor is actually no supervisor because the permission level is not even an owner or even admin. Hence, action denied.
             }
         }
         else
         {
-            return false; // A supervisor cannot delete his own account (at least not with this function)
+            return -1; // A supervisor cannot delete his own account (at least not with this function)
         }
     }
 

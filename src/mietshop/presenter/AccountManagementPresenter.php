@@ -137,9 +137,20 @@ class AccountManagementPresenter implements IAccountManagementPresenter
                 }
                 else if($request->isRequestParameterMatching("action", "delete"))
                 {
-                    $filteredPermissionRoleArray = $this->filterDeniedRoles($supervisorPermissionLevel, IAccountModel::PERMISSION_ROLE);
+                    $postPasswordSupervisorValue = $request->getPOSTValue("passwordSupervisor");
+                    $postEmailAccountValue = $request->getPOSTValue("emailAccount");
 
-                    $this->accountManagementView->show($companyData, [], $filteredPermissionRoleArray, "delete");
+                    // Does the user (supervisor) want to delete an existing account? (= a POST action)
+                    if(is_string($postPasswordSupervisorValue) && is_string($postEmailAccountValue))
+                    {
+                        $responseCode = $this->accountModel->deleteAccountBySupervisor($supervisorEmail, $postPasswordSupervisorValue, $postEmailAccountValue);
+
+                        $this->accountManagementView->show($companyData, [], [], "delete", $responseCode);
+                    }
+                    else // Does the supervisor only wants to see the form page? (always a GET action)
+                    {
+                        $this->accountManagementView->show($companyData, [], [], "delete");
+                    }
                 }
                 else
                 {
