@@ -395,16 +395,6 @@ class AccountModel implements IAccountModel
                             $isNewPermissionLevelOK = $newPermissionLevel <= $supervisorCurrentPermissionLevel;
                             $isTargetAccountLowerRank = $targetAccountCurrentPermissionLevel < $supervisorCurrentPermissionLevel;
 
-                            /*
-                            echo "canManageAccounts: ";
-                            var_dump($canManageAccounts); echo "<br>";
-                            echo "isNewPermissionLevelOK: ";
-                            var_dump($isNewPermissionLevelOK); echo "<br>";
-                            echo "isTargetAccountLowerRank: ";
-                            var_dump($isTargetAccountLowerRank); echo "<br>";
-                            die();
-                            */
-
                             if($canManageAccounts && $isNewPermissionLevelOK && $isTargetAccountLowerRank)
                             {
                                 $adminPermissionLevel = max(array_keys(IAccountModel::PERMISSION_ROLE));
