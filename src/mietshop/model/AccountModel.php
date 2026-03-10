@@ -78,7 +78,7 @@ class AccountModel implements IAccountModel
                 $accountPermissionLevel = $this->readPermissionLevel($supervisorEmail);
 
                 // Check if the given permission level exists
-                if($this->canManageAccounts($supervisorEmail) && $accountPermissionLevel >= $permissionLevel)
+                if($this->isSupervisor($supervisorEmail) && $accountPermissionLevel >= $permissionLevel)
                 {
                     $emailFormatValidationResult = filter_var($email, FILTER_VALIDATE_EMAIL);
 
@@ -391,7 +391,7 @@ class AccountModel implements IAccountModel
                         {
                             // Make sure the user is generally permitted (a verified supervisor) and cannot give a higher permission level than his own.
                             // Also make sure you cannot modify ranks of accounts with the same permission level.
-                            $canManageAccounts = $this->canManageAccounts($supervisorEmail);
+                            $canManageAccounts = $this->isSupervisor($supervisorEmail);
                             $isNewPermissionLevelOK = $newPermissionLevel <= $supervisorCurrentPermissionLevel;
                             $isTargetAccountLowerRank = $targetAccountCurrentPermissionLevel < $supervisorCurrentPermissionLevel;
 
@@ -576,7 +576,7 @@ class AccountModel implements IAccountModel
         }
     }
 
-    public function canManageAccounts(string $email) : bool
+    public function isSupervisor(string $email) : bool
     {
         $ownerPermissionLevel = max(array_keys(IAccountModel::PERMISSION_ROLE))-1;
 

@@ -59,6 +59,23 @@ class MySQLAdapter implements IDatabaseAdapter
         return $columnNames;
     }
 
+    public function readDatatype(string $tableName, string $columnName) : string
+    {
+        $sql = "SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND COLUMN_NAME = ?";
+
+        $fetchData = $this->fetch($sql, [$tableName, $columnName]);
+
+        foreach($fetchData as $row)
+        {
+            if(strcmp($row['COLUMN_NAME'], $columnName) === 0)
+            {
+                return $row['DATA_TYPE'];
+            }
+        }
+
+        return "";
+    }
+
     /**
      * @param string $tableName
      * @param string $columnName
@@ -101,5 +118,12 @@ class MySQLAdapter implements IDatabaseAdapter
             // The given column name is roughly not even close to a valid column name.
             return -1;
         }
+    }
+
+    public function isString(string $tableName, string $columnName) : bool
+    {
+        $datatypeName = strtolower($this->readDatatype($tableName, $columnName));
+
+        return str_contains($datatypeName, "char") || str_contains($datatypeName, "text") || str_contains($datatypeName, "binary");
     }
 }

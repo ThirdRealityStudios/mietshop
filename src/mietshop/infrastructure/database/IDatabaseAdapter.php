@@ -188,4 +188,20 @@ interface IDatabaseAdapter
      * @throws PDOException If SQL execution fails for some reason.
      */
     public function readColumnNames(string $tableName) : array;
+
+    /**
+     * Tells you the datatype of a column.
+     *
+     * @param string $tableName Database table name
+     * @param string $columnName Column name
+     * @return string The datatype of that column. Or empty string if it could not be determined.
+     */
+    public function readDatatype(string $tableName, string $columnName) : string;
+
+    /**
+     * @param string $tableName
+     * @param string $columnName
+     * @return bool
+     */
+    public function isString(string $tableName, string $columnName) : bool;
 }

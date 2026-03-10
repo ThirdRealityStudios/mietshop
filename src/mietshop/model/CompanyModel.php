@@ -41,6 +41,10 @@ class CompanyModel implements ICompanyModel
 			    Place VARCHAR(20) NOT NULL DEFAULT \"Musterstadt\",
 			    
 			    Email VARCHAR(100) NOT NULL DEFAULT \"mail@website.com\",
+			    
+			    P19UStG BOOL NOT NULL DEFAULT FALSE,
+			    P36VSBG BOOL NOT NULL DEFAULT FALSE,
+			    
 			    PhoneMobile VARCHAR(16) NOT NULL DEFAULT \"+49 123 45678\",
 			    PhoneNormal VARCHAR(16) NOT NULL DEFAULT \"12345 6789123\",
 			    
@@ -130,12 +134,13 @@ class CompanyModel implements ICompanyModel
 
     /**
      * Sets the given value in the CompanyModel dataset,
-     * using the column nam.
+     * using the column name.
      *
      * @param string $name SQL column name
+     * @param string|bool $value That boolean or string value to set.
      * @return bool True if updated successfully. Otherwise, false.
      */
-    private function updateValue(string $name, string $value) : bool
+    private function updateValue(string $name, string|bool $value) : bool
     {
         try
         {
@@ -299,6 +304,30 @@ class CompanyModel implements ICompanyModel
         {
             return false;
         }
+    }
+
+    public function isP19UStGNeeded(): bool
+    {
+        $fetchValue = $this->readValue("P19UStGNeeded");
+
+        return (bool) strcmp($fetchValue, "true");
+    }
+
+    public function setP19UStGNeeded(bool $isNeeded): bool
+    {
+        return $this->updateValue("P19UStGNeeded", "$isNeeded");
+    }
+
+    public function isP36VSBGNeeded(): bool
+    {
+        $fetchValue = $this->readValue("P36VSBGNeeded");
+
+        return (bool) strcmp($fetchValue, "true");
+    }
+
+    public function setP36VSBGNeeded(bool $isNeeded): bool
+    {
+        return $this->updateValue("P36VSBGNeeded", "$isNeeded");
     }
 
     public function getPhoneMobile(): string
@@ -535,17 +564,26 @@ class CompanyModel implements ICompanyModel
 
                             if(isset($result[0][$columnName]))
                             {
-                                $maximumCharacterLimit = $this->databaseAdapter->readCharacterLimit("CompanyModel", $columnName);
+                                $companyValue = $result[0][$columnName];
 
-                                if($maximumCharacterLimit >= 0)
+                                // Bugfix: make sure only the character limit is retrieved from string type columns (because it does only work them)
+                                if($this->databaseAdapter->isString("CompanyModel", $columnName)) // Then very likely some usual string type (like varchar, normal char, text etc.)
                                 {
-                                    $companyValue = $result[0][$columnName];
+                                    $maximumCharacterLimit = $this->databaseAdapter->readCharacterLimit("CompanyModel", $columnName);
 
-                                    $companyData[$columnName] = [$companyValue, $maximumCharacterLimit];
+                                    // Could you fetch character limit information (does not apply for booleans e.g.) ?
+                                    if($maximumCharacterLimit >= 0)
+                                    {
+                                        $companyData[$columnName] = [$companyValue, $maximumCharacterLimit];
+                                    }
+                                    else
+                                    {
+                                        return []; // Technical issue or smth
+                                    }
                                 }
                                 else
                                 {
-                                    return [];
+                                    $companyData[$columnName] = [$companyValue, 0];
                                 }
                             }
                             else

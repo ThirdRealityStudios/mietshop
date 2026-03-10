@@ -18,9 +18,9 @@ namespace src\mietshop\contracts;
  *
  * - 2 is supporter level (create, edit or delete feeds and articles)
  *
- * - 3 is owner level (manage all your website content, but no database management tools - for safety reasons)
+ * - 3 is owner level (= a supervisor. Can manage all your website content, but no database management tools - for safety reasons)
  *
- * - 4 is root / admin permission (manage all website content and database management tools).
+ * - 4 is root / admin permission (= a supervisor. Can manage all website content and database management tools).
  */
 interface IAccountModel
 {
@@ -202,11 +202,11 @@ interface IAccountModel
     public function deleteAccountBySupervisor(string $supervisorEmail, string $supervisorPassword, string $email) : int;
 
     /**
-     * Tells you if a given user has basically the permission to manage accounts
-     * (e.g. create new accounts, delete accounts, edit permission levels etc.)
+     * Tells you if a given user has basically the permission to do what an owner or admin can do.
+     * E.g. manage accounts, edit imprint and such.
      *
      * @param string $email Email of the account
-     * @return bool True if the user can generally do account management. Otherwise, false (also if the given account does not exist or if there is an execution error)
+     * @return bool True if the user is at least an owner. Otherwise, false (also if the given account does not exist or if there is an execution error)
      */
-    public function canManageAccounts(string $email) : bool;
+    public function isSupervisor(string $email) : bool;
 }

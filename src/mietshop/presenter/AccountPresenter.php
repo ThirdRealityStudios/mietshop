@@ -60,7 +60,7 @@ class AccountPresenter implements IAccountPresenter
                         {
                             $determinedRole = IAccountModel::PERMISSION_ROLE[$permissionLevel];
 
-                            $canManageAccounts = $this->accountModel->canManageAccounts($sessionValues["Email"]);
+                            $canManageAccounts = $this->accountModel->isSupervisor($sessionValues["Email"]);
 
                             $this->accountView->show($companyData, ["Email" => $sessionValues["Email"], "PermissionRole" => $determinedRole, "CanManageAccounts" => $canManageAccounts]);
                         }

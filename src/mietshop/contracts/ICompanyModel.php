@@ -147,6 +147,42 @@ interface ICompanyModel
     public function setEmail(string $email): bool;
 
     /**
+     * Tells you if paragraph 19 of German UStG is needed (e.g. for the imprint),
+     * based on what setting was set.
+     *
+     * @return bool True if the paragraph 19 was set to 'true' internally. Otherwise, false (also if execution failed and such).
+     */
+    public function isP19UStGNeeded(): bool;
+
+    /**
+     * Sets whether 'true' or 'false' for German paragraph 19 UStG if it is needed,
+     * e.g. to automatically generate the suitable hint text for the imprint page.
+     * It will then be remembered.
+     *
+     * @param bool $isNeeded Is the paragraph 19 UStG needed or does it apply to your company?
+     * @return bool True if it could be set, otherwise false on failure (e.g. execution).
+     */
+    public function setP19UStGNeeded(bool $isNeeded): bool;
+
+    /**
+     * Tells you if paragraph 19 of German UStG is needed (e.g. for the imprint),
+     * based on what setting was set.
+     *
+     * @return bool True if the paragraph 19 was set to 'true' internally. Otherwise, false (also if execution failed and such).
+     */
+    public function isP36VSBGNeeded(): bool;
+
+    /**
+     * Sets whether 'true' or 'false' for German paragraph 36 VSBG if it is needed,
+     * e.g. to automatically generate the suitable hint text for the imprint page.
+     * It will then be remembered.
+     *
+     * @param bool $isNeeded Is the paragraph 36 VSBG needed or does it apply to your company?
+     * @return bool True if it could be set, otherwise false on failure (e.g. execution).
+     */
+    public function setP36VSBGNeeded(bool $isNeeded): bool;
+
+    /**
      * Returns the company's mobile phone number.
      *
      * @return string Mobile number (with optional country code).
@@ -362,6 +398,10 @@ interface ICompanyModel
      *  "Place" => ["German Town", 20],
      *
      *  "Email" => ["mymail@web.com", 100],
+     *
+     *  "P19UStG" => false,
+     *
+     *  "P36VSBG" => true,
      *
      *  "PhoneMobile" => ["+49 123 4567891", 16],
      *

@@ -64,7 +64,7 @@ class AccountManagementPresenter implements IAccountManagementPresenter
 
             // But does the account still exist? Maybe the session is older and the account does not exist anymore (e.g. admin deleted it or owner).
             // Also check (if the account exists) if the user may manage accounts to give access.
-            if(!empty($accountFetchData) && isset($accountFetchData["PermissionLevel"]) && is_numeric($accountFetchData["PermissionLevel"]) && $this->accountModel->canManageAccounts($sessionValues["Email"]))
+            if(!empty($accountFetchData) && isset($accountFetchData["PermissionLevel"]) && is_numeric($accountFetchData["PermissionLevel"]) && $this->accountModel->isSupervisor($sessionValues["Email"]))
             {
                 $supervisorEmail = $sessionValues["Email"];
                 $supervisorPermissionLevel = $accountFetchData["PermissionLevel"];

@@ -60,8 +60,8 @@ class Router implements IRouter
             if($request->isRequestParameterMatching("view", "imprint"))
             {
                 $imprintView = new ImprintView($globalView);
-                $imprintPresenter = new ImprintPresenter($errorView, $imprintView, $companyModel);
-                $imprintPresenter->process();
+                $imprintPresenter = new ImprintPresenter($errorView, $imprintView, $companyModel, $accountModel);
+                $imprintPresenter->process($request, $sessionValues);
             }
             else if($request->isRequestParameterMatching("view", "termsofservice"))
             {
