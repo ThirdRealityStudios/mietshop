@@ -147,40 +147,40 @@ interface ICompanyModel
     public function setEmail(string $email): bool;
 
     /**
-     * Tells you if paragraph 19 of German UStG is needed (e.g. for the imprint),
-     * based on what setting was set.
+     * Tells you if paragraph 19 of German UStG is relevant (e.g. for the imprint),
+     * based on your legal situation of your company (assuming, you met the correct setting before so that you are consistent with the corresponding laws).
      *
      * @return bool True if the paragraph 19 was set to 'true' internally. Otherwise, false (also if execution failed and such).
      */
-    public function isP19UStGNeeded(): bool;
+    public function isP19UStGRelevant(): bool;
 
     /**
      * Sets whether 'true' or 'false' for German paragraph 19 UStG if it is needed,
      * e.g. to automatically generate the suitable hint text for the imprint page.
      * It will then be remembered.
      *
-     * @param bool $isNeeded Is the paragraph 19 UStG needed or does it apply to your company?
+     * @param bool $isLawRelevant Is the paragraph 19 UStG needed or does it apply to your company?
      * @return bool True if it could be set, otherwise false on failure (e.g. execution).
      */
-    public function setP19UStGNeeded(bool $isNeeded): bool;
+    public function setP19UStGApplies(bool $isLawRelevant): bool;
 
     /**
-     * Tells you if paragraph 19 of German UStG is needed (e.g. for the imprint),
-     * based on what setting was set.
+     * Tells you if paragraph 36 of German VSBG is relevant (e.g. for the imprint),
+     * based on your legal situation of your company (assuming, you met the correct setting before so that you are consistent with the corresponding laws).
      *
      * @return bool True if the paragraph 19 was set to 'true' internally. Otherwise, false (also if execution failed and such).
      */
-    public function isP36VSBGNeeded(): bool;
+    public function isP36VSBGRelevant(): bool;
 
     /**
      * Sets whether 'true' or 'false' for German paragraph 36 VSBG if it is needed,
      * e.g. to automatically generate the suitable hint text for the imprint page.
      * It will then be remembered.
      *
-     * @param bool $isNeeded Is the paragraph 36 VSBG needed or does it apply to your company?
+     * @param bool $isLawRelevant Is the paragraph 36 VSBG needed or does it apply to your company?
      * @return bool True if it could be set, otherwise false on failure (e.g. execution).
      */
-    public function setP36VSBGNeeded(bool $isNeeded): bool;
+    public function setP36VSBGApplies(bool $isLawRelevant): bool;
 
     /**
      * Returns the company's mobile phone number.

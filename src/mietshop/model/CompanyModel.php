@@ -42,8 +42,8 @@ class CompanyModel implements ICompanyModel
 			    
 			    Email VARCHAR(100) NOT NULL DEFAULT \"mail@website.com\",
 			    
-			    P19UStG BOOL NOT NULL DEFAULT FALSE,
-			    P36VSBG BOOL NOT NULL DEFAULT FALSE,
+			    P19UStGApplies BOOL NOT NULL DEFAULT FALSE,
+			    P36VSBGApplies BOOL NOT NULL DEFAULT FALSE,
 			    
 			    PhoneMobile VARCHAR(16) NOT NULL DEFAULT \"+49 123 45678\",
 			    PhoneNormal VARCHAR(16) NOT NULL DEFAULT \"12345 6789123\",
@@ -96,9 +96,9 @@ class CompanyModel implements ICompanyModel
      * using the column name.
      *
      * @param string $name SQL column name
-     * @return string Value from CompanyModel.
+     * @return mixed Value from CompanyModel (string, int whatever).
      */
-    private function readValue(string $name) : string
+    private function readValue(string $name) : mixed
     {
         try
         {
@@ -109,7 +109,7 @@ class CompanyModel implements ICompanyModel
             {
                 $dataFetched = $this->databaseAdapter->fetch("SELECT $name FROM CompanyModel");
 
-                $firstRowKey = array_keys($dataFetched)[0];
+                $firstRowKey = array_keys($dataFetched)[0]; // Key for the first row fetched
                 $firstRow = $dataFetched[$firstRowKey];
 
                 if(isset($firstRow[$name]))
@@ -154,9 +154,9 @@ class CompanyModel implements ICompanyModel
                 {
                     $minimumID = $fetchData[0]["MINIMUM"];
 
-                    $updatedRows = $this->databaseAdapter->execute("UPDATE CompanyModel SET $name=? WHERE CompanyModel.ID=?", [$value, $minimumID]);
+                    $this->databaseAdapter->execute("UPDATE CompanyModel SET $name=? WHERE CompanyModel.ID=?", [$value, $minimumID]);
 
-                    return $updatedRows === 1;
+                    return true;
                 }
                 else
                 {
@@ -306,28 +306,28 @@ class CompanyModel implements ICompanyModel
         }
     }
 
-    public function isP19UStGNeeded(): bool
+    public function isP19UStGRelevant(): bool
     {
-        $fetchValue = $this->readValue("P19UStGNeeded");
+        $fetchValue = $this->readValue("P19UStGApplies");
 
         return (bool) strcmp($fetchValue, "true");
     }
 
-    public function setP19UStGNeeded(bool $isNeeded): bool
+    public function setP19UStGApplies(bool $isLawRelevant): bool
     {
-        return $this->updateValue("P19UStGNeeded", "$isNeeded");
+        return $this->updateValue("P19UStGApplies", $isLawRelevant);
     }
 
-    public function isP36VSBGNeeded(): bool
+    public function isP36VSBGRelevant(): bool
     {
-        $fetchValue = $this->readValue("P36VSBGNeeded");
+        $fetchValue = $this->readValue("P36VSBGApplies");
 
         return (bool) strcmp($fetchValue, "true");
     }
 
-    public function setP36VSBGNeeded(bool $isNeeded): bool
+    public function setP36VSBGApplies(bool $isLawRelevant): bool
     {
-        return $this->updateValue("P36VSBGNeeded", "$isNeeded");
+        return $this->updateValue("P36VSBGApplies", $isLawRelevant);
     }
 
     public function getPhoneMobile(): string

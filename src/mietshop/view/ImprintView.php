@@ -14,7 +14,7 @@ class ImprintView implements IImprintView
         $this->globalView = $globalView;
     }
 
-    public function show(array $companyData, string $actionValue = "", int $messageValue = 0) : void
+    public function show(array $companyData, bool $showEditButton, string $actionValue = "", int $messageValue = 0) : void
     {
         $companyNameHTMLSafe = htmlspecialchars($companyData["CompanyName"][0], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         $ownerHTMLSafe = htmlspecialchars($companyData["Owner"][0], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
@@ -27,6 +27,8 @@ class ImprintView implements IImprintView
 
         if(empty($actionValue)) // $messageValue === 0)
         {
+            $optionalEditButton = $showEditButton ? "<a class=\"btn btn-secondary mb-3\" href=\"/?view=imprint&action=update\">Impressum bearbeiten</a>" : "";
+
             $imprintContentHTML =
             "
             <span class=\"fs-6\" style=\"white-space: pre-line;\">
@@ -39,36 +41,115 @@ class ImprintView implements IImprintView
             Telefon: <a href=\"tel:{$phoneMobileHTMLSafe}\">{$phoneMobileHTMLSafe}</a>
     
             Geschäftsführer: {$ownerHTMLSafe}
-    
+        
             Allgemeine Geschäftsbedingungen:
             <a href=\"/?view=termsofservice\">/termsofservice</a>
     
             Hinweis zur Streitbeilegung gemäß § 36 VSBG:
             Wir nehmen nicht an einem Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teil und sind hierzu auch nicht verpflichtet.
-    
+            
             Per §19 Abs. 1 UStG wird die Umsatzsteuer nicht ausgewiesen.
-    
-            <a class=\"btn btn-primary mb-3\" href=\"/\">Zur Startseite</a>
+            
+            <a class=\"btn btn-primary\" href=\"/\">Zur Startseite</a>
+            
+            $optionalEditButton
             ";
         }
         else if(strcmp($actionValue, "update") === 0)
         {
             if($messageValue <= 0) // Show the form and highlight the invalid field, based on $messageValue given.
             {
-                $p19ustgValue = $companyData["P19UStG"][0];
-                $p36vsbgValue = $companyData["P36VSBG"][0];
-
-                $p19UStGIsChecked = ($p19ustgValue == 1) ? " checked" : "";
-                $p36VSBGIsChecked = ($p36vsbgValue == 1) ? " checked" : "";
-
                 $companyNameMaxLength = $companyData["CompanyName"][1];
-                $ownerMaxLength = $companyData["Owner"][1];
+                $companyNameLabelBSClass = "";
+                $companyNameInputBSClass = "";
+                if($messageValue === -1)
+                {
+                    $companyNameLabelBSClass = " text-danger";
+                    $companyNameInputBSClass = " is-invalid";
+                }
+
                 $streetMaxLength = $companyData["Street"][1];
+                $streetLabelBSClass = "";
+                $streetInputBSClass = "";
+                if($messageValue === -2)
+                {
+                    $streetLabelBSClass = " text-danger";
+                    $streetInputBSClass = " is-invalid";
+                }
+
                 $zipCodeMaxLength = $companyData["ZipCode"][1];
+                $zipCodeLabelBSClass = "";
+                $zipCodeInputBSClass = "";
+                if($messageValue === -3)
+                {
+                    $zipCodeLabelBSClass = " text-danger";
+                    $zipCodeInputBSClass = " is-invalid";
+                }
+
                 $placeMaxLength = $companyData["Place"][1];
+                $placeLabelBSClass = "";
+                $placeInputBSClass = "";
+                if($messageValue === -4)
+                {
+                    $placeLabelBSClass = " text-danger";
+                    $placeInputBSClass = " is-invalid";
+                }
+
                 $emailMaxLength = $companyData["Email"][1];
+                $emailLabelBSClass = "";
+                $emailInputBSClass = "";
+                if($messageValue === -5)
+                {
+                    $emailLabelBSClass = " text-danger";
+                    $emailInputBSClass = " is-invalid";
+                }
+
                 $phoneMobileMaxLength = $companyData["PhoneMobile"][1];
+                $phoneMobileLabelBSClass = "";
+                $phoneMobileInputBSClass = "";
+                if($messageValue === -6)
+                {
+                    $phoneMobileLabelBSClass = " text-danger";
+                    $phoneMobileInputBSClass = " is-invalid";
+                }
+
                 $phoneNormalMaxLength = $companyData["PhoneNormal"][1];
+                $phoneNormalLabelBSClass = "";
+                $phoneNormalInputBSClass = "";
+                if($messageValue === -7)
+                {
+                    $phoneNormalLabelBSClass = " text-danger";
+                    $phoneNormalInputBSClass = " is-invalid";
+                }
+
+                $p19ustgApplies = $companyData["P19UStGApplies"][0];
+                $p19UStGAppliesHTML = ($p19ustgApplies == 1) ? " checked" : "";
+                $p19ustgAppliesLabelBSClass = "";
+                $p19ustgAppliesInputBSClass = "";
+                if($messageValue === -8)
+                {
+                    $p19ustgAppliesLabelBSClass = " text-danger";
+                    $p19ustgAppliesInputBSClass = " is-invalid";
+                }
+
+                $p36vsbgApplies = $companyData["P36VSBGApplies"][0];
+                $p36VSBGAppliesHTML = ($p36vsbgApplies == 1) ? " checked" : "";
+                $p36vsbgAppliesLabelBSClass = "";
+                $p36vsbgAppliesInputBSClass = "";
+                if($messageValue === -9)
+                {
+                    $p36vsbgAppliesLabelBSClass = " text-danger";
+                    $p36vsbgAppliesInputBSClass = " is-invalid";
+                }
+
+                $ownerMaxLength = $companyData["Owner"][1];
+                $ownerLabelBSClass = "";
+                $ownerInputBSClass = "";
+                if($messageValue === -10)
+                {
+                    $ownerLabelBSClass = " text-danger";
+                    $ownerInputBSClass = " is-invalid";
+                }
 
                 $imprintContentHTML =
                 "
@@ -83,50 +164,50 @@ class ImprintView implements IImprintView
                                 <div class=\"container-fluid p-0\">
                                     <div class=\"row mb-3\">
                                         <div class=\"col-12\">
-                                            <label class=\"form-label\" for=\"companyName\">Unternehmensname (max. $companyNameMaxLength Zeichen):</label>
-                                            <input type=\"text\" class=\"w-100 form-control\" id=\"companyName\" name=\"companyName\" value=\"{$companyNameHTMLSafe}\" maxlength=\"$companyNameMaxLength\">
+                                            <label class=\"form-label$companyNameLabelBSClass\" for=\"companyName\">Unternehmensname (max. $companyNameMaxLength Zeichen):</label>
+                                            <input type=\"text\" class=\"w-100 form-control$companyNameInputBSClass\" id=\"companyName\" name=\"companyName\" value=\"{$companyNameHTMLSafe}\" maxlength=\"$companyNameMaxLength\">
                                         </div>
                                     </div>
                                     <div class=\"row mb-3\">
                                         <div class=\"col-12\">
-                                            <label class=\"form-label\" for=\"street\">Straße (inkl. Nr., max. $streetMaxLength Zeichen):</label>
-                                            <input type=\"text\" class=\"w-100 form-control\" id=\"street\" name=\"street\" value=\"{$streetHTMLSafe}\" maxlength=\"$streetMaxLength\">
+                                            <label class=\"form-label$streetLabelBSClass\" for=\"street\">Straße (inkl. Nr., max. $streetMaxLength Zeichen):</label>
+                                            <input type=\"text\" class=\"w-100 form-control$streetInputBSClass\" id=\"street\" name=\"street\" value=\"{$streetHTMLSafe}\" maxlength=\"$streetMaxLength\">
                                         </div>
                                     </div>
                                     <div class=\"row mb-3\">
                                         <div class=\"col-12\">
-                                            <label class=\"form-label\" for=\"zipCode\">PLZ (max. $zipCodeMaxLength Zeichen):</label>
-                                            <input type=\"text\" class=\"w-100 form-control\" id=\"zipCode\" name=\"zipCode\" value=\"{$zipCodeHTMLSafe}\" maxlength=\"$zipCodeMaxLength\">
+                                            <label class=\"form-label$zipCodeLabelBSClass\" for=\"zipCode\">PLZ (max. $zipCodeMaxLength Zeichen):</label>
+                                            <input type=\"text\" class=\"w-100 form-control$zipCodeInputBSClass\" id=\"zipCode\" name=\"zipCode\" value=\"{$zipCodeHTMLSafe}\" maxlength=\"$zipCodeMaxLength\">
                                         </div>
                                     </div>
                                     <div class=\"row mb-3\">
                                         <div class=\"col-12\">
-                                            <label class=\"form-label\" for=\"place\">Ort (max. $placeMaxLength Zeichen):</label>
-                                            <input type=\"text\" class=\"w-100 form-control\" id=\"place\" name=\"place\" value=\"{$placeHTMLSafe}\" maxlength=\"$placeMaxLength\">
+                                            <label class=\"form-label$placeLabelBSClass\" for=\"place\">Ort (max. $placeMaxLength Zeichen):</label>
+                                            <input type=\"text\" class=\"w-100 form-control$placeInputBSClass\" id=\"place\" name=\"place\" value=\"{$placeHTMLSafe}\" maxlength=\"$placeMaxLength\">
                                         </div>
                                     </div>
                                     <div class=\"row mb-3\">
                                         <div class=\"col-12\">
-                                            <label class=\"form-label\" for=\"email\">E-Mail (max. $emailMaxLength Zeichen):</label>
-                                            <input type=\"email\" class=\"w-100 form-control\" id=\"email\" name=\"email\" value=\"{$emailHTMLSafe}\" maxlength=\"$emailMaxLength\">
+                                            <label class=\"form-label$emailLabelBSClass\" for=\"email\">E-Mail (max. $emailMaxLength Zeichen):</label>
+                                            <input type=\"email\" class=\"w-100 form-control$emailInputBSClass\" id=\"email\" name=\"email\" value=\"{$emailHTMLSafe}\" maxlength=\"$emailMaxLength\">
                                         </div>
                                     </div>
                                     <div class=\"row mb-3\">
                                         <div class=\"col-12\">
-                                            <label class=\"form-label\" for=\"phoneMobile\">Telefon (mobil, max. $phoneMobileMaxLength Zeichen):</label>
-                                            <input type=\"tel\" class=\"w-100 form-control\" id=\"phoneMobile\" name=\"phoneMobile\" value=\"{$phoneMobileHTMLSafe}\" maxlength=\"$phoneMobileMaxLength\">
+                                            <label class=\"form-label$phoneMobileLabelBSClass\" for=\"phoneMobile\">Telefon (mobil, max. $phoneMobileMaxLength Zeichen):</label>
+                                            <input type=\"tel\" class=\"w-100 form-control$phoneMobileInputBSClass\" id=\"phoneMobile\" name=\"phoneMobile\" value=\"{$phoneMobileHTMLSafe}\" maxlength=\"$phoneMobileMaxLength\">
                                         </div>
                                     </div>
                                     <div class=\"row mb-3\">
                                         <div class=\"col-12\">
-                                            <label class=\"form-label\" for=\"phoneNormal\">Telefon (normal, max. $phoneNormalMaxLength Zeichen):</label>
-                                            <input type=\"tel\" class=\"w-100 form-control\" id=\"phoneNormal\" name=\"phoneNormal\" value=\"{$phoneNormalHTMLSafe}\" maxlength=\"$phoneNormalMaxLength\">
+                                            <label class=\"form-label$phoneNormalLabelBSClass\" for=\"phoneNormal\">Telefon (normal, max. $phoneNormalMaxLength Zeichen):</label>
+                                            <input type=\"tel\" class=\"w-100 form-control$phoneNormalInputBSClass\" id=\"phoneNormal\" name=\"phoneNormal\" value=\"{$phoneNormalHTMLSafe}\" maxlength=\"$phoneNormalMaxLength\">
                                         </div>
                                     </div>
                                     <div class=\"row mb-3\">
                                         <div class=\"col-12\">
-                                            <label class=\"form-label\" for=\"owner\">Geschäftsführer (Vor- & Zuname, max. $ownerMaxLength Zeichen):</label>
-                                            <input type=\"text\" class=\"w-100 form-control\" id=\"owner\" name=\"owner\" value=\"{$ownerHTMLSafe}\" maxlength=\"$ownerMaxLength\">
+                                            <label class=\"form-label$ownerLabelBSClass\" for=\"owner\">Geschäftsführer (Vor- & Zuname, max. $ownerMaxLength Zeichen):</label>
+                                            <input type=\"text\" class=\"w-100 form-control$ownerInputBSClass\" id=\"owner\" name=\"owner\" value=\"{$ownerHTMLSafe}\" maxlength=\"$ownerMaxLength\">
                                         </div>
                                     </div>
                                     <div class=\"row mb-3\">
@@ -136,14 +217,14 @@ class ImprintView implements IImprintView
                                     </div>
                                     <div class=\"row mb-3\">
                                         <div class=\"col-12 align-items-start\">
-                                            <label class=\"form-label\" for=\"p19UStG\">Hinweis zu §19 Abs. 1 UStG anzeigen:</label>
-                                            <input type=\"checkbox\" class=\"form-check\" id=\"p19UStG\" name=\"p19UStG\"{$p19UStGIsChecked}>
+                                            <label class=\"form-label$p19ustgAppliesLabelBSClass\" for=\"p19UStGApplies\">Hinweis zu §19 Abs. 1 UStG anzeigen:</label>
+                                            <input type=\"checkbox\" class=\"form-check$p19ustgAppliesInputBSClass\" id=\"p19UStGApplies\" name=\"p19UStGApplies\"{$p19UStGAppliesHTML}>
                                         </div>
                                     </div>
                                     <div class=\"row mb-3\">
                                         <div class=\"col-12 align-items-start\">
-                                            <label class=\"form-label\" for=\"p36VSBG\">Hinweis zur Streitbeilegung gemäß § 36 VSBG anzeigen:</label>
-                                            <input type=\"checkbox\" class=\"form-check\" id=\"p36VSBG\" name=\"p36VSBG\"{$p36VSBGIsChecked}>
+                                            <label class=\"form-label$p36vsbgAppliesLabelBSClass\" for=\"p36VSBGApplies\">Hinweis zur Streitbeilegung gemäß § 36 VSBG anzeigen:</label>
+                                            <input type=\"checkbox\" class=\"form-check$p36vsbgAppliesInputBSClass\" id=\"p36VSBGApplies\" name=\"p36VSBGApplies\"{$p36VSBGAppliesHTML}>
                                         </div>
                                     </div>
                                     <div class=\"row mb-3\">
@@ -158,7 +239,7 @@ class ImprintView implements IImprintView
                                     </div>
                                     <div class=\"row mb-3\">
                                         <div class=\"col-12\">
-                                            <a class=\"w-100 btn btn-secondary\" href=\"/\">Zur Startseite</a>
+                                            <a class=\"w-100 btn btn-secondary\" href=\"/?view=imprint\">Zurück</a>
                                         </div>
                                     </div> 
                                 </div>
@@ -181,6 +262,10 @@ class ImprintView implements IImprintView
                     
                 ";
             }
+        }
+        else
+        {
+
         }
 
         $feedHTML = $this->globalView->genFeed(null, $imprintContentHTML);
