@@ -41,6 +41,7 @@ Upload, edit, or delete:
 * MVC is considered unsuitable because it does not fully separate the view from the model, which can lead to business or data logic leaking into the view.
 * MVP is preferred for easier view replacement and better adherence to SOLID principles and clean architecture.
 * Interfaces and abstract classes are being used to define contracts and reusable base functionality while keeping components decoupled.
+* After MVP implementation, SaaS Tenant Architecture should be implemented (e.g. this: https://www.youtube.com/watch?v=e8k6TynqGFs)
 
 ---
 
