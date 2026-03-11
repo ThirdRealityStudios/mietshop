@@ -4,18 +4,21 @@ namespace src\mietshop\model;
 
 use PDOException;
 use src\mietshop\contracts\IAccountModel;
+use src\mietshop\contracts\IUserInputModel;
 use src\mietshop\infrastructure\database\IDatabaseAdapter;
 
 class AccountModel implements IAccountModel
 {
+    private IUserInputModel $userInputModel;
     private IDatabaseAdapter $databaseAdapter;
 
     /**
      * @param IDatabaseAdapter $databaseAdapter
      * @throws PDOException
      */
-    public function __construct(IDatabaseAdapter $databaseAdapter)
+    public function __construct(IUserInputModel $userInputModel, IDatabaseAdapter $databaseAdapter)
     {
+        $this->userInputModel = $userInputModel;
         $this->databaseAdapter = $databaseAdapter;
 
         $sql =
@@ -80,10 +83,7 @@ class AccountModel implements IAccountModel
                 // Check if the given permission level exists
                 if($this->isSupervisor($supervisorEmail) && $accountPermissionLevel >= $permissionLevel)
                 {
-                    $emailFormatValidationResult = filter_var($email, FILTER_VALIDATE_EMAIL);
-
-                    // If the filtering was successful, then it is a valid email.
-                    if(!is_bool($emailFormatValidationResult))
+                    if($this->userInputModel->isValidEmail($email))
                     {
                         if(strlen($password) > 0)
                         {
@@ -340,12 +340,26 @@ class AccountModel implements IAccountModel
                 {
                     // Password verified. Now can change email.
 
-                    $sql =
-                    "
-                        UPDATE AccountModel SET Email = ? WHERE Email = ?
-                    ";
+                    if(strcmp($currentEmail, $newEmail) === 0) // No update needed (remains the same)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        if($this->userInputModel->isValidEmail($newEmail))
+                        {
+                            $sql =
+                            "
+                                UPDATE AccountModel SET Email = ? WHERE Email = ?
+                            ";
 
-                    return $this->databaseAdapter->execute($sql, [$newEmail, $currentEmail]) === 1;
+                            return $this->databaseAdapter->execute($sql, [$newEmail, $currentEmail]) === 1;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
                 }
                 else
                 {

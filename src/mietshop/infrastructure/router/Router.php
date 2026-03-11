@@ -9,6 +9,7 @@ use src\mietshop\infrastructure\http\IHTTPRequest;
 use src\mietshop\model\AccountModel;
 use src\mietshop\model\CategoryModel;
 use src\mietshop\model\CompanyModel;
+use src\mietshop\model\UserInputModel;
 use src\mietshop\presenter\AccountManagementPresenter;
 use src\mietshop\presenter\AccountPresenter;
 use src\mietshop\presenter\HomePresenter;
@@ -35,7 +36,8 @@ class Router implements IRouter
 
     public function route(IHTTPRequest $request, array &$sessionValues, IDatabaseAdapter $databaseAdapter) : void
     {
-        $companyModel = new CompanyModel($databaseAdapter);
+        $userInputModel = new UserInputModel();
+        $companyModel = new CompanyModel($userInputModel, $databaseAdapter);
         $categoryModel = new CategoryModel($databaseAdapter);
         $globalView = new GlobalView();
         $errorView = new ErrorView($globalView);
@@ -50,7 +52,7 @@ class Router implements IRouter
         {
             $loginView = new LoginView($globalView);
             $accountView = new AccountView($globalView);
-            $accountModel = new AccountModel($databaseAdapter);
+            $accountModel = new AccountModel($userInputModel, $databaseAdapter);
             $loginPresenter = new LoginPresenter($companyModel, $accountModel, $loginView, $accountView, $errorView);
             $accountPresenter = new AccountPresenter($companyModel, $accountModel, $accountView, $errorView);
 

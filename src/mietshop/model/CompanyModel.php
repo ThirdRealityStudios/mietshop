@@ -4,6 +4,7 @@ namespace src\mietshop\model;
 
 use PDOException;
 use src\mietshop\contracts\ICompanyModel;
+use src\mietshop\contracts\IUserInputModel;
 use src\mietshop\infrastructure\database\IDatabaseAdapter;
 
 /**
@@ -16,6 +17,7 @@ use src\mietshop\infrastructure\database\IDatabaseAdapter;
 class CompanyModel implements ICompanyModel
 {
     private IDatabaseAdapter $databaseAdapter;
+    private IUserInputModel $userInputModel;
 
     // md5(random_bytes(6));
 
@@ -23,9 +25,10 @@ class CompanyModel implements ICompanyModel
      * @param IDatabaseAdapter $databaseAdapter Database adapter. Make sure you have connected yet.
      * @throws PDOException
      */
-    public function __construct(IDatabaseAdapter $databaseAdapter)
+    public function __construct(IUserInputModel $userInputModel, IDatabaseAdapter $databaseAdapter)
     {
         $this->databaseAdapter = $databaseAdapter;
+        $this->userInputModel = $userInputModel;
 
         $sql =
             "
@@ -208,10 +211,7 @@ class CompanyModel implements ICompanyModel
 
     public function setOwner(string $companyOwner): bool
     {
-        // \p{L} is a special expression to include all Unicode alphabetic symbols, e.g. French symbols (probably é, ó whatever), German symbols (ü, ö, ä, ß).
-        $isValidFullName = preg_match('#^[\p{L}\s\-\.\'()]+$#u', $companyOwner);
-        
-        if(mb_strlen($companyOwner, "UTF-8") <= $this->getOwnerCharacterLimit() && $isValidFullName)
+        if(mb_strlen($companyOwner, "UTF-8") <= $this->getOwnerCharacterLimit() && $this->userInputModel->isValidFullName($companyOwner))
         {
             return $this->updateValue("Owner", $companyOwner);
         }
@@ -297,14 +297,9 @@ class CompanyModel implements ICompanyModel
         return $this->databaseAdapter->readCharacterLimit("CompanyModel", "Email");
     }
 
-    private function isValidEmail(string $email): bool
-    {
-        return preg_match('#^([A-Za-z0-9]{1,63}([\-\.]?[A-Za-z0-9]{1,63})*)+@([A-Za-z0-9]{1,63}([\-\.]?[A-Za-z0-9]{1,63})*)\.[A-Za-z]{1,63}$#', $email);
-    }
-
     public function setEmail(string $email): bool
     {
-        if(mb_strlen($email, "UTF-8") <= $this->getEmailCharacterLimit() && $this->isValidEmail($email))
+        if(mb_strlen($email, "UTF-8") <= $this->getEmailCharacterLimit() && $this->userInputModel->isValidEmail($email))
         {
             return $this->updateValue("Email", $email);
         }
@@ -348,29 +343,13 @@ class CompanyModel implements ICompanyModel
         return $this->databaseAdapter->readCharacterLimit("CompanyModel", "PhoneMobile");
     }
 
-    /**
-     * Checks if the given phone number matches an usual international number.
-     * In the beginning,
-     * the plus symbol is optional ( \+? ).
-     * After that you must choose any symbol at least once,
-     * meaning any digit, a space, curly brackets, a dot or dash symbol.
-     * Note: regular expressions begin in this case with #^ and do end with $# .
-     *
-     * @param string $phoneNumber The phone number to check.
-     * @return bool True if the phone number matches the usual international phone number format (no matter if mobile or normal number). Otherwise, false.
-     */
-    private function isValidPhoneNumber(string $phoneNumber): bool
-    {
-        return preg_match('#^\+?[0-9 ().\-]+$#', $phoneNumber);
-    }
-
     public function setPhoneMobile(string $phoneMobile): bool
     {
         if(mb_strlen($phoneMobile, "UTF-8") <= $this->getPhoneMobileCharacterLimit())
         {
             $preprocessedPhoneNormal = str_replace(" ", "", $phoneMobile);
 
-            if($this->isValidPhoneNumber($preprocessedPhoneNormal))
+            if($this->userInputModel->isValidPhoneNumber($preprocessedPhoneNormal))
             {
                 return $this->updateValue("PhoneMobile", $preprocessedPhoneNormal);
             }
@@ -401,7 +380,7 @@ class CompanyModel implements ICompanyModel
         {
             $preprocessedPhoneNormal = str_replace(" ", "", $phoneNormal);
 
-            if($this->isValidPhoneNumber($preprocessedPhoneNormal))
+            if($this->userInputModel->isValidPhoneNumber($preprocessedPhoneNormal))
             {
                 return $this->updateValue("PhoneNormal", $preprocessedPhoneNormal);
             }

@@ -154,7 +154,8 @@ interface IAccountModel
 
     /**
      * Updates the current e-mail address.
-     * But only if there is an account with that given e-mail address and if the given password could be verified.
+     * But only if there is an account with that given e-mail address,
+     * if the e-mail address is valid and if the given password for that account could be verified.
      *
      * @param string $currentPassword Current password in clear-text.
      * @param string $currentEmail Current e-mail address of your account.
