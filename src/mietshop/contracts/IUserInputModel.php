@@ -2,6 +2,11 @@
 
 namespace src\mietshop\contracts;
 
+/**
+ * This is the interface which defines the most important user input validation functions
+ * for across most software components,
+ * so they can access these.
+ */
 interface IUserInputModel
 {
     /**
