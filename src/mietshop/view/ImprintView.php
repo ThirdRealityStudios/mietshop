@@ -30,7 +30,7 @@ class ImprintView implements IImprintView
 
         if(empty($actionValue)) // $messageValue === 0)
         {
-            $optionalEditButton = $showEditButton ? "<div class=\"row mb-2\"><div class=\"col-12\"><a class=\"btn btn-secondary mb-3\" href=\"/?view=imprint&action=update\">Impressum bearbeiten</a></div></div>" : "";
+            $optionalEditButton = $showEditButton ? "<div class=\"row mb-3\"><div class=\"col-12\"><a class=\"btn btn-secondary mb-3\" href=\"/?view=imprint&action=update\">Impressum bearbeiten</a></div></div>" : "";
             $optionalP19UStGText = ($p19ustgApplies === 1) ? "<div class=\"row mb-3\"><div class=\"col-12\"><span class=\"fs-6\">Per §19 Abs. 1 UStG wird die Umsatzsteuer nicht ausgewiesen.</span></div></div>" : "";
             $optionalP36VSBGText = ($p36vsbgApplies === 1) ? "<div class=\"row mb-3\"><div class=\"col-12\"><span class=\"fs-6\">Hinweis zur Streitbeilegung gemäß § 36 VSBG:</span></div></div><div class=\"row mb-3\"><div class=\"col-12\"><span class=\"fs-6\">Wir nehmen nicht an einem Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teil und sind hierzu auch nicht verpflichtet.</span></div></div>" : "";
 
@@ -39,7 +39,7 @@ class ImprintView implements IImprintView
             $imprintContentHTML =
             "
             <div class=\"container-fluid\">
-                <div class=\"row mb-3\">
+                <div class=\"row mb-3 mt-3\">
                     <div class=\"col-12\">
                         <p class=\"fs-1\">Impressum</p>
                     </div>
@@ -56,22 +56,22 @@ class ImprintView implements IImprintView
                 </div>
                 <div class=\"row mb-3\">
                     <div class=\"col-12\">
-                        <span class=\"fs-6\">{$zipCodeHTMLSafe} {$placeHTMLSafe}</span>
-                    </div>
-                </div>
-                <div class=\"row\">
-                    <div class=\"col-12\">
-                        <span class=\"fs-6\">E-Mail: </span><a href=\"mailto:{$emailHTMLSafe}\">{$emailHTMLSafe}</a>
+                        <span class=\"fs-6 d-inline-block\">{$zipCodeHTMLSafe}&nbsp;</span><span class=\"fs-6 d-inline-block\">{$placeHTMLSafe}</span>
                     </div>
                 </div>
                 <div class=\"row mb-3\">
                     <div class=\"col-12\">
-                        <span class=\"fs-6\">Telefon: </span><a class=\"fs-6\" href=\"tel:{$phoneMobileHTMLSafe}\">{$phoneMobileHTMLSafe}</a>
+                        <span class=\"fs-6 d-inline-block\">E-Mail:&nbsp;</span><a class=\"d-inline-block\" href=\"mailto:{$emailHTMLSafe}\">{$emailHTMLSafe}</a>
                     </div>
                 </div>
                 <div class=\"row mb-3\">
                     <div class=\"col-12\">
-                        <span class=\"fs-6\">Geschäftsführer: {$ownerHTMLSafe}</span>
+                        <span class=\"fs-6 d-inline-block\">Telefon:&nbsp;</span><a class=\"fs-6 d-inline-block\" href=\"tel:{$phoneMobileHTMLSafe}\">{$phoneMobileHTMLSafe}</a>
+                    </div>
+                </div>
+                <div class=\"row mb-3\">
+                    <div class=\"col-12\">
+                        <span class=\"fs-6 d-inline-block\">Geschäftsführer:&nbsp;</span><span class=\"fs-6 d-inline-block\">{$ownerHTMLSafe}</span>
                     </div>
                 </div>
                 <div class=\"row\">
