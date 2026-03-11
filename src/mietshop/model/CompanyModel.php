@@ -252,7 +252,7 @@ class CompanyModel implements ICompanyModel
 
     public function setZipCode(string $companyZipCode): bool
     {
-        if(strlen($companyZipCode) <= $this->getZipCodeCharacterLimit())
+        if(strlen($companyZipCode) <= $this->getZipCodeCharacterLimit() && is_numeric($companyZipCode))
         {
             return $this->updateValue("ZipCode", $companyZipCode);
         }
@@ -294,9 +294,14 @@ class CompanyModel implements ICompanyModel
         return $this->databaseAdapter->readCharacterLimit("CompanyModel", "Email");
     }
 
+    private function isValidEmail(string $email): bool
+    {
+        return preg_match('#^([A-Za-z0-9]{1,63}([\-\.]?[A-Za-z0-9]{1,63})*)+@([A-Za-z0-9]{1,63}([\-\.]?[A-Za-z0-9]{1,63})*)\.[A-Za-z]{1,63}$#', $email);
+    }
+
     public function setEmail(string $email): bool
     {
-        if(strlen($email) <= $this->getEmailCharacterLimit())
+        if(strlen($email) <= $this->getEmailCharacterLimit() && $this->isValidEmail($email))
         {
             return $this->updateValue("Email", $email);
         }
@@ -340,11 +345,36 @@ class CompanyModel implements ICompanyModel
         return $this->databaseAdapter->readCharacterLimit("CompanyModel", "PhoneMobile");
     }
 
+    /**
+     * Checks if the given phone number matches an usual international number.
+     * In the beginning,
+     * the plus symbol is optional ( \+? ).
+     * After that you must choose any symbol at least once,
+     * meaning any digit, a space, curly brackets, a dot or dash symbol.
+     * Note: regular expressions begin in this case with #^ and do end with $# .
+     *
+     * @param string $phoneNumber The phone number to check.
+     * @return bool True if the phone number matches the usual international phone number format (no matter if mobile or normal number). Otherwise, false.
+     */
+    private function isValidPhoneNumber(string $phoneNumber): bool
+    {
+        return preg_match('#^\+?[0-9 ().\-]+$#', $phoneNumber);
+    }
+
     public function setPhoneMobile(string $phoneMobile): bool
     {
         if(strlen($phoneMobile) <= $this->getPhoneMobileCharacterLimit())
         {
-            return $this->updateValue("PhoneMobile", $phoneMobile);
+            $preprocessedPhoneNormal = str_replace(" ", "", $phoneMobile);
+
+            if($this->isValidPhoneNumber($preprocessedPhoneNormal))
+            {
+                return $this->updateValue("PhoneMobile", $preprocessedPhoneNormal);
+            }
+            else
+            {
+                return false;
+            }
         }
         else
         {
@@ -366,7 +396,16 @@ class CompanyModel implements ICompanyModel
     {
         if(strlen($phoneNormal) <= $this->getPhoneNormalCharacterLimit())
         {
-            return $this->updateValue("PhoneNormal", $phoneNormal);
+            $preprocessedPhoneNormal = str_replace(" ", "", $phoneNormal);
+
+            if($this->isValidPhoneNumber($preprocessedPhoneNormal))
+            {
+                return $this->updateValue("PhoneNormal", $preprocessedPhoneNormal);
+            }
+            else
+            {
+                return false;
+            }
         }
         else
         {
