@@ -26,6 +26,13 @@ interface IUserInputModel
      * @return bool True if the phone number matches the usual international phone number format (no matter if mobile or normal number). Otherwise, false.
      */
     public function isValidPhoneNumber(string $phoneNumber): bool;
-    
+
+    /**
+     * Validates full names,
+     * allowing UTF-8 alphabetic symbols (of many different language alphabets) and special chars like (,),-,',. and space symbol.
+     *
+     * @param string $fullName Full name of person.
+     * @return bool True if the string represents a valid usual full name. Otherwise, false.
+     */
     public function isValidFullName(string $fullName): bool;
 }
