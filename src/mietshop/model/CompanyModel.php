@@ -186,7 +186,7 @@ class CompanyModel implements ICompanyModel
 
     public function setCompanyName(string $companyName): bool
     {
-        if(strlen($companyName) <= $this->getCompanyNameCharacterLimit())
+        if(mb_strlen($companyName, "UTF-8") <= $this->getCompanyNameCharacterLimit())
         {
             return $this->updateValue("CompanyName", $companyName);
         }
@@ -208,7 +208,10 @@ class CompanyModel implements ICompanyModel
 
     public function setOwner(string $companyOwner): bool
     {
-        if(strlen($companyOwner) <= $this->getOwnerCharacterLimit())
+        // \p{L} is a special expression to include all Unicode alphabetic symbols, e.g. French symbols (probably é, ó whatever), German symbols (ü, ö, ä, ß).
+        $isValidFullName = preg_match('#^[\p{L}\s\-\.\'()]+$#u', $companyOwner);
+        
+        if(mb_strlen($companyOwner, "UTF-8") <= $this->getOwnerCharacterLimit() && $isValidFullName)
         {
             return $this->updateValue("Owner", $companyOwner);
         }
@@ -230,7 +233,7 @@ class CompanyModel implements ICompanyModel
 
     public function setStreet(string $street): bool
     {
-        if(strlen($street) <= $this->getStreetCharacterLimit())
+        if(mb_strlen($street, "UTF-8") <= $this->getStreetCharacterLimit())
         {
             return $this->updateValue("Street", $street);
         }
@@ -252,7 +255,7 @@ class CompanyModel implements ICompanyModel
 
     public function setZipCode(string $companyZipCode): bool
     {
-        if(strlen($companyZipCode) <= $this->getZipCodeCharacterLimit() && is_numeric($companyZipCode))
+        if(mb_strlen($companyZipCode, "UTF-8") <= $this->getZipCodeCharacterLimit() && is_numeric($companyZipCode))
         {
             return $this->updateValue("ZipCode", $companyZipCode);
         }
@@ -274,7 +277,7 @@ class CompanyModel implements ICompanyModel
 
     public function setPlace(string $companyPlace): bool
     {
-        if(strlen($companyPlace) <= $this->getPlaceCharacterLimit())
+        if(mb_strlen($companyPlace, "UTF-8") <= $this->getPlaceCharacterLimit())
         {
             return $this->updateValue("Place", $companyPlace);
         }
@@ -301,7 +304,7 @@ class CompanyModel implements ICompanyModel
 
     public function setEmail(string $email): bool
     {
-        if(strlen($email) <= $this->getEmailCharacterLimit() && $this->isValidEmail($email))
+        if(mb_strlen($email, "UTF-8") <= $this->getEmailCharacterLimit() && $this->isValidEmail($email))
         {
             return $this->updateValue("Email", $email);
         }
@@ -363,7 +366,7 @@ class CompanyModel implements ICompanyModel
 
     public function setPhoneMobile(string $phoneMobile): bool
     {
-        if(strlen($phoneMobile) <= $this->getPhoneMobileCharacterLimit())
+        if(mb_strlen($phoneMobile, "UTF-8") <= $this->getPhoneMobileCharacterLimit())
         {
             $preprocessedPhoneNormal = str_replace(" ", "", $phoneMobile);
 
@@ -394,7 +397,7 @@ class CompanyModel implements ICompanyModel
 
     public function setPhoneNormal(string $phoneNormal): bool
     {
-        if(strlen($phoneNormal) <= $this->getPhoneNormalCharacterLimit())
+        if(mb_strlen($phoneNormal, "UTF-8") <= $this->getPhoneNormalCharacterLimit())
         {
             $preprocessedPhoneNormal = str_replace(" ", "", $phoneNormal);
 
@@ -425,7 +428,7 @@ class CompanyModel implements ICompanyModel
 
     public function setMapLocationURL(string $companyMapLocation): bool
     {
-        if(strlen($companyMapLocation) <= $this->getMapLocationURLCharacterLimit())
+        if(mb_strlen($companyMapLocation, "UTF-8") <= $this->getMapLocationURLCharacterLimit())
         {
             return $this->updateValue("MapLocationURL", $companyMapLocation);
         }
@@ -447,7 +450,7 @@ class CompanyModel implements ICompanyModel
 
     public function setFacebookURL(string $facebookURL): bool
     {
-        if(strlen($facebookURL) <= $this->getFacebookURLCharacterLimit())
+        if(mb_strlen($facebookURL, "UTF-8") <= $this->getFacebookURLCharacterLimit())
         {
             return $this->updateValue("FacebookURL", $facebookURL);
         }
@@ -469,7 +472,7 @@ class CompanyModel implements ICompanyModel
 
     public function setInstagramURL(string $instagramURL): bool
     {
-        if(strlen($instagramURL) <= $this->getInstagramURLCharacterLimit())
+        if(mb_strlen($instagramURL, "UTF-8") <= $this->getInstagramURLCharacterLimit())
         {
             return $this->updateValue("InstagramURL", $instagramURL);
         }
@@ -491,7 +494,7 @@ class CompanyModel implements ICompanyModel
 
     public function setWhatsAppURL(string $whatsAppURL): bool
     {
-        if(strlen($whatsAppURL) <= $this->getWhatsAppURLCharacterLimit())
+        if(mb_strlen($whatsAppURL, "UTF-8") <= $this->getWhatsAppURLCharacterLimit())
         {
             return $this->updateValue("WhatsAppURL", $whatsAppURL);
         }
@@ -513,7 +516,7 @@ class CompanyModel implements ICompanyModel
 
     public function setKleinanzeigenURL(string $kleinanzeigenURL): bool
     {
-        if(strlen($kleinanzeigenURL) <= $this->getKleinanzeigenURLCharacterLimit())
+        if(mb_strlen($kleinanzeigenURL, "UTF-8") <= $this->getKleinanzeigenURLCharacterLimit())
         {
             return $this->updateValue("KleinanzeigenURL", $kleinanzeigenURL);
         }
@@ -535,7 +538,7 @@ class CompanyModel implements ICompanyModel
 
     public function setPrivacyPolicy(string $privacyPolicyInformation): bool
     {
-        if(strlen($privacyPolicyInformation) <= $this->getPrivacyPolicyCharacterLimit())
+        if(mb_strlen($privacyPolicyInformation, "UTF-8") <= $this->getPrivacyPolicyCharacterLimit())
         {
             return $this->updateValue("PrivacyPolicy", $privacyPolicyInformation);
         }
@@ -557,7 +560,7 @@ class CompanyModel implements ICompanyModel
 
     public function setTermsOfService(string $termsOfService): bool
     {
-        if(strlen($termsOfService) <= $this->getTermsOfServiceCharacterLimit())
+        if(mb_strlen($termsOfService, "UTF-8") <= $this->getTermsOfServiceCharacterLimit())
         {
             return $this->updateValue("TermsOfService", $termsOfService);
         }

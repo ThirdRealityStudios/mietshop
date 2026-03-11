@@ -162,10 +162,19 @@ class ImprintView implements IImprintView
                     $phoneNormalInputBSClass = " is-invalid";
                 }
 
+                $ownerMaxLength = $companyData["Owner"][1];
+                $ownerLabelBSClass = "";
+                $ownerInputBSClass = "";
+                if($messageValue === -8)
+                {
+                    $ownerLabelBSClass = " text-danger";
+                    $ownerInputBSClass = " is-invalid";
+                }
+
                 $p19UStGAppliesHTML = ($p19ustgApplies === 1) ? " checked" : "";
                 $p19ustgAppliesLabelBSClass = "";
                 $p19ustgAppliesInputBSClass = "";
-                if($messageValue === -8)
+                if($messageValue === -9)
                 {
                     $p19ustgAppliesLabelBSClass = " text-danger";
                     $p19ustgAppliesInputBSClass = " is-invalid";
@@ -174,19 +183,10 @@ class ImprintView implements IImprintView
                 $p36VSBGAppliesHTML = ($p36vsbgApplies === 1) ? " checked" : "";
                 $p36vsbgAppliesLabelBSClass = "";
                 $p36vsbgAppliesInputBSClass = "";
-                if($messageValue === -9)
+                if($messageValue === -10)
                 {
                     $p36vsbgAppliesLabelBSClass = " text-danger";
                     $p36vsbgAppliesInputBSClass = " is-invalid";
-                }
-
-                $ownerMaxLength = $companyData["Owner"][1];
-                $ownerLabelBSClass = "";
-                $ownerInputBSClass = "";
-                if($messageValue === -10)
-                {
-                    $ownerLabelBSClass = " text-danger";
-                    $ownerInputBSClass = " is-invalid";
                 }
 
                 $imprintContentHTML =
