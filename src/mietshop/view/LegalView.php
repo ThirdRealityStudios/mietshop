@@ -40,7 +40,7 @@ class LegalView implements ILegalView
             <div class=\"container-fluid p-0\">
                 <div class=\"row mb-3 mt-2\">
                     <div class=\"col-12\">
-                        <span class=\"fs-2 fw-bold\">$legalTextTitleLong</span>
+                        <span class=\"fs-3 fw-bold\">$legalTextTitleLong</span>
                     </div>
                 </div>
                 $optionalEditButton

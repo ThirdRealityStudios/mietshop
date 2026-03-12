@@ -39,7 +39,7 @@ class ImprintView implements IImprintView
             <div class=\"container-fluid p-0\">
                 <div class=\"row mb-2 mt-2\">
                     <div class=\"col-12\">
-                        <p class=\"fs-2 fw-bold\">Impressum</p>
+                        <p class=\"fs-3 fw-bold\">Impressum</p>
                     </div>
                 </div>
                 <div class=\"row mb-3\">
