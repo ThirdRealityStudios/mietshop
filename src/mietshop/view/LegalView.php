@@ -55,11 +55,24 @@ class LegalView implements ILegalView
 
         $this->giveErrorMessageIfNotString($companyData, $legalTextHTMLSafeFormattedSemiBold);
 
+        /**
+         * Note: [^mySymbols] will say "allow every symbol possible except those in the edgy brackets after the symbol ^".
+         */
         $legalTextSelectedAreaFormattedSemiBold = preg_replace("#\*\*([^\*]*)\*\*#", "<span class=\"fw-semibold m-0 d-inline-block\">$1</span>", $legalTextHTMLSafeFormattedSemiBold);
 
         $this->giveErrorMessageIfNotString($companyData, $legalTextSelectedAreaFormattedSemiBold);
 
-        $legalTextFormattedDots = preg_replace("#^\*\s*(.*)$#m", "• $1", $legalTextSelectedAreaFormattedSemiBold);// str_replace("*", "•", $legalTextSelectedAreaFormattedSemiBold); // Now styled all dots nicer
+        /**
+         * What happens here with the regex expression (PCRE format) is:
+         *
+         * #expression# will initiate the validation generally.
+         * #expression#m will additionally limit the validation to every single line (no validation across lines possible - only single lines, using multiline mode, shortly m).
+         * #^preciseExpression$#m will do what said above but also say: from the beginning to the end it must be strict what the preciseExpression says.
+         * #^\*\s*(.*)$#m will say: every line directly has to start (note ^ at the beginning) with an (here correctly escaped) asterisk, followed by a variable length of whitespace characters (note \s with * for variable length).
+         *                          (.*) will symbolize a Capturing Group (note the opening and closing curly braces which contain the expression that is extracted - and after that usable with the $1 placeholder in the replacement string parameter).
+         *                          .* will symbolize that any symbol in any variable character length is accepted.
+         */
+        $legalTextFormattedDots = preg_replace("#^\*\s*(.*)$#m", "• $1", $legalTextSelectedAreaFormattedSemiBold);
 
         $legalTextHTMLSafeFormatted = $legalTextFormattedDots;
 
