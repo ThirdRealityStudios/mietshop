@@ -74,8 +74,8 @@ class Router implements IRouter
             else if($request->isRequestParameterMatching("view", "privacypolicy"))
             {
                 $privacyPolicyView = new PrivacyPolicyView($globalView);
-                $privacyPolicyPresenter = new PrivacyPolicyPresenter($privacyPolicyView, $errorView, $companyModel);
-                $privacyPolicyPresenter->process();
+                $privacyPolicyPresenter = new PrivacyPolicyPresenter($privacyPolicyView, $errorView, $companyModel, $accountModel);
+                $privacyPolicyPresenter->process($request, $sessionValues);
             }
             else if($request->isRequestParameterMatching("view", "login"))
             {

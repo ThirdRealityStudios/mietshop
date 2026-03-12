@@ -28,20 +28,18 @@ class ImprintView implements IImprintView
         $p19ustgApplies = $companyData["P19UStGApplies"][0];
         $p36vsbgApplies = $companyData["P36VSBGApplies"][0];
 
-        if(empty($actionValue)) // $messageValue === 0)
+        if(empty($actionValue))
         {
-            $optionalEditButton = $showEditButton ? "<div class=\"row mb-3\"><div class=\"col-12\"><a class=\"btn btn-secondary mb-3\" href=\"/?view=imprint&action=update\">Impressum bearbeiten</a></div></div>" : "";
+            $optionalEditButton = $showEditButton ? "<div class=\"row mb-3\"><div class=\"col-12\"><a class=\"btn btn-secondary\" href=\"/?view=imprint&action=update\">Impressum bearbeiten</a></div></div>" : "";
             $optionalP19UStGText = ($p19ustgApplies === 1) ? "<div class=\"row mb-3\"><div class=\"col-12\"><span class=\"fs-6\">Per §19 Abs. 1 UStG wird die Umsatzsteuer nicht ausgewiesen.</span></div></div>" : "";
             $optionalP36VSBGText = ($p36vsbgApplies === 1) ? "<div class=\"row mb-3\"><div class=\"col-12\"><span class=\"fs-6\">Hinweis zur Streitbeilegung gemäß § 36 VSBG:</span></div></div><div class=\"row mb-3\"><div class=\"col-12\"><span class=\"fs-6\">Wir nehmen nicht an einem Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teil und sind hierzu auch nicht verpflichtet.</span></div></div>" : "";
 
-            // <span class=\"fs-6\" style=\"white-space: pre-line;\">
-
             $imprintContentHTML =
             "
-            <div class=\"container-fluid\">
-                <div class=\"row mb-3 mt-3\">
+            <div class=\"container-fluid p-0\">
+                <div class=\"row mb-2 mt-2\">
                     <div class=\"col-12\">
-                        <p class=\"fs-1\">Impressum</p>
+                        <p class=\"fs-2 fw-bold\">Impressum</p>
                     </div>
                 </div>
                 <div class=\"row mb-3\">
@@ -285,25 +283,35 @@ class ImprintView implements IImprintView
                         </form>   
                     </div>
                 ";
-
-                /**
-                    Hinweis zur Streitbeilegung gemäß § 36 VSBG:
-                    Wir nehmen nicht an einem Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teil und sind hierzu auch nicht verpflichtet.
-
-                    Per §19 Abs. 1 UStG wird die Umsatzsteuer nicht ausgewiesen.
-                */
             }
             else if($messageValue === 1) // Show that update was all ok.
             {
                 $imprintContentHTML =
                 "
-                    
+                <div class=\"container-fluid p-0\">
+                    <div class=\"row mt-3 mb-5\">
+                        <div class=\"col-2\" style=\"background-image: url('/img/symbol/trash-fill-success.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\"></div>
+                        <div class=\"col-10\">
+                           <span class=\"fs-2 fw-bold text-success\">Impressum erfolgreich aktualisiert!</span>
+                        </div>
+                    </div>
+                    <div class=\"row mb-3\">
+                        <div class=\"col-12\">
+                            <a class=\"btn btn-success w-100\" href=\"/?view=imprint&action=update\">Impressum weiter bearbeiten</a>
+                        </div>
+                    </div>
+                    <div class=\"row mb-3\">
+                        <div class=\"col-12\">
+                            <a class=\"btn btn-secondary w-100\" href=\"/?view=imprint\">Zur Übersicht</a>
+                        </div>
+                    </div>
+                </div>
                 ";
             }
-        }
-        else
-        {
-
+            else
+            {
+                // Invalid request
+            }
         }
 
         $feedHTML = $this->globalView->genFeed(null, $imprintContentHTML);

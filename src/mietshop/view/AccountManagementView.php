@@ -239,7 +239,7 @@ class AccountManagementView implements IAccountManagementView
                     "
                     <div class=\"container-fluid p-0\">
                         <div class=\"row mt-3 mb-5\">
-                            <div class=\"col-2\" style=\"background-image: url('/img/symbol/person-fill-slash.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\"></div>
+                            <div class=\"col-2\" style=\"background-image: url('/img/symbol/person-fill-slash-danger.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\"></div>
                             <div class=\"col-10\">
                                 <span class=\"fs-2 fw-bold text-danger\">Unzureichende Befugnisse</span>
                             </div>
@@ -263,7 +263,7 @@ class AccountManagementView implements IAccountManagementView
                     "
                     <div class=\"container-fluid p-0\">
                         <div class=\"row mt-3 mb-5\">
-                            <div class=\"col-2\" style=\"background-image: url('/img/symbol/person-fill-check.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\"></div>
+                            <div class=\"col-2\" style=\"background-image: url('/img/symbol/person-fill-check-success.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\"></div>
                             <div class=\"col-10\">
                                 <span class=\"fs-2 fw-bold text-success\">Konto erfolgreich erstellt</span>
                             </div>
@@ -438,7 +438,7 @@ class AccountManagementView implements IAccountManagementView
                     "
                     <div class=\"container-fluid p-0\">
                         <div class=\"row mt-3 mb-5\">
-                            <div class=\"col-2\" style=\"background-image: url('/img/symbol/cpu-fill.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\"></div>
+                            <div class=\"col-2\" style=\"background-image: url('/img/symbol/cpu-fill-danger.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\"></div>
                             <div class=\"col-10\">
                                 <span class=\"fs-2 fw-bold text-danger\">Allgemeiner Verarbeitungsfehler</span>
                             </div>
@@ -459,10 +459,10 @@ class AccountManagementView implements IAccountManagementView
                 else if($messageValue === -5) // Do I have insufficient permissions to update the permissions of this account? (most likely because a higher permission level was provided than the supervisor has)
                 {
                     $feedContentHTML =
-                        "
+                    "
                     <div class=\"container-fluid p-0\">
                         <div class=\"row mt-3 mb-5\">
-                            <div class=\"col-2\" style=\"background-image: url('/img/symbol/person-fill-slash.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\"></div>
+                            <div class=\"col-2\" style=\"background-image: url('/img/symbol/person-fill-slash-danger.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\"></div>
                             <div class=\"col-10\">
                                 <span class=\"fs-2 fw-bold text-danger\">Unzureichende Befugnisse</span>
                             </div>
@@ -486,7 +486,7 @@ class AccountManagementView implements IAccountManagementView
                     "
                     <div class=\"container-fluid p-0\">
                         <div class=\"row mt-3 mb-5\">
-                            <div class=\"col-2\" style=\"background-image: url('/img/symbol/person-fill-check.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\"></div>
+                            <div class=\"col-2\" style=\"background-image: url('/img/symbol/person-fill-check-success.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\"></div>
                             <div class=\"col-10\">
                                 <span class=\"fs-2 fw-bold text-success\">Berechtigung erfolgreich aktualisiert</span>
                             </div>
@@ -586,7 +586,7 @@ class AccountManagementView implements IAccountManagementView
                     "
                     <div class=\"container-fluid p-0\">
                         <div class=\"row mt-3 mb-5\">
-                            <div class=\"col-2\" style=\"background-image: url('/img/symbol/person-fill-slash.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\"></div>
+                            <div class=\"col-2\" style=\"background-image: url('/img/symbol/person-fill-slash-danger.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\"></div>
                             <div class=\"col-10\">
                                 <span class=\"fs-2 fw-bold text-danger\">Unzureichende Befugnisse</span>
                             </div>
@@ -610,7 +610,7 @@ class AccountManagementView implements IAccountManagementView
                     "
                     <div class=\"container-fluid p-0\">
                         <div class=\"row mt-3 mb-5\">
-                            <div class=\"col-2\" style=\"background-image: url('/img/symbol/trash-fill.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\"></div>
+                            <div class=\"col-2\" style=\"background-image: url('/img/symbol/trash-fill-success.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\"></div>
                             <div class=\"col-10\">
                                 <span class=\"fs-2 fw-bold text-success\">Konto erfolgreich gelöscht!</span>
                             </div>
