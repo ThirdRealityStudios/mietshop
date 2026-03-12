@@ -58,8 +58,8 @@ class CompanyModel implements ICompanyModel
 			    WhatsAppURL VARCHAR(150) NOT NULL DEFAULT \"\",
 			    KleinanzeigenURL VARCHAR(150) NOT NULL DEFAULT \"\",
 			    
-			    PrivacyPolicy VARCHAR(65535) NOT NULL DEFAULT \"\",
-			    TermsOfService VARCHAR(65535) NOT NULL DEFAULT \"\"
+			    PrivacyPolicy TEXT NOT NULL DEFAULT \"\",
+			    TermsOfService TEXT NOT NULL DEFAULT \"\"
 			);
 			";
 

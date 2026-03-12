@@ -2,6 +2,7 @@
 
 namespace src\mietshop\view;
 
+use src\mietshop\contracts\IErrorView;
 use src\mietshop\contracts\IGlobalView;
 use src\mietshop\contracts\ILegalView;
 
@@ -16,10 +17,22 @@ use src\mietshop\contracts\ILegalView;
 class LegalView implements ILegalView
 {
     private IGlobalView $globalView;
+    private IErrorView $errorView;
 
-    public function __construct(IGlobalView $globalView)
+    public function __construct(IGlobalView $globalView, IErrorView  $errorView)
     {
         $this->globalView = $globalView;
+        $this->errorView = $errorView;
+    }
+
+    private function giveErrorMessageIfNotString(array $companyData, $stringPregReplaceResult)
+    {
+        if(!is_string($stringPregReplaceResult))
+        {
+            $this->errorView->show($companyData, "Unbekannter Fehler", "Die interne EDV scheint derzeit einen Verarbeitungsfehler zu haben. Bitte schauen Sie später nochmal vorbei, bis der Fehler behoben worden ist.");
+
+            exit(0);
+        }
     }
 
     public function show(array $companyData, bool $showEditButton, bool $isPrivacyPolicy, string $actionValue = "", int $messageValue = 0) : void
@@ -30,7 +43,26 @@ class LegalView implements ILegalView
         $legalTextView = $isPrivacyPolicy ? "privacypolicy" : "termsofservice";
         $legalTextInputIdentifier = $isPrivacyPolicy ? "privacyPolicy" : "termsOfService";
 
-        $legalTextHTMLSafe = htmlspecialchars($companyData[$legalTextKey][0], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $legalTextUnformatted = $companyData[$legalTextKey][0]; // Unformatted without styles
+
+        $legalTextHTMLSafe = htmlspecialchars($legalTextUnformatted, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+
+        $legalTextHTMLSafeFormattedBold = preg_replace("#^\#\#\s*(.*)$#m", "<span class=\"fw-bold m-0 d-inline-block\">$1</span>", $legalTextHTMLSafe);
+
+        $this->giveErrorMessageIfNotString($companyData, $legalTextHTMLSafeFormattedBold);
+
+        $legalTextHTMLSafeFormattedSemiBold = preg_replace("#^\#\s*(.*)$#m", "<span class=\"fw-semibold m-0 d-inline-block\">$1</span>", $legalTextHTMLSafeFormattedBold);
+
+        $this->giveErrorMessageIfNotString($companyData, $legalTextHTMLSafeFormattedSemiBold);
+
+        $legalTextSelectedAreaFormattedSemiBold = preg_replace("#\*\*([^\*]*)\*\*#", "<span class=\"fw-semibold m-0 d-inline-block\">$1</span>", $legalTextHTMLSafeFormattedSemiBold);
+
+        $this->giveErrorMessageIfNotString($companyData, $legalTextSelectedAreaFormattedSemiBold);
+
+        $legalTextFormattedDots = preg_replace("#^\*\s*(.*)$#m", "• $1", $legalTextSelectedAreaFormattedSemiBold);// str_replace("*", "•", $legalTextSelectedAreaFormattedSemiBold); // Now styled all dots nicer
+
+        $legalTextHTMLSafeFormatted = $legalTextFormattedDots;
+
         $optionalEditButton = $showEditButton ? "<div class=\"row mb-4\"><div class=\"col-12\"><a class=\"btn btn-secondary\" href=\"/?view=$legalTextView&action=update\">Bearbeiten</a></div></div>" : "";
 
         if(empty($actionValue))
@@ -46,7 +78,7 @@ class LegalView implements ILegalView
                 $optionalEditButton
                 <div class=\"row mb-3\">
                     <div class=\"col-12\">
-                        <p style=\"white-space: pre-line;\" class=\"fs-6\">$legalTextHTMLSafe</p>
+                        <p style=\"white-space: pre-line;\" class=\"fs-6\">$legalTextHTMLSafeFormatted</p>
                     </div>
                 </div>
                 <div class=\"row mb-3\">
