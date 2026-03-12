@@ -43,6 +43,8 @@ class AccountPresenter implements IAccountPresenter
             {
                 // Then I am logged in (at least judging server-side - maybe the account does not exist anymore because an admin deleted it)
 
+                $accountEmail = $sessionValues["Email"];
+
                 if(is_string($queryActionValue) && strcmp($queryActionValue, "logout") === 0) // Does the user want to logout?
                 {
                     session_destroy();
@@ -58,11 +60,11 @@ class AccountPresenter implements IAccountPresenter
 
                         if(key_exists($permissionLevel, IAccountModel::PERMISSION_ROLE))
                         {
-                            $determinedRole = IAccountModel::PERMISSION_ROLE[$permissionLevel];
+                            $permissionRoleName = IAccountModel::PERMISSION_ROLE[$permissionLevel];
 
-                            $canManageAccounts = $this->accountModel->isSupervisor($sessionValues["Email"]);
+                            $isSupervisor = $this->accountModel->isSupervisor($sessionValues["Email"]);
 
-                            $this->accountView->show($companyData, ["Email" => $sessionValues["Email"], "PermissionRole" => $determinedRole, "CanManageAccounts" => $canManageAccounts]);
+                            $this->accountView->show($companyData, $accountEmail, $isSupervisor, $permissionRoleName);
                         }
                         else
                         {

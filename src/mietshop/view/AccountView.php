@@ -14,36 +14,45 @@ class AccountView implements IAccountView
         $this->globalView = $globalView;
     }
 
-    public function show(array $companyData, array $accountData) : void
+    private function genAccountMenuButton(string $view, string $action, string $title) : string
+    {
+        $menuButtonHTML =
+        "
+        <div class=\"row mt-4\">
+            <div class=\"col-12\">
+                <a class=\"btn btn-primary w-100\" href=\"/?view=$view&action=$action\">$title</a>
+            </div>
+        </div>
+        ";
+
+        return $menuButtonHTML;
+    }
+
+    public function show(array $companyData, string $email, bool $isSupervisor, string $permissionRoleName) : void
     {
         $cutFromLength = 30;
 
-        if(strlen($accountData["Email"]) > $cutFromLength)
+        if(mb_strlen($email, "UTF-8") > $cutFromLength)
         {
-            $accountEmailLimited = substr($accountData["Email"], 0, $cutFromLength);
+            $accountEmailLimited = substr($email, 0, $cutFromLength);
             $accountEmailLimited .= "...";
         }
         else
         {
-            $accountEmailLimited = $accountData["Email"];
+            $accountEmailLimited = $email;
         }
 
         $accountEmailSafe = htmlspecialchars($accountEmailLimited, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
 
-        if($accountData["CanManageAccounts"])
+        if($isSupervisor)
         {
-            $optionalManageAccountsButton =
-            "
-                <div class=\"row mt-4\">
-                    <div class=\"col-12\">
-                        <a class=\"btn btn-primary w-100\" href=\"/?view=accounts&action=all\">Konten verwalten 👥</a>
-                    </div>
-                </div>
-            ";
+            $optionalManageAccountsButton = $this->genAccountMenuButton("accounts", "all", "Konten verwalten 👥");
+            $optionalManageAppearanceButton = $this->genAccountMenuButton("appearance", "all", "Darstellung verwalten 🎨");
         }
         else
         {
             $optionalManageAccountsButton = "";
+            $optionalManageAppearanceButton = "";
         }
 
         $feedContent =
@@ -60,7 +69,7 @@ class AccountView implements IAccountView
                             </div>
                             <div class=\"row\">
                                 <div class=\"col-12 text-left\">
-                                    <span>Sie sind: {$accountData["PermissionRole"]}</span>
+                                    <span>Sie sind: {$permissionRoleName}</span>
                                 </div>
                             </div>
                         </div>
@@ -72,6 +81,7 @@ class AccountView implements IAccountView
                     </div>
                 </div>
                 $optionalManageAccountsButton
+                $optionalManageAppearanceButton
                 <div class=\"row mt-3\">
                     <div class=\"col-12\">
                     </div>
