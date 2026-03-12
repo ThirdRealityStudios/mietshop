@@ -18,6 +18,9 @@ class UserInputModel implements IUserInputModel
 
     public function isValidFullName(string $fullName): bool
     {
+        /**
+         * Note: \p{L} is used to allow every alphabetic international Unicode character. u in the end stands for Unicode mode to basically allow the use of [\p{L} .
+         */
         return preg_match('#^[\p{L}\s\-\.\'()]+$#u', $fullName) === 1;
     }
 }
