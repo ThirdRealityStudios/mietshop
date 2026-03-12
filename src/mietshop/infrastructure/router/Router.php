@@ -23,9 +23,8 @@ use src\mietshop\view\ErrorView;
 use src\mietshop\view\GlobalView;
 use src\mietshop\view\HomeView;
 use src\mietshop\view\ImprintView;
+use src\mietshop\view\LegalView;
 use src\mietshop\view\LoginView;
-use src\mietshop\view\PrivacyPolicyView;
-use src\mietshop\view\TermsOfServiceView;
 
 class Router implements IRouter
 {
@@ -52,11 +51,13 @@ class Router implements IRouter
         {
             $loginView = new LoginView($globalView);
             $accountView = new AccountView($globalView);
+            $legalView = new LegalView($globalView);
+            $accountManagementView = new AccountManagementView($globalView);
+
             $accountModel = new AccountModel($userInputModel, $databaseAdapter);
+
             $loginPresenter = new LoginPresenter($companyModel, $accountModel, $loginView, $accountView, $errorView);
             $accountPresenter = new AccountPresenter($companyModel, $accountModel, $accountView, $errorView);
-
-            $accountManagementView = new AccountManagementView($globalView);
             $accountManagementPresenter = new AccountManagementPresenter($companyModel, $accountModel, $accountManagementView, $errorView);
 
             if($request->isRequestParameterMatching("view", "imprint"))
@@ -67,14 +68,12 @@ class Router implements IRouter
             }
             else if($request->isRequestParameterMatching("view", "termsofservice"))
             {
-                $termsOfServiceView = new TermsOfServiceView($globalView);
-                $termsOfServicePresenter = new TermsOfServicePresenter($errorView, $termsOfServiceView, $companyModel);
-                $termsOfServicePresenter->process();
+                $termsOfServicePresenter = new TermsOfServicePresenter($legalView, $errorView, $companyModel, $accountModel);
+                $termsOfServicePresenter->process($request, $sessionValues);
             }
             else if($request->isRequestParameterMatching("view", "privacypolicy"))
             {
-                $privacyPolicyView = new PrivacyPolicyView($globalView);
-                $privacyPolicyPresenter = new PrivacyPolicyPresenter($privacyPolicyView, $errorView, $companyModel, $accountModel);
+                $privacyPolicyPresenter = new PrivacyPolicyPresenter($legalView, $errorView, $companyModel, $accountModel);
                 $privacyPolicyPresenter->process($request, $sessionValues);
             }
             else if($request->isRequestParameterMatching("view", "login"))
