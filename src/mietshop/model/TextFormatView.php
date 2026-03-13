@@ -28,28 +28,28 @@ class TextFormatView implements ITextFormatView
         /**
          * Note: [^mySymbols] will say "allow every symbol possible except those in the edgy brackets after the symbol ^".
          */
-        $possiblyFormattedText = preg_replace("#\*\*([^\*]*)\*\*#", "<span class=\"fw-semibold m-0 d-inline-block\">$1</span>", $text);
+        $possiblyFormattedText = preg_replace("#\*\*([^\*]*)\*\*#", "<span class=\"fw-semibold lh-1 p-0 m-0 d-inline\">$1</span>", $text);
 
         return is_string($possiblyFormattedText) ? $possiblyFormattedText : $text;
     }
 
     public function formatLinesSemiBold(string $text): string
     {
-        $possiblyFormattedText = preg_replace("#^\#\s*(.*)$#m", "<span class=\"fw-semibold m-0 d-inline-block\">$1</span>", $text);
+        $possiblyFormattedText = preg_replace("#^\#\s*(.*)$#m", "<span class=\"fw-semibold lh-md p-0 m-0 d-inline-block\">$1</span>", $text);
 
         return is_string($possiblyFormattedText) ? $possiblyFormattedText : $text;
     }
 
     public function formatLinesBold(string $text): string
     {
-        $possiblyFormattedText = preg_replace("#^\#\#\s*(.*)$#m", "<span class=\"fw-bold m-0 d-inline-block\">$1</span>", $text);
+        $possiblyFormattedText = preg_replace("#^\#\#\s*(.*)$#m", "<span class=\"fw-bold lh-md p-0 m-0 d-inline-block\">$1</span>", $text);
 
         return is_string($possiblyFormattedText) ? $possiblyFormattedText : $text;
     }
 
     public function formatTextAreasItalic(string $text): string
     {
-        $possiblyFormattedText = preg_replace("#\*([^\*]*)\*#", "<span class=\"fst-italic m-0 d-inline-block\">$1</span>", $text);
+        $possiblyFormattedText = preg_replace("#\*([^\*]*)\*#", "<span class=\"fst-italic lh-1 p-0 m-0 d-inline\">$1</span>", $text);
 
         return is_string($possiblyFormattedText) ? $possiblyFormattedText : $text;
     }
