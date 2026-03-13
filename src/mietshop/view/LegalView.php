@@ -5,6 +5,7 @@ namespace src\mietshop\view;
 use src\mietshop\contracts\IErrorView;
 use src\mietshop\contracts\IGlobalView;
 use src\mietshop\contracts\ILegalView;
+use src\mietshop\contracts\ITextFormatView;
 
 /**
  * Meant to visualize the terms of service or privacy policy.
@@ -18,11 +19,13 @@ class LegalView implements ILegalView
 {
     private IGlobalView $globalView;
     private IErrorView $errorView;
+    private ITextFormatView $textFormatView;
 
-    public function __construct(IGlobalView $globalView, IErrorView  $errorView)
+    public function __construct(IGlobalView $globalView, IErrorView  $errorView, ITextFormatView $textFormatView)
     {
         $this->globalView = $globalView;
         $this->errorView = $errorView;
+        $this->textFormatView = $textFormatView;
     }
 
     private function giveErrorMessageIfNotString(array $companyData, $stringPregReplaceResult)
@@ -47,34 +50,7 @@ class LegalView implements ILegalView
 
         $legalTextHTMLSafe = htmlspecialchars($legalTextUnformatted, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 
-        $legalTextHTMLSafeFormattedBold = preg_replace("#^\#\#\s*(.*)$#m", "<span class=\"fw-bold m-0 d-inline-block\">$1</span>", $legalTextHTMLSafe);
-
-        $this->giveErrorMessageIfNotString($companyData, $legalTextHTMLSafeFormattedBold);
-
-        $legalTextHTMLSafeFormattedSemiBold = preg_replace("#^\#\s*(.*)$#m", "<span class=\"fw-semibold m-0 d-inline-block\">$1</span>", $legalTextHTMLSafeFormattedBold);
-
-        $this->giveErrorMessageIfNotString($companyData, $legalTextHTMLSafeFormattedSemiBold);
-
-        /**
-         * Note: [^mySymbols] will say "allow every symbol possible except those in the edgy brackets after the symbol ^".
-         */
-        $legalTextSelectedAreaFormattedSemiBold = preg_replace("#\*\*([^\*]*)\*\*#", "<span class=\"fw-semibold m-0 d-inline-block\">$1</span>", $legalTextHTMLSafeFormattedSemiBold);
-
-        $this->giveErrorMessageIfNotString($companyData, $legalTextSelectedAreaFormattedSemiBold);
-
-        /**
-         * What happens here with the regex expression (PCRE format) is:
-         *
-         * #expression# will initiate the validation generally.
-         * #expression#m will additionally limit the validation to every single line (no validation across lines possible - only single lines, using multiline mode, shortly m).
-         * #^preciseExpression$#m will do what said above but also say: from the beginning to the end it must be strict what the preciseExpression says.
-         * #^\*\s*(.*)$#m will say: every line directly has to start (note ^ at the beginning) with an (here correctly escaped) asterisk, followed by a variable length of whitespace characters (note \s with * for variable length).
-         *                          (.*) will symbolize a Capturing Group (note the opening and closing curly braces which contain the expression that is extracted - and after that usable with the $1 placeholder in the replacement string parameter).
-         *                          .* will symbolize that any symbol in any variable character length is accepted.
-         */
-        $legalTextFormattedDots = preg_replace("#^\*\s*(.*)$#m", "• $1", $legalTextSelectedAreaFormattedSemiBold);
-
-        $legalTextHTMLSafeFormatted = $legalTextFormattedDots;
+        $legalTextHTMLSafeFormatted = $this->textFormatView->formatAll($legalTextHTMLSafe);
 
         $optionalEditButton = $showEditButton ? "<div class=\"row mb-4\"><div class=\"col-12\"><a class=\"btn btn-secondary\" href=\"/?view=$legalTextView&action=update\">Bearbeiten</a></div></div>" : "";
 

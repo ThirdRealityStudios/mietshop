@@ -9,6 +9,7 @@ use src\mietshop\infrastructure\http\IHTTPRequest;
 use src\mietshop\model\AccountModel;
 use src\mietshop\model\CategoryModel;
 use src\mietshop\model\CompanyModel;
+use src\mietshop\model\TextFormatView;
 use src\mietshop\model\UserInputModel;
 use src\mietshop\presenter\AccountManagementPresenter;
 use src\mietshop\presenter\AccountPresenter;
@@ -40,6 +41,7 @@ class Router implements IRouter
         $categoryModel = new CategoryModel($databaseAdapter);
         $globalView = new GlobalView();
         $errorView = new ErrorView($globalView);
+        $textFormatView = new TextFormatView();
 
         if(empty($request->getQueryKeys()) && empty($request->getPOSTKeys()))
         {
@@ -51,7 +53,7 @@ class Router implements IRouter
         {
             $loginView = new LoginView($globalView);
             $accountView = new AccountView($globalView);
-            $legalView = new LegalView($globalView, $errorView);
+            $legalView = new LegalView($globalView, $errorView, $textFormatView);
             $accountManagementView = new AccountManagementView($globalView);
 
             $accountModel = new AccountModel($userInputModel, $databaseAdapter);
