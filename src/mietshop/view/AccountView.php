@@ -47,7 +47,7 @@ class AccountView implements IAccountView
         if($isSupervisor)
         {
             $optionalManageAccountsButton = $this->genAccountMenuButton("accounts", "all", "Konten verwalten 👥");
-            $optionalManageAppearanceButton = $this->genAccountMenuButton("appearance", "all", "Darstellung verwalten 🎨");
+            $optionalManageAppearanceButton = $this->genAccountMenuButton("appearance", "all", "Darstellung verwalten 🖼️");
         }
         else
         {
