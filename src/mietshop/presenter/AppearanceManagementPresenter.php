@@ -26,7 +26,7 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
 
     private function showPageDoesNotExist(array $companyData)
     {
-        $this->errorView->show($companyData, "Anfrage ungültig", "Die angeforderte Funktion or Seite existiert nicht.");
+        $this->errorView->show($companyData, "Anfrage ungültig", "Die angeforderte Funktion oder Seite existiert nicht.");
     }
 
     public function process(IHTTPRequest $request, array $sessionValues): void
@@ -51,9 +51,17 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
                     {
                         $this->appearanceManagementView->show($companyData, "all", "color");
                     }
-                    else if($request->isQueryParameterMatching("target", "logo"))
+                    else if($request->isQueryParameterMatching("target", "image"))
                     {
-                        $this->appearanceManagementView->show($companyData, "all", "logo");
+                        if($request->isQueryParameterMatching("element", "logo"))
+                        {
+                            $this->appearanceManagementView->show($companyData, "all", "image", "logo");
+                        }
+                        else
+                        {
+                            // This feature does not exist / not implemented.
+                            $this->showPageDoesNotExist($companyData);
+                        }
                     }
                     else
                     {
@@ -65,43 +73,59 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
                 {
                     if($request->isPostParameterMatching("target", "color"))
                     {
-                        if($request->isPostParameterMatching("color", "frame"))
+                        if($request->isPostParameterMatching("element", "frame"))
                         {
-
-
                             $responseCode = 1; // TODO Use here corresponding model function to update the specific appearance element. Also, use preg_match to verify the color sent (HTML color code hexadecimal - also for Bootstrap colors).
-                        }
-                        else if($request->isPostParameterExisting("color", "window"))
-                        {
 
+                            $this->appearanceManagementView->show($companyData, "update", "color", "frame", $responseCode);
                         }
-                        else if($request->isPostParameterExisting("color", "background"))
+                        else if($request->isPostParameterMatching("element", "window"))
                         {
+                            $responseCode = 1;
 
+                            $this->appearanceManagementView->show($companyData, "update", "color", "window", $responseCode);
                         }
-                        else if($request->isPostParameterExisting("color", "text"))
+                        else if($request->isPostParameterMatching("element", "background"))
                         {
+                            $responseCode = 1;
 
+                            $this->appearanceManagementView->show($companyData, "update", "color", "background", $responseCode);
                         }
-                        else if($request->isPostParameterExisting("color", "link"))
+                        else if($request->isPostParameterMatching("element", "text"))
                         {
+                            $responseCode = 1;
 
+                            $this->appearanceManagementView->show($companyData, "update", "color", "text", $responseCode);
                         }
-                        else if($request->isPostParameterExisting("color", "interesting")) // especially for button
+                        else if($request->isPostParameterMatching("element", "link"))
                         {
+                            $responseCode = 1;
 
+                            $this->appearanceManagementView->show($companyData, "update", "color", "link", $responseCode);
                         }
-                        else if($request->isPostParameterExisting("color", "uninteresting")) // especially for button
+                        else if($request->isPostParameterMatching("element", "interesting")) // especially for button
                         {
+                            $responseCode = 1;
 
+                            $this->appearanceManagementView->show($companyData, "update", "color", "interesting", $responseCode);
                         }
-                        else if($request->isPostParameterExisting("color", "actionExecute")) // especially for button
+                        else if($request->isPostParameterMatching("element", "uninteresting")) // especially for button
                         {
+                            $responseCode = 1;
 
+                            $this->appearanceManagementView->show($companyData, "update", "color", "uninteresting", $responseCode);
                         }
-                        else if($request->isPostParameterExisting("color", "actionAbort")) // especially for button
+                        else if($request->isPostParameterMatching("element", "actionExecute")) // especially for button
                         {
+                            $responseCode = 1;
 
+                            $this->appearanceManagementView->show($companyData, "update", "color", "actionExecute", $responseCode);
+                        }
+                        else if($request->isPostParameterMatching("element", "actionAbort")) // especially for button
+                        {
+                            $responseCode = 1;
+
+                            $this->appearanceManagementView->show($companyData, "update", "color", "actionAbort", $responseCode);
                         }
                         else
                         {
@@ -109,13 +133,18 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
                             $this->showPageDoesNotExist($companyData);
                         }
                     }
-                    else if($request->isPostParameterMatching("target", "logo"))
+                    else if($request->isPostParameterMatching("target", "image"))
                     {
-                        $postImageValue = $request->getPOSTValue("image"); // New company logo transmitted (TODO process still and maybe convert to suitable image format)
-
-                        if(!is_string($postImageValue))
+                        // New company logo transmitted
+                        if($request->isPostParameterMatching("element", "logo"))
                         {
+                            $image = $request->getPOSTValue("element");
 
+                            // TODO Process $image, maybe convert it correctly and such...
+
+                            $responseCode = 1;
+
+                            $this->appearanceManagementView->show($companyData, "update", "image", "logo", $responseCode);
                         }
                         else
                         {

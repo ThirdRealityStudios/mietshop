@@ -13,6 +13,7 @@ use src\mietshop\model\TextFormatView;
 use src\mietshop\model\UserInputModel;
 use src\mietshop\presenter\AccountManagementPresenter;
 use src\mietshop\presenter\AccountPresenter;
+use src\mietshop\presenter\AppearanceManagementPresenter;
 use src\mietshop\presenter\HomePresenter;
 use src\mietshop\presenter\ImprintPresenter;
 use src\mietshop\presenter\LoginPresenter;
@@ -20,6 +21,7 @@ use src\mietshop\presenter\PrivacyPolicyPresenter;
 use src\mietshop\presenter\TermsOfServicePresenter;
 use src\mietshop\view\AccountManagementView;
 use src\mietshop\view\AccountView;
+use src\mietshop\view\AppearanceManagementView;
 use src\mietshop\view\ErrorView;
 use src\mietshop\view\GlobalView;
 use src\mietshop\view\HomeView;
@@ -55,12 +57,14 @@ class Router implements IRouter
             $accountView = new AccountView($globalView);
             $legalView = new LegalView($globalView, $errorView, $textFormatView);
             $accountManagementView = new AccountManagementView($globalView);
+            $appearanceManagementView = new AppearanceManagementView($globalView);
 
             $accountModel = new AccountModel($userInputModel, $databaseAdapter);
 
             $loginPresenter = new LoginPresenter($companyModel, $accountModel, $loginView, $accountView, $errorView);
             $accountPresenter = new AccountPresenter($companyModel, $accountModel, $accountView, $errorView);
             $accountManagementPresenter = new AccountManagementPresenter($companyModel, $accountModel, $accountManagementView, $errorView);
+            $appearanceManagementPresenter = new AppearanceManagementPresenter($companyModel, $accountModel, $appearanceManagementView, $errorView);
 
             if($request->isParameterMatching("view", "imprint"))
             {
@@ -92,6 +96,10 @@ class Router implements IRouter
             {
                 // Show the account management page
                 $accountManagementPresenter->process($request, $sessionValues);
+            }
+            else if($request->isParameterMatching("view", "appearance"))
+            {
+                $appearanceManagementPresenter->process($request, $sessionValues);
             }
             else
             {
