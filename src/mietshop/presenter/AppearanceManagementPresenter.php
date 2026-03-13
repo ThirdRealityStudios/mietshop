@@ -24,6 +24,11 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
         $this->errorView = $errorView;
     }
 
+    private function showPageDoesNotExist(array $companyData)
+    {
+        $this->errorView->show($companyData, "Anfrage ungültig", "Die angeforderte Funktion or Seite existiert nicht.");
+    }
+
     public function process(IHTTPRequest $request, array $sessionValues): void
     {
         if(isset($sessionValues["Email"]) && is_string($sessionValues["Email"])) // Is the visitor logged in?
@@ -36,55 +41,74 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
             {
                 $companyData = $this->companyModel->getCompanyData();
 
-                if($request->isParameterMatching("action", "all"))
+                if($request->isQueryParameterMatching("action", "all"))
                 {
                     $this->appearanceManagementView->show($companyData, "all");
                 }
-                else if($request->isParameterMatching("action", "update"))
+                else if($request->isQueryParameterMatching("action", "update"))
                 {
-                    if($request->isParameterMatching("target", "color"))
+                    if($request->isQueryParameterMatching("target", "color"))
                     {
-                        $postColorValue = $request->getPOSTValue("color"); // HTML color code (TODO to verify still)
-
 
                     }
-                    else if($request->isParameterMatching("target", "logo"))
+                    else if($request->isQueryParameterMatching("target", "logo"))
                     {
-                        $postLogoValue = $request->getPOSTValue("companyLogo"); // New company logo transmitted (TODO process still and maybe convert to suitable image format)
 
-                        if(!empty($postLogoValue))
+                    }
+                    else
+                    {
+                        // This feature does not exist / not implemented.
+                        $this->showPageDoesNotExist($companyData);
+                    }
+                }
+                else if($request->isPostParameterMatching("action", "update"))
+                {
+                    if($request->isPostParameterMatching("target", "color"))
+                    {
+                        $postCodeValue = $request->getPOSTValue("code");
+
+                        if(!is_string($postCodeValue))
+                        {
+                            $responseCode = 1; // TODO Use here corresponding model function to update the specific appearance element. Also, use preg_match to verify the color sent (HTML color code hexadecimal - also for Bootstrap colors).
+
+                            
+                        }
+                        else
+                        {
+                            // Expected some valid kind of transmitted color code BUT instead got nothing.
+                            $this->showPageDoesNotExist($companyData);
+                        }
+                    }
+                    else if($request->isPostParameterMatching("target", "logo"))
+                    {
+                        $postImageValue = $request->getPOSTValue("image"); // New company logo transmitted (TODO process still and maybe convert to suitable image format)
+
+                        if(!is_string($postImageValue))
                         {
 
                         }
                         else
                         {
-                            $this->appearanceManagementView->show($companyData, $actionUpdateBasicColors, $responseCode);
+                            // Expected a transmitted image as a new company logo BUT instead got nothing.
+                            $this->showPageDoesNotExist($companyData);
                         }
                     }
                     else
                     {
-                        // This feature does not exist / not implemented.
-                        $this->errorView->show($companyData, "Angeforderte Funktion ungültig", "Die angeforderte Funktion existiert nicht.");
-                    }
-
-                    // Does the user (supervisor) want to update the overall basic colors used for all views? (= a POST action)
-                    if(is_string($postColorValue))
-                    {
-                        $responseCode = 1; // TODO Use here corresponding model function to update the specific appearance element. Also, use preg_match to verify the color sent (HTML color code hexadecimal - also for Bootstrap colors).
-
-                        $this->appearanceManagementView->show($companyData, $actionUpdateBasicColors, $responseCode);
+                        // This update feature does not exist for the desired appearance element.
+                        $this->showPageDoesNotExist($companyData);
                     }
                 }
                 else
                 {
                     // This feature does not exist / not implemented.
-                    $this->errorView->show($companyData, "Angeforderte Funktion ungültig", "Die angeforderte Funktion existiert nicht.");
+                    $this->showPageDoesNotExist($companyData);
                 }
             }
             else
             {
                 // Account does not exist or access denied (missing permissions)
-                $this->errorView->show([], "Fehler", "Zugriff verweigert");
+                $this->showPageDoesNotExist([]);
             }
         }
         else

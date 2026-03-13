@@ -155,10 +155,7 @@ class HTTPRequest implements IHTTPRequest
 
     public function isParameterExisting(string $requestParameterName): bool
     {
-        $queryActionValue = $this->getQueryValue($requestParameterName);
-        $postActionValue = $this->getPostValue($requestParameterName);
-
-        return is_string($queryActionValue) || is_string($postActionValue);
+        return $this->isQueryParameterExisting($requestParameterName) || $this->isPostParameterExisting($requestParameterName);
     }
 
     public function isParameterMatching(string $requestParameterName, string $checkValue): bool
@@ -168,15 +165,21 @@ class HTTPRequest implements IHTTPRequest
 
     public function isPostParameterMatching(string $postParameterName, string $checkValue): bool
     {
-        $possiblePostValue = $this->getPOSTValue($postParameterName);
-
-        return is_string($possiblePostValue) && strcmp($possiblePostValue, $checkValue) === 0;
+        return $this->isPostParameterExisting($postParameterName) && strcmp($this->getPOSTValue($postParameterName), $checkValue) === 0;
     }
 
     public function isQueryParameterMatching(string $queryParameterName, string $checkValue): bool
     {
-        $possibleQueryValue = $this->getQueryValue($queryParameterName);
+        return $this->isQueryParameterExisting($queryParameterName) && strcmp($this->getQueryValue($queryParameterName), $checkValue) === 0;
+    }
 
-        return is_string($possibleQueryValue) && strcmp($possibleQueryValue, $checkValue) === 0;
+    public function isPostParameterExisting(string $postParameterName): bool
+    {
+        return !is_null($this->getPOSTValue($postParameterName));
+    }
+
+    public function isQueryParameterExisting(string $queryParameterName): bool
+    {
+        return !is_null($this->getQueryValue($queryParameterName));
     }
 }

@@ -124,4 +124,20 @@ interface IHTTPRequest
      * @return bool True if the query parameter value indeed matches the given value.
      */
     public function isQueryParameterMatching(string $queryParameterName, string $checkValue): bool;
+
+    /**
+     * Tells you if a post parameter exists.
+     *
+     * @param string $postParameterName Request post parameter name
+     * @return bool True if the post parameter exists. Otherwise, false.
+     */
+    public function isPostParameterExisting(string $postParameterName): bool;
+
+    /**
+     * Tells you if a query parameter exists.
+     *
+     * @param string $queryParameterName Request query parameter name
+     * @return bool True if the query parameter exists. Otherwise, false.
+     */
+    public function isQueryParameterExisting(string $queryParameterName): bool;
 }
