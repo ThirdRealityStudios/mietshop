@@ -2,6 +2,10 @@
 
 namespace src\mietshop\contracts;
 
+/**
+ * Exists to enable the development of text format functions,
+ * using HTML and Bootstrap.
+ */
 interface ITextFormatView
 {
     /**
