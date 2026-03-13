@@ -153,7 +153,7 @@ class HTTPRequest implements IHTTPRequest
         return array_keys($this -> post);
     }
 
-    public function isRequestParameterExisting(string $requestParameterName): bool
+    public function isParameterExisting(string $requestParameterName): bool
     {
         $queryActionValue = $this->getQueryValue($requestParameterName);
         $postActionValue = $this->getPostValue($requestParameterName);
@@ -161,26 +161,22 @@ class HTTPRequest implements IHTTPRequest
         return is_string($queryActionValue) || is_string($postActionValue);
     }
 
-    public function isRequestParameterMatching(string $requestParameterName, string $checkValue): bool
+    public function isParameterMatching(string $requestParameterName, string $checkValue): bool
     {
-        $potentialQueryValue = $this->getQueryValue($requestParameterName);
+        return $this->isPostParameterMatching($requestParameterName, $checkValue) || $this->isQueryParameterMatching($requestParameterName, $checkValue);
+    }
 
-        if(is_string($potentialQueryValue) && strcmp($potentialQueryValue, $checkValue) === 0)
-        {
-            return true;
-        }
-        else
-        {
-            $potentialPostValue = $this->getPostValue($requestParameterName);
+    public function isPostParameterMatching(string $postParameterName, string $checkValue): bool
+    {
+        $possiblePostValue = $this->getPOSTValue($postParameterName);
 
-            if(is_string($potentialPostValue) && strcmp($potentialPostValue, $checkValue) === 0)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
+        return is_string($possiblePostValue) && strcmp($possiblePostValue, $checkValue) === 0;
+    }
+
+    public function isQueryParameterMatching(string $queryParameterName, string $checkValue): bool
+    {
+        $possibleQueryValue = $this->getQueryValue($queryParameterName);
+
+        return is_string($possibleQueryValue) && strcmp($possibleQueryValue, $checkValue) === 0;
     }
 }

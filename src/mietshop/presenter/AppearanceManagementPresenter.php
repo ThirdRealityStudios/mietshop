@@ -4,10 +4,26 @@ namespace src\mietshop\presenter;
 
 use src\mietshop\contracts\IAccountModel;
 use src\mietshop\contracts\IAppearanceManagementPresenter;
+use src\mietshop\contracts\IAppearanceManagementView;
+use src\mietshop\contracts\ICompanyModel;
+use src\mietshop\contracts\IErrorView;
 use src\mietshop\infrastructure\http\IHTTPRequest;
 
 class AppearanceManagementPresenter implements IAppearanceManagementPresenter
 {
+    private ICompanyModel $companyModel;
+    private IAccountModel $accountModel;
+    private IAppearanceManagementView $appearanceManagementView;
+    private IErrorView $errorView;
+
+    public function __construct(ICompanyModel $companyModel, IAccountModel $accountModel, IAppearanceManagementView $appearanceManagementView, IErrorView $errorView)
+    {
+        $this->companyModel = $companyModel;
+        $this->accountModel = $accountModel;
+        $this->appearanceManagementView = $appearanceManagementView;
+        $this->errorView = $errorView;
+    }
+
     public function process(IHTTPRequest $request, array $sessionValues): void
     {
         if(isset($sessionValues["Email"]) && is_string($sessionValues["Email"])) // Is the visitor logged in?
@@ -18,33 +34,45 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
             // Also check (if the account exists) if the user may manage accounts to give access.
             if(!empty($accountFetchData) && $this->accountModel->isSupervisor($sessionValues["Email"]))
             {
-                $supervisorEmail = $sessionValues["Email"];
-                $supervisorPermissionLevel = $accountFetchData["PermissionLevel"];
-
                 $companyData = $this->companyModel->getCompanyData();
 
-                if($request->isRequestParameterMatching("action", "all"))
+                if($request->isParameterMatching("action", "all"))
                 {
-                    $this->accountManagementView->show($companyData, [], [], "all");
+                    $this->appearanceManagementView->show($companyData, "all");
                 }
-                else if($request->isRequestParameterMatching("action", "update"))
+                else if($request->isParameterMatching("action", "update"))
                 {
-                    $filteredPermissionRoleArray = $this->filterDeniedRoles($supervisorPermissionLevel, IAccountModel::PERMISSION_ROLE);
-
-                    $postEmailAccountValue = $request->getPOSTValue("emailAccount");
-                    $postPermissionLevelAccountValue = $request->getPOSTValue("permissionLevelOptions");
-                    $postPasswordSupervisorValue = $request->getPOSTValue("passwordSupervisor");
-
-                    // Does the user (supervisor) want to create a new account? (= a POST action)
-                    if(is_string($postEmailAccountValue) && is_numeric($postPermissionLevelAccountValue) && is_string($postPasswordSupervisorValue))
+                    if($request->isParameterMatching("target", "color"))
                     {
-                        $responseCode = $this->accountModel->updatePermissionLevel($supervisorEmail, $postPasswordSupervisorValue, $postEmailAccountValue, $postPermissionLevelAccountValue);
+                        $postColorValue = $request->getPOSTValue("color"); // HTML color code (TODO to verify still)
 
-                        $this->accountManagementView->show($companyData, [], $filteredPermissionRoleArray, "update", $responseCode);
+
                     }
-                    else // Does the supervisor only wants to see the form page? (always a GET action)
+                    else if($request->isParameterMatching("target", "logo"))
                     {
-                        $this->accountManagementView->show($companyData, [], $filteredPermissionRoleArray, "update");
+                        $postLogoValue = $request->getPOSTValue("companyLogo"); // New company logo transmitted (TODO process still and maybe convert to suitable image format)
+
+                        if(!empty($postLogoValue))
+                        {
+
+                        }
+                        else
+                        {
+                            $this->appearanceManagementView->show($companyData, $actionUpdateBasicColors, $responseCode);
+                        }
+                    }
+                    else
+                    {
+                        // This feature does not exist / not implemented.
+                        $this->errorView->show($companyData, "Angeforderte Funktion ungültig", "Die angeforderte Funktion existiert nicht.");
+                    }
+
+                    // Does the user (supervisor) want to update the overall basic colors used for all views? (= a POST action)
+                    if(is_string($postColorValue))
+                    {
+                        $responseCode = 1; // TODO Use here corresponding model function to update the specific appearance element. Also, use preg_match to verify the color sent (HTML color code hexadecimal - also for Bootstrap colors).
+
+                        $this->appearanceManagementView->show($companyData, $actionUpdateBasicColors, $responseCode);
                     }
                 }
                 else
@@ -56,13 +84,14 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
             else
             {
                 // Account does not exist or access denied (missing permissions)
-                die("Account does not exist or missing permissions");
+                $this->errorView->show([], "Fehler", "Zugriff verweigert");
             }
         }
         else
         {
             // User not logged in
-            die("You are not logged in!");
+            header("Location: /?view=login");
+            exit(0);
         }
     }
 }

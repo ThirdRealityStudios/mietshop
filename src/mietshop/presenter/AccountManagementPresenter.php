@@ -71,11 +71,11 @@ class AccountManagementPresenter implements IAccountManagementPresenter
 
                 $companyData = $this->companyModel->getCompanyData();
 
-                if($request->isRequestParameterMatching("action", "all"))
+                if($request->isParameterMatching("action", "all"))
                 {
                     $this->accountManagementView->show($companyData, [], [], "all");
                 }
-                else if($request->isRequestParameterMatching("action" , "create"))
+                else if($request->isParameterMatching("action" , "create"))
                 {
                     $filteredPermissionRoleArray = $this->filterDeniedRoles($supervisorPermissionLevel, IAccountModel::PERMISSION_ROLE);
 
@@ -96,7 +96,7 @@ class AccountManagementPresenter implements IAccountManagementPresenter
                         $this->accountManagementView->show($companyData, [], $filteredPermissionRoleArray, "create");
                     }
                 }
-                else if($request->isRequestParameterMatching("action", "read"))
+                else if($request->isParameterMatching("action", "read"))
                 {
                     $pagesAmount = $this->accountModel->readAmountOfPages();
                     $pageNonIndexed = $request->getQueryValue("page");
@@ -115,7 +115,7 @@ class AccountManagementPresenter implements IAccountManagementPresenter
                         $this->accountManagementView->show($companyData, $accountResults, [], "read", 0, 0, $pagesAmount);
                     }
                 }
-                else if($request->isRequestParameterMatching("action", "update"))
+                else if($request->isParameterMatching("action", "update"))
                 {
                     $filteredPermissionRoleArray = $this->filterDeniedRoles($supervisorPermissionLevel, IAccountModel::PERMISSION_ROLE);
 
@@ -135,7 +135,7 @@ class AccountManagementPresenter implements IAccountManagementPresenter
                         $this->accountManagementView->show($companyData, [], $filteredPermissionRoleArray, "update");
                     }
                 }
-                else if($request->isRequestParameterMatching("action", "delete"))
+                else if($request->isParameterMatching("action", "delete"))
                 {
                     $postPasswordSupervisorValue = $request->getPOSTValue("passwordSupervisor");
                     $postEmailAccountValue = $request->getPOSTValue("emailAccount");

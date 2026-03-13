@@ -91,7 +91,7 @@ class ImprintPresenter implements IImprintPresenter
         {
             $canUpdateImprintPage = isset($sessionValues["Email"]) && $this->accountModel->isSupervisor($sessionValues["Email"]);
 
-            if($httpRequest->isRequestParameterMatching("action", "update"))
+            if($httpRequest->isParameterMatching("action", "update"))
             {
                 // Does an account session exist and is the account a registered supervisor? (maybe the session is older and account was deleted e.g. by an admin)
                 if($canUpdateImprintPage)

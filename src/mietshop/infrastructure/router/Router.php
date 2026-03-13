@@ -62,33 +62,33 @@ class Router implements IRouter
             $accountPresenter = new AccountPresenter($companyModel, $accountModel, $accountView, $errorView);
             $accountManagementPresenter = new AccountManagementPresenter($companyModel, $accountModel, $accountManagementView, $errorView);
 
-            if($request->isRequestParameterMatching("view", "imprint"))
+            if($request->isParameterMatching("view", "imprint"))
             {
                 $imprintView = new ImprintView($globalView);
                 $imprintPresenter = new ImprintPresenter($errorView, $imprintView, $companyModel, $accountModel);
                 $imprintPresenter->process($request, $sessionValues);
             }
-            else if($request->isRequestParameterMatching("view", "termsofservice"))
+            else if($request->isParameterMatching("view", "termsofservice"))
             {
                 $termsOfServicePresenter = new TermsOfServicePresenter($legalView, $errorView, $companyModel, $accountModel);
                 $termsOfServicePresenter->process($request, $sessionValues);
             }
-            else if($request->isRequestParameterMatching("view", "privacypolicy"))
+            else if($request->isParameterMatching("view", "privacypolicy"))
             {
                 $privacyPolicyPresenter = new PrivacyPolicyPresenter($legalView, $errorView, $companyModel, $accountModel);
                 $privacyPolicyPresenter->process($request, $sessionValues);
             }
-            else if($request->isRequestParameterMatching("view", "login"))
+            else if($request->isParameterMatching("view", "login"))
             {
                 // Show the login page or authenticate and then redirect (if the user is yet logged in)
                 $loginPresenter->process($request, $sessionValues);
             }
-            else if($request->isRequestParameterMatching("view", "account"))
+            else if($request->isParameterMatching("view", "account"))
             {
                 // Show the account page (will check if you are authorized or logged in yet)
                 $accountPresenter->process($request, $sessionValues);
             }
-            else if($request->isRequestParameterMatching("view", "accounts"))
+            else if($request->isParameterMatching("view", "accounts"))
             {
                 // Show the account management page
                 $accountManagementPresenter->process($request, $sessionValues);

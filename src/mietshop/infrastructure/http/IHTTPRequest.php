@@ -86,7 +86,7 @@ interface IHTTPRequest
      * @param string $requestParameterName Name of the parameter
      * @return bool True if the parameter does exist as a query parameter or post parameter. Otherwise, false.
      */
-    public function isRequestParameterExisting(string $requestParameterName): bool;
+    public function isParameterExisting(string $requestParameterName): bool;
 
     /**
      * Tells you if a post value or query value matches the given value.
@@ -105,5 +105,23 @@ interface IHTTPRequest
      * @param string $checkValue The given value which should be compared to the request parameter if it equals.
      * @return bool True if the post or query parameter value indeed matches the given value.
      */
-    public function isRequestParameterMatching(string $requestParameterName, string $checkValue): bool;
+    public function isParameterMatching(string $requestParameterName, string $checkValue): bool;
+
+    /**
+     * Tells you if a post value matches the given value.
+     *
+     * @param string $postParameterName Request post parameter name
+     * @param string $checkValue The given value which should be compared to the request post parameter if it equals.
+     * @return bool True if the post parameter value indeed matches the given value.
+     */
+    public function isPostParameterMatching(string $postParameterName, string $checkValue): bool;
+
+    /**
+     * Tells you if a query value matches the given value.
+     *
+     * @param string $queryParameterName Request query parameter name
+     * @param string $checkValue The given value which should be compared to the request query parameter if it equals.
+     * @return bool True if the query parameter value indeed matches the given value.
+     */
+    public function isQueryParameterMatching(string $queryParameterName, string $checkValue): bool;
 }
