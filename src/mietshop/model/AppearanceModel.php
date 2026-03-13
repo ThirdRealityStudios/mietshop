@@ -18,23 +18,23 @@ class AppearanceModel
         $this->userInputModel = $userInputModel;
 
         $sql =
-            "
-			CREATE TABLE IF NOT EXISTS AppearanceModel
-			(
-				ID INT(8) AUTO_INCREMENT PRIMARY KEY UNIQUE,
+        "
+	    CREATE TABLE IF NOT EXISTS AppearanceModel
+		(
+		    ID INT(8) AUTO_INCREMENT PRIMARY KEY UNIQUE,
 			    
-			    ColorFrame VARCHAR(9) NOT NULL DEFAULT \"#0D6EFD\",
-			    ColorWindow VARCHAR(9) NOT NULL DEFAULT \"#CFE2FF\",
-			    ColorBackground VARCHAR(9) NOT NULL DEFAULT \"#E9ECEF\",
-			    ColorText VARCHAR(9) NOT NULL DEFAULT \"#212529\",
-			    ColorLink VARCHAR(9) NOT NULL DEFAULT \"#0D6EFD\",
-			    ColorInteresting VARCHAR(9) NOT NULL DEFAULT \"#0D6EFD\",
-			    ColorUninteresting VARCHAR(9) NOT NULL DEFAULT \"#6C757D\",
-			    ColorActionExecute VARCHAR(9) NOT NULL DEFAULT \"#198754\",
-			    ColorActionAbort VARCHAR(9) NOT NULL DEFAULT \"#DC3545\",
-			    ImageLogo VARCHAR(255) NOT NULL DEFAULT \"/img/logo/company/logo.png\"
-			);
-			";
+			ColorFrame VARCHAR(9) NOT NULL DEFAULT \"#0D6EFD\",
+			ColorWindow VARCHAR(9) NOT NULL DEFAULT \"#CFE2FF\",
+			ColorBackground VARCHAR(9) NOT NULL DEFAULT \"#E9ECEF\",
+			ColorText VARCHAR(9) NOT NULL DEFAULT \"#212529\",
+			ColorLink VARCHAR(9) NOT NULL DEFAULT \"#0D6EFD\",
+			ColorInteresting VARCHAR(9) NOT NULL DEFAULT \"#0D6EFD\",
+			ColorUninteresting VARCHAR(9) NOT NULL DEFAULT \"#6C757D\",
+			ColorActionExecute VARCHAR(9) NOT NULL DEFAULT \"#198754\",
+			ColorActionAbort VARCHAR(9) NOT NULL DEFAULT \"#DC3545\",
+			ImageLogo VARCHAR(255) NOT NULL DEFAULT \"/img/logo/company/logo.png\"
+		);
+		";
 
         $this->databaseAdapter->execute($sql);
 
