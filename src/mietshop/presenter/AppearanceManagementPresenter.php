@@ -49,11 +49,11 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
                 {
                     if($request->isQueryParameterMatching("target", "color"))
                     {
-
+                        $this->appearanceManagementView->show($companyData, "all", "color");
                     }
                     else if($request->isQueryParameterMatching("target", "logo"))
                     {
-
+                        $this->appearanceManagementView->show($companyData, "all", "logo");
                     }
                     else
                     {
@@ -65,17 +65,46 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
                 {
                     if($request->isPostParameterMatching("target", "color"))
                     {
-                        $postCodeValue = $request->getPOSTValue("code");
-
-                        if(!is_string($postCodeValue))
+                        if($request->isPostParameterExisting("colorFrame"))
                         {
                             $responseCode = 1; // TODO Use here corresponding model function to update the specific appearance element. Also, use preg_match to verify the color sent (HTML color code hexadecimal - also for Bootstrap colors).
+                        }
 
-                            
+                        if($request->isPostParameterExisting("colorWindow"))
+                        {
+
+                        }
+                        else if($request->isPostParameterExisting("colorBackground"))
+                        {
+
+                        }
+                        else if($request->isPostParameterExisting("colorText"))
+                        {
+
+                        }
+                        else if($request->isPostParameterExisting("colorLink"))
+                        {
+
+                        }
+                        else if($request->isPostParameterExisting("colorButtonInteresting"))
+                        {
+
+                        }
+                        else if($request->isPostParameterExisting("colorButtonUninteresting"))
+                        {
+
+                        }
+                        else if($request->isPostParameterExisting("colorButtonExecuteAction"))
+                        {
+
+                        }
+                        else if($request->isPostParameterExisting("colorButtonAbortAction"))
+                        {
+
                         }
                         else
                         {
-                            // Expected some valid kind of transmitted color code BUT instead got nothing.
+                            // Expected some valid kind of transmitted color code BUT instead got something invalid or nothing.
                             $this->showPageDoesNotExist($companyData);
                         }
                     }
