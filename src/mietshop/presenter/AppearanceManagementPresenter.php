@@ -65,40 +65,41 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
                 {
                     if($request->isPostParameterMatching("target", "color"))
                     {
-                        if($request->isPostParameterExisting("colorFrame"))
+                        if($request->isPostParameterMatching("color", "frame"))
                         {
+
+
                             $responseCode = 1; // TODO Use here corresponding model function to update the specific appearance element. Also, use preg_match to verify the color sent (HTML color code hexadecimal - also for Bootstrap colors).
                         }
-
-                        if($request->isPostParameterExisting("colorWindow"))
+                        else if($request->isPostParameterExisting("color", "window"))
                         {
 
                         }
-                        else if($request->isPostParameterExisting("colorBackground"))
+                        else if($request->isPostParameterExisting("color", "background"))
                         {
 
                         }
-                        else if($request->isPostParameterExisting("colorText"))
+                        else if($request->isPostParameterExisting("color", "text"))
                         {
 
                         }
-                        else if($request->isPostParameterExisting("colorLink"))
+                        else if($request->isPostParameterExisting("color", "link"))
                         {
 
                         }
-                        else if($request->isPostParameterExisting("colorButtonInteresting"))
+                        else if($request->isPostParameterExisting("color", "interesting")) // especially for button
                         {
 
                         }
-                        else if($request->isPostParameterExisting("colorButtonUninteresting"))
+                        else if($request->isPostParameterExisting("color", "uninteresting")) // especially for button
                         {
 
                         }
-                        else if($request->isPostParameterExisting("colorButtonExecuteAction"))
+                        else if($request->isPostParameterExisting("color", "actionExecute")) // especially for button
                         {
 
                         }
-                        else if($request->isPostParameterExisting("colorButtonAbortAction"))
+                        else if($request->isPostParameterExisting("color", "actionAbort")) // especially for button
                         {
 
                         }
