@@ -77,6 +77,8 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
                         {
                             $responseCode = 1; // TODO Use here corresponding model function to update the specific appearance element. Also, use preg_match to verify the color sent (HTML color code hexadecimal - also for Bootstrap colors).
 
+                            
+
                             $this->appearanceManagementView->show($companyData, "update", "color", "frame", $responseCode);
                         }
                         else if($request->isPostParameterMatching("element", "window"))

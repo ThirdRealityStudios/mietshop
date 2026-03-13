@@ -64,7 +64,7 @@ class AppearanceManagementView implements IAppearanceManagementView
                 {
                     if(strcmp($element, "frame") === 0)
                     {
-
+                        // TODO Show if successful or not or whatever ...
                     }
                     else if(strcmp($element, "window") === 0)
                     {
