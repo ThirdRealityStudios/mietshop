@@ -49,13 +49,14 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
                 {
                     if($request->isQueryParameterMatching("target", "color"))
                     {
-                        $this->appearanceManagementView->show($companyData, "all", "color");
+                        // Request or show all colors choosable and such..
+                        $this->appearanceManagementView->show($companyData, "update", "color");
                     }
                     else if($request->isQueryParameterMatching("target", "image"))
                     {
                         if($request->isQueryParameterMatching("element", "logo"))
                         {
-                            $this->appearanceManagementView->show($companyData, "all", "image", "logo");
+                            $this->appearanceManagementView->show($companyData, "update", "image", "logo");
                         }
                         else
                         {
@@ -73,67 +74,22 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
                 {
                     if($request->isPostParameterMatching("target", "color"))
                     {
-                        if($request->isPostParameterMatching("element", "frame"))
-                        {
-                            $responseCode = 1; // TODO Use here corresponding model function to update the specific appearance element. Also, use preg_match to verify the color sent (HTML color code hexadecimal - also for Bootstrap colors).
+                        $validColors = [ "frame", "window", "background", "text", "link", "interesting", "uninteresting", "actionExecute", "actionAbort" ];
 
-                            
-
-                            $this->appearanceManagementView->show($companyData, "update", "color", "frame", $responseCode);
-                        }
-                        else if($request->isPostParameterMatching("element", "window"))
+                        foreach($validColors as $validColor)
                         {
-                            $responseCode = 1;
+                            if($request->isPostParameterMatching("element", $validColor))
+                            {
+                                $responseCode = 1; // TODO Use here corresponding model function to update the specific appearance element. Also, use preg_match to verify the color sent (HTML color code hexadecimal - also for Bootstrap colors).
 
-                            $this->appearanceManagementView->show($companyData, "update", "color", "window", $responseCode);
-                        }
-                        else if($request->isPostParameterMatching("element", "background"))
-                        {
-                            $responseCode = 1;
+                                $this->appearanceManagementView->show($companyData, "update", "color", $validColor, $responseCode);
 
-                            $this->appearanceManagementView->show($companyData, "update", "color", "background", $responseCode);
+                                return;
+                            }
                         }
-                        else if($request->isPostParameterMatching("element", "text"))
-                        {
-                            $responseCode = 1;
 
-                            $this->appearanceManagementView->show($companyData, "update", "color", "text", $responseCode);
-                        }
-                        else if($request->isPostParameterMatching("element", "link"))
-                        {
-                            $responseCode = 1;
-
-                            $this->appearanceManagementView->show($companyData, "update", "color", "link", $responseCode);
-                        }
-                        else if($request->isPostParameterMatching("element", "interesting")) // especially for button
-                        {
-                            $responseCode = 1;
-
-                            $this->appearanceManagementView->show($companyData, "update", "color", "interesting", $responseCode);
-                        }
-                        else if($request->isPostParameterMatching("element", "uninteresting")) // especially for button
-                        {
-                            $responseCode = 1;
-
-                            $this->appearanceManagementView->show($companyData, "update", "color", "uninteresting", $responseCode);
-                        }
-                        else if($request->isPostParameterMatching("element", "actionExecute")) // especially for button
-                        {
-                            $responseCode = 1;
-
-                            $this->appearanceManagementView->show($companyData, "update", "color", "actionExecute", $responseCode);
-                        }
-                        else if($request->isPostParameterMatching("element", "actionAbort")) // especially for button
-                        {
-                            $responseCode = 1;
-
-                            $this->appearanceManagementView->show($companyData, "update", "color", "actionAbort", $responseCode);
-                        }
-                        else
-                        {
-                            // Expected some valid kind of transmitted color code BUT instead got something invalid or nothing.
-                            $this->showPageDoesNotExist($companyData);
-                        }
+                        // Expected some valid kind of transmitted color code BUT instead got something invalid or nothing.
+                        $this->showPageDoesNotExist($companyData);
                     }
                     else if($request->isPostParameterMatching("target", "image"))
                     {
@@ -176,7 +132,6 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
         {
             // User not logged in
             header("Location: /?view=login");
-            exit(0);
         }
     }
 }
