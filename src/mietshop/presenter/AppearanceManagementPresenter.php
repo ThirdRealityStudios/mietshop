@@ -74,15 +74,17 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
                 {
                     if($request->isPostParameterMatching("target", "color"))
                     {
-                        $validColors = [ "frame", "window", "background", "text", "link", "interesting", "uninteresting", "actionExecute", "actionAbort" ];
+                        $validColorElements = [ "frame" => "Farbe für Rahmen", "window" => "Farbe für Fenster", "background" => "Farbe für Hintergrund", "text" => "Text-Farbe", "link" => "Link-Farbe", "interesting" => "Hauptfarbe", "uninteresting" => "Nebenfarbe", "actionExecute" => "Ausführen-Schaltfläche-Farbe", "actionAbort" => "Abbruch-Schaltfläche-Farbe" ];
 
-                        foreach($validColors as $validColor)
+                        foreach($validColorElements as $validColorElement)
                         {
-                            if($request->isPostParameterMatching("element", $validColor))
+                            $validColorElementTechnicalName = $validColorElement[0];
+
+                            if($request->isPostParameterMatching("element", $validColorElementTechnicalName))
                             {
                                 $responseCode = 1; // TODO Use here corresponding model function to update the specific appearance element. Also, use preg_match to verify the color sent (HTML color code hexadecimal - also for Bootstrap colors).
 
-                                $this->appearanceManagementView->show($companyData, "update", "color", $validColor, $responseCode);
+                                $this->appearanceManagementView->show($companyData, "update", "color", $responseCode, $validColorElementTechnicalName);
 
                                 return;
                             }
@@ -93,22 +95,29 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
                     }
                     else if($request->isPostParameterMatching("target", "image"))
                     {
-                        // New company logo transmitted
-                        if($request->isPostParameterMatching("element", "logo"))
+                        $validImageElements = [ "logo" => "Firmenlogo" ];
+
+                        foreach($validImageElements as $validImageElement)
                         {
-                            $image = $request->getPOSTValue("element");
+                            $validImageElementTechnicalName = $validImageElement[0];
 
-                            // TODO Process $image, maybe convert it correctly and such...
+                            // New company logo transmitted
+                            if($request->isPostParameterMatching("element", $validImageElementTechnicalName))
+                            {
+                                $image = $request->getPOSTValue("element");
 
-                            $responseCode = 1;
+                                // TODO Process $image, maybe convert it correctly and such...
 
-                            $this->appearanceManagementView->show($companyData, "update", "image", "logo", $responseCode);
+                                $responseCode = 1; // TODO Use here corresponding model function to update the specific appearance element.
+
+                                $this->appearanceManagementView->show($companyData, "update", "image", $responseCode, $validImageElementTechnicalName);
+
+                                return;
+                            }
                         }
-                        else
-                        {
-                            // Expected a transmitted image as a new company logo BUT instead got nothing.
-                            $this->showPageDoesNotExist($companyData);
-                        }
+
+                        // Expected a transmitted image as a new company logo BUT instead got nothing.
+                        $this->showPageDoesNotExist($companyData);
                     }
                     else
                     {

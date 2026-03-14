@@ -17,14 +17,36 @@ class AppearanceManagementView implements IAppearanceManagementView
         $this->errorView = $errorView;
     }
 
-    private function showInvalidRequest(array $companyData)
+    private function showInvalidRequest(array $companyData) : void
     {
         $this->errorView->show($companyData, "Ungültige Anfrage", "Aktualisierung fehlgeschlagen.");
+        exit(0);
     }
 
-    private function genForm(array $companyData, string $target, string $element) : string
+    private function genFormColorRadioButton(string $bsColorClass, string $labelText, string $id, string $postValue) : string
     {
-        if(strcmp($target, "color") === 0)
+        return
+        "
+        <div class=\"row mb-3\">
+            <div class=\"col-12\">
+                <label class=\"form-label fw-bold $bsColorClass\" for=\"body\">$labelText</label>
+                <input type=\"radio\" id=\"$id\" name=\"color\" class=\"w-100 btn btn-primary\" value=\"$postValue\">
+            </div>
+        </div>
+        ";
+    }
+
+    private function genFormColorRadioButtons() : string
+    {
+        $colorRadioButtons = "";
+
+
+    }
+
+    private function genForm(array $companyData, string $target, string $element, array $validElements) : string
+    {
+        // Want to see a specific form for an element to change the color for?
+        if(strcmp($target, "color") === 0 && !empty($element))
         {
             return
             "
@@ -73,14 +95,15 @@ class AppearanceManagementView implements IAppearanceManagementView
                         </div>
                     </div>
                 </form>   
-                </div>
-                ";
+            </div>
+            ";
         }
-        else if(strcmp($target, "image") === 0)
+        // Want to see a specific form for an element to change the image for?
+        else if(strcmp($target, "image") === 0 && !empty($element))
         {
             return
             "
-            
+                This image upload form cannot be shown yet, due to not implemented.
             ";
         }
         else
@@ -89,7 +112,7 @@ class AppearanceManagementView implements IAppearanceManagementView
         }
     }
 
-    public function show(array $companyData, string $action, string $target = "", string $element = "", int $messageValue = 0): void
+    public function show(array $companyData, string $action, string $target = "", string $element = "", int $messageValue = 0, array $validElements = []): void
     {
         if(empty($companyData))
         {
@@ -127,12 +150,60 @@ class AppearanceManagementView implements IAppearanceManagementView
             }
             else if(strcmp($action, "update") === 0)
             {
-                if(strcmp($target, "color") === 0)
+                if((strcmp($target, "color") === 0 || strcmp($target, "image") === 0))
                 {
+                    // Is an overview requested to show all changeable elements which do exist?
+                    if(empty($element))
+                    {
+                        if(strcmp($target, "color") === 0)
+                        {
+                            $feedContentHTML =
+                            "
+                            <div class=\"container-fluid p-0\">
+                                <div class=\"row mt-3 mb-5\">
+                                    <div class=\"col-12\">
+                                        <span class=\"fs-2 fw-bold\">Farbe ändern von</span>
+                                    </div>
+                                </div>
+                                
+                                <div class=\"row mt-3 mb-3\">
+                                    <div class=\"col-12\">
+                                        <a class=\"btn btn-secondary w-100\" href=\"/?view=appearance&action=all\">Zurück</a>
+                                    </div>
+                                </div>
+                            </div>
+                            ";
+                        }
+                        else if(strcmp($target, "image") === 0)
+                        {
+                            $feedContentHTML = "Requested overview for all image update forms not implemented yet.";
+                        }
+                        else
+                        {
+                            $this->showInvalidRequest($companyData);
+                        }
+                    }
+                    else // Is a specific element requested to change the color for? (= show submit form for that specific element??)
+                    {
+                        if(strcmp($target, "color") === 0)
+                        {
+                            $feedContentHTML = $this->genForm($companyData, $target, $element, $validElements);
+                        }
+                        else if(strcmp($target, "image") === 0)
+                        {
+                            $feedContentHTML = "Requested update form for that given element not implemented yet.";
+                        }
+                        else
+                        {
+                            $this->showInvalidRequest($companyData);
+                        }
+                    }
+
+                    /*
                     if($messageValue === 0)
                     {
                         // Show normal update form
-                        $feedContentHTML = $this->genForm($companyData, "color", $element);
+                        $this->showForm($companyData, "color", $element);
                     }
                     else if($messageValue === 1)
                     {
@@ -146,10 +217,7 @@ class AppearanceManagementView implements IAppearanceManagementView
                     {
                         $this->showInvalidRequest($companyData);
                     }
-                }
-                else if(strcmp($target, "image") === 0)
-                {
-                    $this->showInvalidRequest($companyData);
+                    */
                 }
                 else
                 {
