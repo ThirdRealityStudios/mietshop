@@ -41,7 +41,7 @@ class AppearanceManagementView implements IAppearanceManagementView
         "
         <div class=\"row p-0 mb-3 $bsColorClass rounded align-items-center\">
             <div class=\"col-1 ps-0 h-100 d-inline\">
-                <input type=\"radio\" id=\"$id\" name=\"color\" class=\"form-check-input ms-3 d-inline-block\" value=\"$postValue\">
+                <input type=\"radio\" id=\"$id\" name=\"colorBootstrap\" class=\"form-check-input ms-3 d-inline-block\" value=\"$postValue\">
             </div>
             <div class=\"col-11 pe-0 h-100 d-inline\">
                 <label class=\"form-check-label fw-bold w-100 p-2 d-inline-block\" for=\"$id\"><span class=\"fs-6\" style=\"filter: invert(100%);\">$labelText</span></label>
@@ -76,7 +76,7 @@ class AppearanceManagementView implements IAppearanceManagementView
             return
             "
             <div class=\"container-fluid\">
-                <div class=\"row\">
+                <div class=\"row mb-4\">
                     <div class=\"col-12 p-0\">
                         <p class=\"fs-2 fw-bold\">Bearbeiten</p>
                     </div>
@@ -92,8 +92,19 @@ class AppearanceManagementView implements IAppearanceManagementView
                             </div>
                             <div class=\"row mb-3\">
                                 <div class=\"col-12 p-0 w-100\">
-                                    <label class=\"form-label fw-bold w-100 fs-6\" for=\"custom\">Eigene Farbe auswählen (evtl. fortgeschritten):</label>
-                                    <input class=\"w-100 form-control form-control-color p-0\" type=\"color\" id=\"custom\" value=\"\">
+                                    <label class=\"form-label fw-bold w-100 fs-6\" for=\"colorPicker\">Eigene Farbe auswählen (evtl. fortgeschritten):</label>
+                                    <input class=\"w-100 form-control form-control-color p-0\" name=\"colorPicker\" type=\"color\" id=\"colorPicker\" value=\"\">
+                                </div>
+                            </div>
+                            <div class=\"row mb-3\">
+                                <div class=\"col-12 p-0\">
+                                    <hr class=\"w-100 border border-1 border-primary\">
+                                </div>
+                            </div>
+                            <div class=\"row mb-3\">
+                                <div class=\"col-12 p-0 w-100\">
+                                    <label class=\"form-label fw-bold w-100 fs-6\" for=\"colorHex\">Farb-Code eingeben (RGBA Hex Code):</label>
+                                    <input class=\"w-100 form-control\" placeholder=\"z.B. #11223344\" name=\"colorHex\" type=\"text\" id=\"colorHex\" value=\"\">
                                 </div>
                             </div>
                             <div class=\"row mb-3\">
