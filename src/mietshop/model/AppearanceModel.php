@@ -26,6 +26,9 @@ use src\mietshop\infrastructure\database\IDatabaseAdapter;
  */
 class AppearanceModel implements IAppearanceModel
 {
+    private IUserInputModel $userInputModel;
+    private IDatabaseAdapter $databaseAdapter;
+
     private function genTableCreateColumnSQLText(string $elementTypeName, string $elementName)
     {
         return ", $elementTypeName$elementName TINYTEXT NOT NULL DEFAULT \"\"";
@@ -189,11 +192,11 @@ class AppearanceModel implements IAppearanceModel
         return $this->databaseAdapter->readCharacterLimit("AppearanceModel", "Color$elementName");
     }
 
-    public function setColor(string $color, string $elementName): bool
+    public function setColor(string $colorCode, string $elementName): bool
     {
-        if(mb_strlen($color, "UTF-8") <= $this->getColorCharacterLimit($elementName))
+        if(($this->userInputModel->isValidHexRGBCode($colorCode) || in_array($colorCode, IAppearanceModel::ACCEPTED_COLORS)) && mb_strlen($colorCode, "UTF-8") <= $this->getColorCharacterLimit($elementName))
         {
-            return $this->updateValue("Color$elementName", $color);
+            return $this->updateValue("Color$elementName", $colorCode);
         }
         else
         {
