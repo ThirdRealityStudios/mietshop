@@ -39,10 +39,12 @@ class AppearanceManagementView implements IAppearanceManagementView
     {
         return
         "
-        <div class=\"row mb-3\">
-            <div class=\"col-12\">
-                <label class=\"form-label fw-bold $bsColorClass\" for=\"$id\">$labelText</label>
-                <input type=\"radio\" id=\"$id\" name=\"color\" class=\"form-check\" value=\"$postValue\">
+        <div class=\"row p-0 mb-3 $bsColorClass rounded align-items-center\">
+            <div class=\"col-1 ps-0 h-100 d-inline\">
+                <input type=\"radio\" id=\"$id\" name=\"color\" class=\"form-check-input ms-3 d-inline-block\" value=\"$postValue\">
+            </div>
+            <div class=\"col-11 pe-0 h-100 d-inline\">
+                <label class=\"form-check-label fw-bold w-100 p-2 d-inline-block\" for=\"$id\"><span class=\"\" style=\"filter: invert(100%);\">$labelText</span></label>
             </div>
         </div>
         ";
@@ -52,11 +54,13 @@ class AppearanceManagementView implements IAppearanceManagementView
     {
         $colorRadioButtons = "";
 
-        foreach($validColors as $validColor)
-        {
-            $bsClass = "bg-".$validColor[0];
+        $validColorsKeys = array_keys($validColors);
 
-            $colorRadioButtons .= $this->genFormColorRadioButton($bsClass, $validColor[1], $validColor[0], $validColor[0]);
+        foreach($validColorsKeys as $validBootstrapColor)
+        {
+            $bsBgColorClass = "bg-".$validBootstrapColor;
+
+            $colorRadioButtons .= $this->genFormColorRadioButton($bsBgColorClass, $validColors[$validBootstrapColor], $bsBgColorClass, $bsBgColorClass);
         }
 
         return $colorRadioButtons;
