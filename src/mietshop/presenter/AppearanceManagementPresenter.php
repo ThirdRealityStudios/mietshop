@@ -31,6 +31,9 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
 
     public function process(IHTTPRequest $request, array $sessionValues): void
     {
+        $validElements = [ "color" => [ "frame" => "Farbe für Rahmen", "window" => "Farbe für Fenster", "background" => "Farbe für Hintergrund", "text" => "Text-Farbe", "link" => "Link-Farbe", "interesting" => "Hauptfarbe", "uninteresting" => "Nebenfarbe", "actionExecute" => "Ausführen-Schaltfläche-Farbe", "actionAbort" => "Abbruch-Schaltfläche-Farbe" ], "image" => [ "logo" => "Firmenlogo" ] ];
+        $validColors = [ "primary" => "Color name written fully", "secondary" => "Other color name written fully", "danger" => "Also a color name written fully" ];
+
         if(isset($sessionValues["Email"]) && is_string($sessionValues["Email"])) // Is the visitor logged in?
         {
             $accountFetchData = $this->accountModel->readAccount($sessionValues["Email"]);
@@ -50,13 +53,13 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
                     if($request->isQueryParameterMatching("target", "color"))
                     {
                         // Request or show all colors choosable and such..
-                        $this->appearanceManagementView->show($companyData, "update", "color");
+                        $this->appearanceManagementView->show($companyData, "update", "color", "", 0, $validElements);
                     }
                     else if($request->isQueryParameterMatching("target", "image"))
                     {
                         if($request->isQueryParameterMatching("element", "logo"))
                         {
-                            $this->appearanceManagementView->show($companyData, "update", "image", "logo");
+                            $this->appearanceManagementView->show($companyData, "update", "image", "logo", 0, $validElements);
                         }
                         else
                         {
@@ -72,12 +75,8 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
                 }
                 else if($request->isPostParameterMatching("action", "update"))
                 {
-                    $validElements = [ "color" => [ "frame" => "Farbe für Rahmen", "window" => "Farbe für Fenster", "background" => "Farbe für Hintergrund", "text" => "Text-Farbe", "link" => "Link-Farbe", "interesting" => "Hauptfarbe", "uninteresting" => "Nebenfarbe", "actionExecute" => "Ausführen-Schaltfläche-Farbe", "actionAbort" => "Abbruch-Schaltfläche-Farbe" ], "image" => [ "logo" => "Firmenlogo" ] ];
-
                     if($request->isPostParameterMatching("target", "color"))
                     {
-                        $validColors = [ "primary" => "Color name written fully", "secondary" => "Other color name written fully", "danger" => "Also a color name written fully" ];
-
                         $validColorElements = $validElements["color"];
                         $validColorElementsKeys = array_keys($validColorElements);
 

@@ -29,7 +29,7 @@ class AppearanceManagementView implements IAppearanceManagementView
         "
         <div class=\"row mb-3\">
             <div class=\"col-12\">
-                <a class=\"btn btn-primary\" href=\"/?view=appearance&action=update&target=$urlTargetValue&element=$urlElementValue\">$title</a>
+                <a class=\"btn btn-primary w-100\" href=\"/?view=appearance&action=update&target=$urlTargetValue&element=$urlElementValue\">$title</a>
             </div>
         </div>
         ";
@@ -134,7 +134,7 @@ class AppearanceManagementView implements IAppearanceManagementView
             {
                 $feedContentHTML =
                 "
-                <div class=\"container-fluid p-0\">
+                <div class=\"container-fluid\">
                     <div class=\"row mt-3 mb-5\">
                         <div class=\"col-12\">
                             <span class=\"fs-2 fw-bold\">Darstellung verwalten</span>
@@ -167,16 +167,28 @@ class AppearanceManagementView implements IAppearanceManagementView
                     {
                         if(strcmp($target, "color") === 0)
                         {
+                            $validColorElements = $validElements["color"];
+                            $validColorElementsKeys = array_keys($validColorElements);
+
+                            $buttonsHTML = "";
+
+                            foreach($validColorElementsKeys as $validColorElementsKey)
+                            {
+                                $validColorElementName = $validColorElements[$validColorElementsKey];
+
+                                $buttonsHTML .= $this->genButton("color", $validColorElementsKey, $validColorElementName);
+                            }
+
                             $feedContentHTML =
                             "
-                            <div class=\"container-fluid p-0\">
+                            <div class=\"container-fluid\">
                                 <div class=\"row mt-3 mb-5\">
                                     <div class=\"col-12\">
                                         <span class=\"fs-2 fw-bold\">Farbe ändern von</span>
                                     </div>
                                 </div>
-                                
-                                <div class=\"row mt-3 mb-3\">
+                                $buttonsHTML
+                                <div class=\"row mt-5 mb-3\">
                                     <div class=\"col-12\">
                                         <a class=\"btn btn-secondary w-100\" href=\"/?view=appearance&action=all\">Zurück</a>
                                     </div>

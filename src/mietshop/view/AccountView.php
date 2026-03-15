@@ -58,7 +58,7 @@ class AccountView implements IAccountView
         $feedContent =
         "
             <div class=\"container-fluid\">
-                <div class=\"row mt-3\">
+                <div class=\"row mt-3 mb-5\">
                     <div class=\"col-2\" style=\"background-image: url('/img/symbol/person-square.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\"></div>
                     <div class=\"col-10\">
                         <div class=\"container-fluid\">
