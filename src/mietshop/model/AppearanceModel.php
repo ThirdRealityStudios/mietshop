@@ -3,11 +3,53 @@
 namespace src\mietshop\model;
 
 use PDOException;
+use src\mietshop\contracts\IAppearanceModel;
 use src\mietshop\contracts\IUserInputModel;
 use src\mietshop\infrastructure\database\IDatabaseAdapter;
 
-class AppearanceModel
+/**
+ * CREATE TABLE IF NOT EXISTS AppearanceModel
+ * (
+ * ID INT(8) AUTO_INCREMENT PRIMARY KEY UNIQUE,
+ *
+ * ColorFrame TINYTEXT NOT NULL DEFAULT \"#0D6EFD\",
+ * ColorWindow TINYTEXT NOT NULL DEFAULT \"#CFE2FF\",
+ * ColorBackground TINYTEXT NOT NULL DEFAULT \"#E9ECEF\",
+ * ColorText TINYTEXT NOT NULL DEFAULT \"#212529\",
+ * ColorLink TINYTEXT NOT NULL DEFAULT \"#0D6EFD\",
+ * ColorInteresting TINYTEXT NOT NULL DEFAULT \"#0D6EFD\",
+ * ColorUninteresting TINYTEXT NOT NULL DEFAULT \"#6C757D\",
+ * ColorActionExecute TINYTEXT NOT NULL DEFAULT \"#198754\",
+ * ColorActionAbort TINYTEXT NOT NULL DEFAULT \"#DC3545\",
+ * ImageLogo TINYTEXT NOT NULL DEFAULT \"/img/logo/company/logo.png\"
+ * );
+ */
+class AppearanceModel implements IAppearanceModel
 {
+    private function genTableCreateColumnSQLText(string $elementTypeName, string $elementName)
+    {
+        return ", $elementTypeName$elementName TINYTEXT NOT NULL DEFAULT \"\"";
+    }
+
+    private function genTableCreateColumnsSQLText(array $acceptedElements)
+    {
+        $sqlCreateColumns = "";
+
+        $elementTypeNames = array_keys($acceptedElements);
+
+        foreach($elementTypeNames as $elementTypeName)
+        {
+            $elementNames = $acceptedElements[$elementTypeName];
+
+            foreach($elementNames as $elementName)
+            {
+                $sqlCreateColumns .= $this->genTableCreateColumnSQLText($elementTypeName, $elementName);
+            }
+        }
+
+        return $sqlCreateColumns;
+    }
+
     /**
      * @param IDatabaseAdapter $databaseAdapter Database adapter. Make sure you have connected yet.
      * @throws PDOException
@@ -17,22 +59,16 @@ class AppearanceModel
         $this->databaseAdapter = $databaseAdapter;
         $this->userInputModel = $userInputModel;
 
+        // Map the IAppearanceModel::ACCEPTED_ELEMENTS to a suitable SQL database scheme text.
+        $necessaryCreateTableColumns = $this->genTableCreateColumnsSQLText(IAppearanceModel::ACCEPTED_ELEMENTS);
+
+        /**     /img/logo/company/logo.png is used internally for column ImageLogo      */
         $sql =
         "
 	    CREATE TABLE IF NOT EXISTS AppearanceModel
 		(
-		    ID INT(8) AUTO_INCREMENT PRIMARY KEY UNIQUE,
-			    
-			ColorFrame VARCHAR(9) NOT NULL DEFAULT \"#0D6EFD\",
-			ColorWindow VARCHAR(9) NOT NULL DEFAULT \"#CFE2FF\",
-			ColorBackground VARCHAR(9) NOT NULL DEFAULT \"#E9ECEF\",
-			ColorText VARCHAR(9) NOT NULL DEFAULT \"#212529\",
-			ColorLink VARCHAR(9) NOT NULL DEFAULT \"#0D6EFD\",
-			ColorInteresting VARCHAR(9) NOT NULL DEFAULT \"#0D6EFD\",
-			ColorUninteresting VARCHAR(9) NOT NULL DEFAULT \"#6C757D\",
-			ColorActionExecute VARCHAR(9) NOT NULL DEFAULT \"#198754\",
-			ColorActionAbort VARCHAR(9) NOT NULL DEFAULT \"#DC3545\",
-			ImageLogo VARCHAR(255) NOT NULL DEFAULT \"/img/logo/company/logo.png\"
+		    ID INT(8) AUTO_INCREMENT PRIMARY KEY UNIQUE
+			$necessaryCreateTableColumns
 		);
 		";
 
@@ -143,21 +179,21 @@ class AppearanceModel
         }
     }
 
-    public function getColorFrame(): string
+    public function getColor(string $elementName): string
     {
-        return $this->readValue("ColorFrame");
+        return $this->readValue("Color$elementName");
     }
 
-    public function getColorFrameCharacterLimit(): int
+    public function getColorCharacterLimit(string $elementName): int
     {
-        return $this->databaseAdapter->readCharacterLimit("AppearanceModel", "ColorFrame");
+        return $this->databaseAdapter->readCharacterLimit("AppearanceModel", "Color$elementName");
     }
 
-    public function setColorFrame(string $colorFrame): bool
+    public function setColor(string $color, string $elementName): bool
     {
-        if(mb_strlen($colorFrame, "UTF-8") <= $this->getColorFrameCharacterLimit())
+        if(mb_strlen($color, "UTF-8") <= $this->getColorCharacterLimit($elementName))
         {
-            return $this->updateValue("ColorFrame", $colorFrame);
+            return $this->updateValue("Color$elementName", $color);
         }
         else
         {
@@ -165,197 +201,21 @@ class AppearanceModel
         }
     }
 
-    public function getColorWindow(): string
+    public function getImage(string $elementName): string
     {
-        return $this->readValue("ColorWindow");
+        return $this->readValue("Image$elementName");
     }
 
-    public function getColorWindowCharacterLimit(): int
+    public function getImageCharacterLimit(string $elementName): int
     {
-        return $this->databaseAdapter->readCharacterLimit("AppearanceModel", "ColorWindow");
+        return $this->databaseAdapter->readCharacterLimit("AppearanceModel", "Image$elementName");
     }
 
-    public function setColorWindow(string $colorWindow): bool
+    public function setImage(string $elementName, string $imagePath): bool
     {
-        if(mb_strlen($colorWindow, "UTF-8") <= $this->getColorWindowCharacterLimit())
+        if(mb_strlen($imagePath, "UTF-8") <= $this->getImageCharacterLimit($elementName))
         {
-            return $this->updateValue("ColorWindow", $colorWindow);
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    public function getColorBackground(): string
-    {
-        return $this->readValue("ColorBackground");
-    }
-
-    public function getColorBackgroundCharacterLimit(): int
-    {
-        return $this->databaseAdapter->readCharacterLimit("AppearanceModel", "ColorBackground");
-    }
-
-    public function setColorBackground(string $colorBackground): bool
-    {
-        if(mb_strlen($colorBackground, "UTF-8") <= $this->getColorBackgroundCharacterLimit())
-        {
-            return $this->updateValue("ColorBackground", $colorBackground);
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    public function getColorText(): string
-    {
-        return $this->readValue("ColorText");
-    }
-
-    public function getColorTextCharacterLimit(): int
-    {
-        return $this->databaseAdapter->readCharacterLimit("AppearanceModel", "ColorText");
-    }
-
-    public function setColorText(string $colorText): bool
-    {
-        if(mb_strlen($colorText, "UTF-8") <= $this->getColorTextCharacterLimit())
-        {
-            return $this->updateValue("ColorText", $colorText);
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    public function getColorLink(): string
-    {
-        return $this->readValue("ColorLink");
-    }
-
-    public function getColorLinkCharacterLimit(): int
-    {
-        return $this->databaseAdapter->readCharacterLimit("AppearanceModel", "ColorLink");
-    }
-
-    public function setColorLink(string $colorLink): bool
-    {
-        if(mb_strlen($colorLink, "UTF-8") <= $this->getColorLinkCharacterLimit())
-        {
-            return $this->updateValue("ColorLink", $colorLink);
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    public function getColorInteresting(): string
-    {
-        return $this->readValue("ColorInteresting");
-    }
-
-    public function getColorInterestingCharacterLimit(): int
-    {
-        return $this->databaseAdapter->readCharacterLimit("AppearanceModel", "ColorInteresting");
-    }
-
-    public function setColorInteresting(string $colorInteresting): bool
-    {
-        if(mb_strlen($colorInteresting, "UTF-8") <= $this->getColorInterestingCharacterLimit())
-        {
-            return $this->updateValue("ColorInteresting", $colorInteresting);
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    public function getColorUninteresting(): string
-    {
-        return $this->readValue("ColorUninteresting");
-    }
-
-    public function getColorUninterestingCharacterLimit(): int
-    {
-        return $this->databaseAdapter->readCharacterLimit("AppearanceModel", "ColorUninteresting");
-    }
-
-    public function setColorUninteresting(string $colorUninteresting): bool
-    {
-        if(mb_strlen($colorUninteresting, "UTF-8") <= $this->getColorUninterestingCharacterLimit())
-        {
-            return $this->updateValue("ColorUninteresting", $colorUninteresting);
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    public function getColorActionExecute(): string
-    {
-        return $this->readValue("ColorActionExecute");
-    }
-
-    public function getColorActionExecuteCharacterLimit(): int
-    {
-        return $this->databaseAdapter->readCharacterLimit("AppearanceModel", "ColorActionExecute");
-    }
-
-    public function setColorActionExecute(string $colorActionExecute): bool
-    {
-        if(mb_strlen($colorActionExecute, "UTF-8") <= $this->getColorActionExecuteCharacterLimit())
-        {
-            return $this->updateValue("ColorActionExecute", $colorActionExecute);
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    public function getColorActionAbort(): string
-    {
-        return $this->readValue("ColorActionAbort");
-    }
-
-    public function getColorActionAbortCharacterLimit(): int
-    {
-        return $this->databaseAdapter->readCharacterLimit("AppearanceModel", "ColorActionAbort");
-    }
-
-    public function setColorActionAbort(string $colorActionAbort): bool
-    {
-        if(mb_strlen($colorActionAbort, "UTF-8") <= $this->getColorActionAbortCharacterLimit())
-        {
-            return $this->updateValue("ColorActionAbort", $colorActionAbort);
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    public function getImageLogo(): string
-    {
-        return $this->readValue("ImageLogo");
-    }
-
-    public function getImageLogoCharacterLimit(): int
-    {
-        return $this->databaseAdapter->readCharacterLimit("AppearanceModel", "ImageLogo");
-    }
-
-    public function setImageLogo(string $imageLogo): bool
-    {
-        if(mb_strlen($imageLogo, "UTF-8") <= $this->getImageLogoCharacterLimit())
-        {
-            return $this->updateValue("ImageLogo", $imageLogo);
+            return $this->updateValue("Image$elementName", $imagePath);
         }
         else
         {
