@@ -35,16 +35,16 @@ class AppearanceManagementView implements IAppearanceManagementView
         ";
     }
 
-    private function genFormColorRadioButton(string $bsColorClass, string $labelText, string $id, string $postValue) : string
+    private function genFormColorRadioButton(string $acceptedBsColorName, string $labelText, string $id, string $postValue) : string
     {
         return
         "
-        <div class=\"row p-0 mb-3 $bsColorClass rounded align-items-center\">
+        <div class=\"row text- p-0 mb-3 bg-$acceptedBsColorName rounded border border-1 border-black align-items-center\">
             <div class=\"col-1 ps-0 h-100 d-inline\">
-                <input type=\"radio\" id=\"$id\" name=\"colorBootstrap\" class=\"form-check-input ms-3 d-inline-block\" value=\"$postValue\">
+                <input type=\"radio\" id=\"$id\" name=\"colorBootstrap\" class=\"form-check-input ms-3 border border-1 border-black d-inline-block\" value=\"$postValue\">
             </div>
             <div class=\"col-11 pe-0 h-100 d-inline\">
-                <label class=\"form-check-label fw-bold w-100 p-2 d-inline-block\" for=\"$id\"><span class=\"fs-6\" style=\"filter: invert(100%);\">$labelText</span></label>
+                <label class=\"form-check-label fw-bold w-100 p-2 d-inline-block\" for=\"$id\"><span class=\"fs-6 p-1 bg-dark-subtle rounded border border-1 border-black text-black d-inline\">$labelText</span></label>
             </div>
         </div>
         ";
@@ -54,13 +54,9 @@ class AppearanceManagementView implements IAppearanceManagementView
     {
         $colorRadioButtons = "";
 
-        $validColorsKeys = array_keys($validColors);
-
-        foreach($validColorsKeys as $validBootstrapColor)
+        foreach($validColors as $acceptedBsColorName)
         {
-            $bsBgColorClass = "bg-".$validBootstrapColor;
-
-            $colorRadioButtons .= $this->genFormColorRadioButton($bsBgColorClass, $validColors[$validBootstrapColor], $bsBgColorClass, $bsBgColorClass);
+            $colorRadioButtons .= $this->genFormColorRadioButton($acceptedBsColorName, $acceptedBsColorName, $acceptedBsColorName, $acceptedBsColorName);
         }
 
         return $colorRadioButtons;

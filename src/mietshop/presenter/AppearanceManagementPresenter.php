@@ -5,6 +5,7 @@ namespace src\mietshop\presenter;
 use src\mietshop\contracts\IAccountModel;
 use src\mietshop\contracts\IAppearanceManagementPresenter;
 use src\mietshop\contracts\IAppearanceManagementView;
+use src\mietshop\contracts\IAppearanceModel;
 use src\mietshop\contracts\ICompanyModel;
 use src\mietshop\contracts\IErrorView;
 use src\mietshop\infrastructure\http\IHTTPRequest;
@@ -31,8 +32,8 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
 
     public function process(IHTTPRequest $request, array $sessionValues): void
     {
-        $validElements = [ "color" => [ "frame" => "Farbe für Rahmen", "window" => "Farbe für Fenster", "background" => "Farbe für Hintergrund", "text" => "Text-Farbe", "link" => "Link-Farbe", "interesting" => "Hauptfarbe", "uninteresting" => "Nebenfarbe", "actionExecute" => "Ausführen-Schaltfläche-Farbe", "actionAbort" => "Abbruch-Schaltfläche-Farbe" ], "image" => [ "logo" => "Firmenlogo" ] ];
-        $validColors = [ "primary" => "Color name written fully", "secondary" => "Other color name written fully", "danger" => "Also a color name written fully" ];
+        $validColors = IAppearanceModel::ACCEPTED_COLORS;
+        $validElements = IAppearanceModel::ACCEPTED_ELEMENTS;
 
         if(isset($sessionValues["Email"]) && is_string($sessionValues["Email"])) // Is the visitor logged in?
         {

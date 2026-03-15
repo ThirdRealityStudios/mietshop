@@ -13,7 +13,7 @@ interface IAppearanceManagementView
      * @param string $element Optional (only needed if $target is needed too): specifies the corresponding, specific element to update of the target.
      * @param int $messageValue Optional: only needed if you use the request parameter "action" with the value "update", combined with a value chosen for parameter $target. 0 is usually interpreted as neutral to only show the submit form. 1 means successfully updated. -1 means failed to update.
      * @param array $validElements Optional: Only needed if parameter $element was set too. This is due to the determination of the exact element which should be updated with the corresponding property.
-     * @param array $validColors Optional: Only needed if the parameter $action = "update", $target = "color" and $element = "myColorElementChangeable". Array should look like this: [ "primary" => "Color name written fully", "secondary" => "Other color name written fully", "danger" => "Also a color name written fully" ]
+     * @param array $validColors Optional: Only needed if the parameter $action = "update", $target = "color" and $element = "myColorElementChangeable". Array should look like this: [ "primary", "secondary", "danger" ]
      * @return void
      */
     public function show(array $companyData, string $action, string $target = "", string $element = "", int $messageValue = 0, array $validElements = [], array $validColors = []) : void;
