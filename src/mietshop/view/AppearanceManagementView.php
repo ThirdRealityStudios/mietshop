@@ -99,7 +99,7 @@ class AppearanceManagementView implements IAppearanceManagementView
                             </div>
                             <div class=\"row mb-3\">
                                 <div class=\"col-12\">
-                                    <a class=\"w-100 btn btn-secondary\" href=\"/?view=appearance&action=update&target=all\">Abbrechen</a>
+                                    <a class=\"w-100 btn btn-secondary\" href=\"/?view=appearance&action=update&target=color\">Abbrechen</a>
                                 </div>
                             </div> 
                         </div>
@@ -160,41 +160,43 @@ class AppearanceManagementView implements IAppearanceManagementView
             }
             else if(strcmp($action, "update") === 0)
             {
-                if((strcmp($target, "color") === 0 || strcmp($target, "image") === 0))
+                if(strcmp($target, "color") === 0)
                 {
                     // Is an overview requested to show all changeable elements which do exist?
                     if(empty($element))
                     {
-                        if(strcmp($target, "color") === 0)
+                        $validColorElements = $validElements["color"];
+                        $validColorElementsKeys = array_keys($validColorElements);
+
+                        $buttonsHTML = "";
+
+                        foreach($validColorElementsKeys as $validColorElementsKey)
                         {
-                            $validColorElements = $validElements["color"];
-                            $validColorElementsKeys = array_keys($validColorElements);
+                            $validColorElementName = $validColorElements[$validColorElementsKey];
 
-                            $buttonsHTML = "";
+                            $buttonsHTML .= $this->genButton("color", $validColorElementsKey, $validColorElementName);
+                        }
 
-                            foreach($validColorElementsKeys as $validColorElementsKey)
-                            {
-                                $validColorElementName = $validColorElements[$validColorElementsKey];
-
-                                $buttonsHTML .= $this->genButton("color", $validColorElementsKey, $validColorElementName);
-                            }
-
-                            $feedContentHTML =
-                            "
-                            <div class=\"container-fluid\">
-                                <div class=\"row mt-3 mb-5\">
-                                    <div class=\"col-12\">
-                                        <span class=\"fs-2 fw-bold\">Farbe ändern von</span>
-                                    </div>
-                                </div>
-                                $buttonsHTML
-                                <div class=\"row mt-5 mb-3\">
-                                    <div class=\"col-12\">
-                                        <a class=\"btn btn-secondary w-100\" href=\"/?view=appearance&action=all\">Zurück</a>
-                                    </div>
+                        $feedContentHTML =
+                        "
+                        <div class=\"container-fluid\">
+                            <div class=\"row mt-3 mb-5\">
+                                <div class=\"col-12\">
+                                    <span class=\"fs-2 fw-bold\">Farbe ändern von</span>
                                 </div>
                             </div>
-                            ";
+                            $buttonsHTML
+                            <div class=\"row mt-5 mb-3\">
+                                <div class=\"col-12\">
+                                    <a class=\"btn btn-secondary w-100\" href=\"/?view=appearance&action=all\">Zurück</a>
+                                </div>
+                            </div>
+                        </div>
+                        ";
+
+                        if(strcmp($target, "color") === 0)
+                        {
+
                         }
                         else if(strcmp($target, "image") === 0)
                         {
@@ -205,20 +207,9 @@ class AppearanceManagementView implements IAppearanceManagementView
                             $this->showInvalidRequest($companyData);
                         }
                     }
-                    else // Is a specific element requested to change the color for? (= show submit form for that specific element??)
+                    else // = want to change the color of a specific element.
                     {
-                        if(strcmp($target, "color") === 0)
-                        {
-                            $feedContentHTML = $this->genColorForm($target, $element, $validColors);
-                        }
-                        else if(strcmp($target, "image") === 0)
-                        {
-                            $feedContentHTML = "Requested update form for that given element not implemented yet.";
-                        }
-                        else
-                        {
-                            $this->showInvalidRequest($companyData);
-                        }
+                        $feedContentHTML = $this->genColorForm($target, $element, $validColors);
                     }
 
                     /*
@@ -240,6 +231,10 @@ class AppearanceManagementView implements IAppearanceManagementView
                         $this->showInvalidRequest($companyData);
                     }
                     */
+                }
+                else if(strcmp($target, "image") === 0)
+                {
+                    $this->showInvalidRequest($companyData);
                 }
                 else
                 {

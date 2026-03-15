@@ -52,8 +52,10 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
                 {
                     if($request->isQueryParameterMatching("target", "color"))
                     {
+                        $elementValue = $request->getQueryValue("element") ?? "";
+
                         // Request or show all colors choosable and such..
-                        $this->appearanceManagementView->show($companyData, "update", "color", "", 0, $validElements);
+                        $this->appearanceManagementView->show($companyData, "update", "color", $elementValue, 0, $validElements, $validColors);
                     }
                     else if($request->isQueryParameterMatching("target", "image"))
                     {
