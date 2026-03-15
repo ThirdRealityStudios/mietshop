@@ -8,6 +8,7 @@ use src\mietshop\contracts\IAppearanceManagementView;
 use src\mietshop\contracts\IAppearanceModel;
 use src\mietshop\contracts\ICompanyModel;
 use src\mietshop\contracts\IErrorView;
+use src\mietshop\contracts\IUserInputModel;
 use src\mietshop\infrastructure\http\IHTTPRequest;
 
 class AppearanceManagementPresenter implements IAppearanceManagementPresenter
@@ -15,21 +16,25 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
     private ICompanyModel $companyModel;
     private IAccountModel $accountModel;
     private IAppearanceModel $appearanceModel;
+    private IUserInputModel $userInputModel;
     private IAppearanceManagementView $appearanceManagementView;
     private IErrorView $errorView;
 
-    public function __construct(ICompanyModel $companyModel, IAccountModel $accountModel, IAppearanceModel $appearanceModel, IAppearanceManagementView $appearanceManagementView, IErrorView $errorView)
+    public function __construct(ICompanyModel $companyModel, IAccountModel $accountModel, IAppearanceModel $appearanceModel, IUserInputModel $userInputModel, IAppearanceManagementView $appearanceManagementView, IErrorView $errorView)
     {
         $this->companyModel = $companyModel;
         $this->accountModel = $accountModel;
+        $this->appearanceModel = $appearanceModel;
+        $this->userInputModel = $userInputModel;
+
         $this->appearanceManagementView = $appearanceManagementView;
         $this->errorView = $errorView;
-        $this->appearanceModel = $appearanceModel;
     }
 
     private function showPageDoesNotExist(array $companyData)
     {
         $this->errorView->show($companyData, "Anfrage ungültig", "Die angeforderte Funktion oder Seite existiert nicht.");
+        exit(0);
     }
 
     public function process(IHTTPRequest $request, array $sessionValues): void
@@ -84,31 +89,49 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
                     {
                         $validElementNames = array_keys($validElements["Color"]);
 
+                        $possibleColorBootstrap = $request->getPOSTValue("colorBootstrap");
+                        $possibleColorPicked = $request->getPOSTValue("colorPicked");
+                        $possibleColorHexCode = $request->getPOSTValue("colorHexCode");
+
+                        $areColorFieldsSentTechnically = is_string($possibleColorBootstrap) && is_string($possibleColorPicked) && is_string($possibleColorHexCode);
+
+                        /*
+                        var_dump($possibleColorBootstrap);
+                        var_dump($possibleColorPicked);
+                        var_dump($possibleColorHexCode);
+                        die();
+                        */
+
                         foreach($validElementNames as $validElementName)
                         {
-                            // $validColorElementName = $validElements["Color"][$validElementName];
-
-                            if($request->isPostParameterMatching("element", $validElementName /* $validColorElementName */) && ($request->isPostParameterExisting("colorBootstrap") || $request->isPostParameterExisting("colorBootstrap") || $request->isPostParameterExisting("colorPicked") || $request->isPostParameterExisting("colorHexCode")))
+                            if($request->isPostParameterMatching("element", $validElementName) && $areColorFieldsSentTechnically)
                             {
-                                $responseCode = 1; // TODO Use here corresponding model function to update the specific appearance element. Also, use preg_match to verify the color sent (HTML color code hexadecimal - also for Bootstrap colors).
+                                $colorChosen = "";
 
-                                if($request->isPostParameterMatching("element", "#000000"))
+                                // Was a custom hex code sent?
+                                if($this->userInputModel->isValidHexRGBCode($possibleColorHexCode))
                                 {
-
+                                    $colorChosen = $possibleColorHexCode;
                                 }
-                                $colorHexCodeTransmitted = $request->getPOSTValue("colorHexCode");
-                                $colorPickedTransmitted = $request->getPOSTValue("colorPicked");
-                                $colorBootstrapTransmitted = $request->getPOSTValue("colorBootstrap");
+                                // Was a valid color transmitted by the color picker (black #000000 currently not supported and interpreted as "not sent" or "not chosen" - because it is easier currently)
+                                else if(strcmp($possibleColorPicked, "#000000") !== 0 && $this->userInputModel->isValidHexRGBCode($possibleColorPicked))
+                                {
+                                    $colorChosen = $possibleColorPicked;
+                                }
+                                // Is it a known pre-defined Bootstrap color? (to prevent manipulation)
+                                else if(in_array($possibleColorBootstrap, $validColors))
+                                {
+                                    $colorChosen = $possibleColorBootstrap;
+                                }
+                                else
+                                {
+                                    // Something went wrong. Invalid request.
+                                    $this->showPageDoesNotExist($companyData);
+                                }
 
-                                $this->appearanceModel->setColor();
+                                $updateResponse = $this->appearanceModel->setColor($colorChosen, $validElementName);
 
-                                var_dump($colorBootstrapTransmitted);
-                                var_dump($colorPickedTransmitted);
-                                var_dump($colorHexCodeTransmitted);
-                                var_dump($validElementName);
-                                die();
-
-                                $this->appearanceManagementView->show($companyData, "update", "Color", $validElementName /* $validColorElementName */, $responseCode, $validElements, $validColors);
+                                $this->appearanceManagementView->show($companyData, "update", "Color", $validElementName, $updateResponse ? 1 : -1, $validElements, $validColors);
 
                                 return;
                             }
@@ -133,9 +156,9 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
 
                                 // TODO Process $image, maybe convert it correctly and such...
 
-                                $responseCode = 1; // TODO Use here corresponding model function to update the specific appearance element.
+                                $updateResponse = 1; // TODO Use here corresponding model function to update the specific appearance element.
 
-                                $this->appearanceManagementView->show($companyData, "update", "Image", $validImageElementName, $responseCode, $validElements);
+                                $this->appearanceManagementView->show($companyData, "update", "Image", $validImageElementName, $updateResponse, $validElements);
 
                                 return;
                             }

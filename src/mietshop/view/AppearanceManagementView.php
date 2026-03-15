@@ -35,13 +35,15 @@ class AppearanceManagementView implements IAppearanceManagementView
         ";
     }
 
-    private function genFormColorRadioButton(string $acceptedBsColorName, string $labelText, string $id, string $postValue) : string
+    private function genFormColorRadioButton(string $acceptedBsColorName, string $labelText, string $id, string $postValue, bool $isChecked) : string
     {
+        $possiblyCheckedProperty = $isChecked ? " checked" : "";
+
         return
         "
         <div class=\"row darker-hover p-0 mb-3 bg-$acceptedBsColorName rounded border border-1 border-black align-items-center\">
             <div class=\"col-1 ps-0 h-100 d-inline\">
-                <input type=\"radio\" id=\"$id\" name=\"colorBootstrap\" class=\"form-check-input ms-3 border border-1 border-black d-inline-block\" value=\"$postValue\">
+                <input type=\"radio\" id=\"$id\" name=\"colorBootstrap\" class=\"form-check-input ms-3 border border-1 border-black d-inline-block\" value=\"$postValue\"$possiblyCheckedProperty>
             </div>
             <div class=\"col-11 pe-0 h-100 d-inline\">
                 <label class=\"form-check-label fw-bold w-100 p-2 d-inline-block\" for=\"$id\"><span class=\"fs-6 p-1 bg-dark-subtle rounded border border-1 border-black text-black d-inline\">$labelText</span></label>
@@ -54,9 +56,23 @@ class AppearanceManagementView implements IAppearanceManagementView
     {
         $colorRadioButtons = "";
 
+        $count = 0;
+
         foreach($validColors as $acceptedBsColorName)
         {
-            $colorRadioButtons .= $this->genFormColorRadioButton($acceptedBsColorName, $acceptedBsColorName, $acceptedBsColorName, $acceptedBsColorName);
+            if($count === 0)
+            {
+                $isChecked = true;
+            }
+            else
+            {
+                $isChecked = false;
+            }
+
+            // Some radio button needs to be checked by default, because otherwise no radio button is transmitted via POST request (which is interpreted as wrong request - because programmed this way)
+            $colorRadioButtons .= $this->genFormColorRadioButton($acceptedBsColorName, $acceptedBsColorName, $acceptedBsColorName, $acceptedBsColorName, $isChecked);
+
+            $count++;
         }
 
         return $colorRadioButtons;

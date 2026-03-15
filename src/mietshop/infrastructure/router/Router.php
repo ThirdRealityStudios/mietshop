@@ -66,7 +66,7 @@ class Router implements IRouter
             $loginPresenter = new LoginPresenter($companyModel, $accountModel, $loginView, $accountView, $errorView);
             $accountPresenter = new AccountPresenter($companyModel, $accountModel, $accountView, $errorView);
             $accountManagementPresenter = new AccountManagementPresenter($companyModel, $accountModel, $accountManagementView, $errorView);
-            $appearanceManagementPresenter = new AppearanceManagementPresenter($companyModel, $accountModel, $appearanceModel, $appearanceManagementView, $errorView);
+            $appearanceManagementPresenter = new AppearanceManagementPresenter($companyModel, $accountModel, $appearanceModel, $userInputModel, $appearanceManagementView, $errorView);
 
             if($request->isParameterMatching("view", "imprint"))
             {
