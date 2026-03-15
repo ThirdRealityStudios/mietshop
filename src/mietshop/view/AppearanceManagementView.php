@@ -67,7 +67,7 @@ class AppearanceManagementView implements IAppearanceManagementView
         $colorRadioButtonsHTML = $this->genFormColorRadioButtons($validColors);
 
         // Want to see a specific form for an element to change the color for?
-        if(strcmp($target, "color") === 0 && !empty($element))
+        if(strcmp($target, "Color") === 0 && !empty($element))
         {
             return
             "
@@ -115,7 +115,7 @@ class AppearanceManagementView implements IAppearanceManagementView
                             </div>
                             <div class=\"row mb-3\">
                                 <div class=\"col-12 p-0\">
-                                    <a class=\"w-100 btn btn-secondary\" href=\"/?view=appearance&action=update&target=color\">Abbrechen</a>
+                                    <a class=\"w-100 btn btn-secondary\" href=\"/?view=appearance&action=update&target=Color\">Abbrechen</a>
                                 </div>
                             </div> 
                         </div>
@@ -125,7 +125,7 @@ class AppearanceManagementView implements IAppearanceManagementView
             ";
         }
         // Want to see a specific form for an element to change the image for?
-        else if(strcmp($target, "image") === 0 && !empty($element))
+        else if(strcmp($target, "Image") === 0 && !empty($element))
         {
             return
             "
@@ -158,12 +158,12 @@ class AppearanceManagementView implements IAppearanceManagementView
                     </div>
                     <div class=\"row mb-3\">
                         <div class=\"col-12\">
-                            <a class=\"btn btn-primary w-100\" href=\"/?view=appearance&action=update&target=color\">Farben ändern 🎨️</a>
+                            <a class=\"btn btn-primary w-100\" href=\"/?view=appearance&action=update&target=Color\">Farben ändern 🎨️</a>
                         </div>
                     </div>
                     <div class=\"row mb-5\">
                         <div class=\"col-12\">
-                            <a class=\"btn btn-primary w-100\" href=\"/?view=appearance&action=update&target=image\">Grafiken ändern 📸</a>
+                            <a class=\"btn btn-primary w-100\" href=\"/?view=appearance&action=update&target=Image\">Grafiken ändern 📸</a>
                         </div>
                     </div>
                     <div class=\"row mb-3\">
@@ -176,12 +176,12 @@ class AppearanceManagementView implements IAppearanceManagementView
             }
             else if(strcmp($action, "update") === 0)
             {
-                if(strcmp($target, "color") === 0)
+                if(strcmp($target, "Color") === 0)
                 {
                     // Is an overview requested to show all changeable elements which do exist?
                     if(empty($element))
                     {
-                        $validColorElements = $validElements["color"];
+                        $validColorElements = $validElements["Color"];
                         $validColorElementsKeys = array_keys($validColorElements);
 
                         $buttonsHTML = "";
@@ -190,7 +190,7 @@ class AppearanceManagementView implements IAppearanceManagementView
                         {
                             $validColorElementName = $validColorElements[$validColorElementsKey];
 
-                            $buttonsHTML .= $this->genButton("color", $validColorElementsKey, $validColorElementName);
+                            $buttonsHTML .= $this->genButton("Color", $validColorElementsKey, $validColorElementName);
                         }
 
                         $feedContentHTML =
@@ -210,11 +210,11 @@ class AppearanceManagementView implements IAppearanceManagementView
                         </div>
                         ";
 
-                        if(strcmp($target, "color") === 0)
+                        if(strcmp($target, "Color") === 0)
                         {
 
                         }
-                        else if(strcmp($target, "image") === 0)
+                        else if(strcmp($target, "Image") === 0)
                         {
                             $feedContentHTML = "Requested overview for all image update forms not implemented yet.";
                         }
@@ -248,7 +248,7 @@ class AppearanceManagementView implements IAppearanceManagementView
                     }
                     */
                 }
-                else if(strcmp($target, "image") === 0)
+                else if(strcmp($target, "Image") === 0)
                 {
                     $this->showInvalidRequest($companyData);
                 }

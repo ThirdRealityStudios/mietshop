@@ -7,6 +7,7 @@ use src\mietshop\contracts\IErrorView;
 use src\mietshop\infrastructure\database\IDatabaseAdapter;
 use src\mietshop\infrastructure\http\IHTTPRequest;
 use src\mietshop\model\AccountModel;
+use src\mietshop\model\AppearanceModel;
 use src\mietshop\model\CategoryModel;
 use src\mietshop\model\CompanyModel;
 use src\mietshop\model\TextFormatView;
@@ -39,6 +40,7 @@ class Router implements IRouter
     public function route(IHTTPRequest $request, array &$sessionValues, IDatabaseAdapter $databaseAdapter) : void
     {
         $userInputModel = new UserInputModel();
+        $appearanceModel = new AppearanceModel($userInputModel, $databaseAdapter);
         $companyModel = new CompanyModel($userInputModel, $databaseAdapter);
         $categoryModel = new CategoryModel($databaseAdapter);
         $globalView = new GlobalView();
@@ -64,7 +66,7 @@ class Router implements IRouter
             $loginPresenter = new LoginPresenter($companyModel, $accountModel, $loginView, $accountView, $errorView);
             $accountPresenter = new AccountPresenter($companyModel, $accountModel, $accountView, $errorView);
             $accountManagementPresenter = new AccountManagementPresenter($companyModel, $accountModel, $accountManagementView, $errorView);
-            $appearanceManagementPresenter = new AppearanceManagementPresenter($companyModel, $accountModel, $appearanceManagementView, $errorView);
+            $appearanceManagementPresenter = new AppearanceManagementPresenter($companyModel, $accountModel, $appearanceModel, $appearanceManagementView, $errorView);
 
             if($request->isParameterMatching("view", "imprint"))
             {

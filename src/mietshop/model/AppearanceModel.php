@@ -38,15 +38,17 @@ class AppearanceModel implements IAppearanceModel
     {
         $sqlCreateColumns = "";
 
-        $elementTypeNames = array_keys($acceptedElements);
+        $elementTypes = array_keys($acceptedElements);
 
-        foreach($elementTypeNames as $elementTypeName)
+        foreach($elementTypes as $elementType)
         {
-            $elementNames = $acceptedElements[$elementTypeName];
+            $elementNames = $acceptedElements[$elementType];
 
-            foreach($elementNames as $elementName)
+            $elementNameKeys = array_keys($elementNames);
+
+            foreach($elementNameKeys as $elementNameKey)
             {
-                $sqlCreateColumns .= $this->genTableCreateColumnSQLText($elementTypeName, $elementName);
+                $sqlCreateColumns .= $this->genTableCreateColumnSQLText($elementType, $elementNameKey);
             }
         }
 

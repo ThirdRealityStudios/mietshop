@@ -14,15 +14,17 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
 {
     private ICompanyModel $companyModel;
     private IAccountModel $accountModel;
+    private IAppearanceModel $appearanceModel;
     private IAppearanceManagementView $appearanceManagementView;
     private IErrorView $errorView;
 
-    public function __construct(ICompanyModel $companyModel, IAccountModel $accountModel, IAppearanceManagementView $appearanceManagementView, IErrorView $errorView)
+    public function __construct(ICompanyModel $companyModel, IAccountModel $accountModel, IAppearanceModel $appearanceModel, IAppearanceManagementView $appearanceManagementView, IErrorView $errorView)
     {
         $this->companyModel = $companyModel;
         $this->accountModel = $accountModel;
         $this->appearanceManagementView = $appearanceManagementView;
         $this->errorView = $errorView;
+        $this->appearanceModel = $appearanceModel;
     }
 
     private function showPageDoesNotExist(array $companyData)
@@ -51,18 +53,18 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
                 }
                 else if($request->isQueryParameterMatching("action", "update"))
                 {
-                    if($request->isQueryParameterMatching("target", "color"))
+                    if($request->isQueryParameterMatching("target", "Color"))
                     {
                         $elementValue = $request->getQueryValue("element") ?? "";
 
                         // Request or show all colors choosable and such..
-                        $this->appearanceManagementView->show($companyData, "update", "color", $elementValue, 0, $validElements, $validColors);
+                        $this->appearanceManagementView->show($companyData, "update", "Color", $elementValue, 0, $validElements, $validColors);
                     }
-                    else if($request->isQueryParameterMatching("target", "image"))
+                    else if($request->isQueryParameterMatching("target", "Image"))
                     {
-                        if($request->isQueryParameterMatching("element", "logo"))
+                        if($request->isQueryParameterMatching("element", "Logo"))
                         {
-                            $this->appearanceManagementView->show($companyData, "update", "image", "logo", 0, $validElements);
+                            $this->appearanceManagementView->show($companyData, "update", "Image", "Logo", 0, $validElements);
                         }
                         else
                         {
@@ -78,20 +80,20 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
                 }
                 else if($request->isPostParameterMatching("action", "update"))
                 {
-                    if($request->isPostParameterMatching("target", "color"))
+                    if($request->isPostParameterMatching("target", "Color"))
                     {
-                        $validColorElements = $validElements["color"];
-                        $validColorElementsKeys = array_keys($validColorElements);
+                        $validElementNames = array_keys($validElements["Color"]);
 
-                        foreach($validColorElementsKeys as $validColorElementKey)
+                        foreach($validElementNames as $validElementName)
                         {
-                            $validColorElementName = $validColorElements[$validColorElementKey];
+                            var_dump($validElementName); die();
+                            // $validColorElementName = $validElements["Color"][$validElementName];
 
-                            if($request->isPostParameterMatching("element", $validColorElementName))
+                            if($request->isPostParameterMatching("element", $validElementName /* $validColorElementName */))
                             {
                                 $responseCode = 1; // TODO Use here corresponding model function to update the specific appearance element. Also, use preg_match to verify the color sent (HTML color code hexadecimal - also for Bootstrap colors).
 
-                                $this->appearanceManagementView->show($companyData, "update", "color", $validColorElementName, $responseCode, $validElements, $validColors);
+                                $this->appearanceManagementView->show($companyData, "update", "Color", $validElementName /* $validColorElementName */, $responseCode, $validElements, $validColors);
 
                                 return;
                             }
@@ -100,9 +102,9 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
                         // Expected some valid kind of transmitted color code BUT instead got something invalid or nothing.
                         $this->showPageDoesNotExist($companyData);
                     }
-                    else if($request->isPostParameterMatching("target", "image"))
+                    else if($request->isPostParameterMatching("target", "Image"))
                     {
-                        $validImageElements = $validElements["image"];
+                        $validImageElements = $validElements["Image"];
                         $validImageElementsKeys = array_keys($validImageElements);
 
                         foreach($validImageElementsKeys as $validImageElementKey)
@@ -118,7 +120,7 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
 
                                 $responseCode = 1; // TODO Use here corresponding model function to update the specific appearance element.
 
-                                $this->appearanceManagementView->show($companyData, "update", "image", $validImageElementName, $responseCode, $validElements);
+                                $this->appearanceManagementView->show($companyData, "update", "Image", $validImageElementName, $responseCode, $validElements);
 
                                 return;
                             }
