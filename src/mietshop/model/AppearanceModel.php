@@ -216,6 +216,7 @@ class AppearanceModel implements IAppearanceModel
 
     public function setImage(string $elementName, string $imagePath): bool
     {
+        // TODO Check if $imagePath reflects a valid path (by webserver syntax only)
         if(mb_strlen($imagePath, "UTF-8") <= $this->getImageCharacterLimit($elementName))
         {
             return $this->updateValue("Image$elementName", $imagePath);
