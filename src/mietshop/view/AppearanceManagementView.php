@@ -93,7 +93,7 @@ class AppearanceManagementView implements IAppearanceManagementView
                             <div class=\"row mb-3\">
                                 <div class=\"col-12 p-0 w-100\">
                                     <label class=\"form-label fw-bold w-100 fs-6\" for=\"custom\">Eigene Farbe auswählen (evtl. fortgeschritten):</label>
-                                    <input class=\"w-100 btn btn-primary p-0\" type=\"color\" id=\"custom\" value=\"\">
+                                    <input class=\"w-100 form-control form-control-color p-0\" type=\"color\" id=\"custom\" value=\"\">
                                 </div>
                             </div>
                             <div class=\"row mb-3\">
