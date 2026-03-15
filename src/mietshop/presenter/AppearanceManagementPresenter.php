@@ -72,19 +72,24 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
                 }
                 else if($request->isPostParameterMatching("action", "update"))
                 {
+                    $validElements = [ "color" => [ "frame" => "Farbe für Rahmen", "window" => "Farbe für Fenster", "background" => "Farbe für Hintergrund", "text" => "Text-Farbe", "link" => "Link-Farbe", "interesting" => "Hauptfarbe", "uninteresting" => "Nebenfarbe", "actionExecute" => "Ausführen-Schaltfläche-Farbe", "actionAbort" => "Abbruch-Schaltfläche-Farbe" ], "image" => [ "logo" => "Firmenlogo" ] ];
+
                     if($request->isPostParameterMatching("target", "color"))
                     {
-                        $validColorElements = [ "frame" => "Farbe für Rahmen", "window" => "Farbe für Fenster", "background" => "Farbe für Hintergrund", "text" => "Text-Farbe", "link" => "Link-Farbe", "interesting" => "Hauptfarbe", "uninteresting" => "Nebenfarbe", "actionExecute" => "Ausführen-Schaltfläche-Farbe", "actionAbort" => "Abbruch-Schaltfläche-Farbe" ];
+                        $validColors = [ "primary" => "Color name written fully", "secondary" => "Other color name written fully", "danger" => "Also a color name written fully" ];
 
-                        foreach($validColorElements as $validColorElement)
+                        $validColorElements = $validElements["color"];
+                        $validColorElementsKeys = array_keys($validColorElements);
+
+                        foreach($validColorElementsKeys as $validColorElementKey)
                         {
-                            $validColorElementTechnicalName = $validColorElement[0];
+                            $validColorElementName = $validColorElements[$validColorElementKey];
 
-                            if($request->isPostParameterMatching("element", $validColorElementTechnicalName))
+                            if($request->isPostParameterMatching("element", $validColorElementName))
                             {
                                 $responseCode = 1; // TODO Use here corresponding model function to update the specific appearance element. Also, use preg_match to verify the color sent (HTML color code hexadecimal - also for Bootstrap colors).
 
-                                $this->appearanceManagementView->show($companyData, "update", "color", $responseCode, $validColorElementTechnicalName);
+                                $this->appearanceManagementView->show($companyData, "update", "color", $validColorElementName, $responseCode, $validElements, $validColors);
 
                                 return;
                             }
@@ -95,14 +100,15 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
                     }
                     else if($request->isPostParameterMatching("target", "image"))
                     {
-                        $validImageElements = [ "logo" => "Firmenlogo" ];
+                        $validImageElements = $validElements["image"];
+                        $validImageElementsKeys = array_keys($validImageElements);
 
-                        foreach($validImageElements as $validImageElement)
+                        foreach($validImageElementsKeys as $validImageElementKey)
                         {
-                            $validImageElementTechnicalName = $validImageElement[0];
+                            $validImageElementName = $validImageElements[$validImageElementKey];
 
                             // New company logo transmitted
-                            if($request->isPostParameterMatching("element", $validImageElementTechnicalName))
+                            if($request->isPostParameterMatching("element", $validImageElementName))
                             {
                                 $image = $request->getPOSTValue("element");
 
@@ -110,7 +116,7 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
 
                                 $responseCode = 1; // TODO Use here corresponding model function to update the specific appearance element.
 
-                                $this->appearanceManagementView->show($companyData, "update", "image", $responseCode, $validImageElementTechnicalName);
+                                $this->appearanceManagementView->show($companyData, "update", "image", $validImageElementName, $responseCode, $validElements);
 
                                 return;
                             }

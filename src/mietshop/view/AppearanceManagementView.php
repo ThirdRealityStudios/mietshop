@@ -23,28 +23,49 @@ class AppearanceManagementView implements IAppearanceManagementView
         exit(0);
     }
 
+    private function genButton(string $urlTargetValue, string $urlElementValue, string $title) : string
+    {
+        return
+        "
+        <div class=\"row mb-3\">
+            <div class=\"col-12\">
+                <a class=\"btn btn-primary\" href=\"/?view=appearance&action=update&target=$urlTargetValue&element=$urlElementValue\">$title</a>
+            </div>
+        </div>
+        ";
+    }
+
     private function genFormColorRadioButton(string $bsColorClass, string $labelText, string $id, string $postValue) : string
     {
         return
         "
         <div class=\"row mb-3\">
             <div class=\"col-12\">
-                <label class=\"form-label fw-bold $bsColorClass\" for=\"body\">$labelText</label>
-                <input type=\"radio\" id=\"$id\" name=\"color\" class=\"w-100 btn btn-primary\" value=\"$postValue\">
+                <label class=\"form-label fw-bold $bsColorClass\" for=\"$id\">$labelText</label>
+                <input type=\"radio\" id=\"$id\" name=\"color\" class=\"form-check\" value=\"$postValue\">
             </div>
         </div>
         ";
     }
 
-    private function genFormColorRadioButtons() : string
+    private function genFormColorRadioButtons(array $validColors) : string
     {
         $colorRadioButtons = "";
 
+        foreach($validColors as $validColor)
+        {
+            $bsClass = "bg-".$validColor[0];
 
+            $colorRadioButtons .= $this->genFormColorRadioButton($bsClass, $validColor[1], $validColor[0], $validColor[0]);
+        }
+
+        return $colorRadioButtons;
     }
 
-    private function genForm(array $companyData, string $target, string $element, array $validElements) : string
+    private function genColorForm(string $target, string $element, array $validColors) : string
     {
+        $colorRadioButtonsHTML = $this->genFormColorRadioButtons($validColors);
+
         // Want to see a specific form for an element to change the color for?
         if(strcmp($target, "color") === 0 && !empty($element))
         {
@@ -59,18 +80,7 @@ class AppearanceManagementView implements IAppearanceManagementView
                 <form class=\"row form\" action=\"/?view=appearance&action=update&target=$target&element=$element\" method=\"post\">
                     <div class=\"col-12\">
                         <div class=\"container-fluid p-0\">
-                            <div class=\"row mb-3\">
-                                <div class=\"col-12\">
-                                    <label class=\"form-label fw-bold text-body\" for=\"body\">Body:</label>
-                                    <input type=\"radio\" id=\"body\" name=\"color\" class=\"w-100 btn btn-primary\" value=\"body\">
-                                </div>
-                            </div>
-                            <div class=\"row mb-3\">
-                                <div class=\"col-12\">
-                                    <label class=\"form-label fw-bold text-bg\" for=\"body\">Secondary:</label>
-                                    <input type=\"radio\" id=\"body\" name=\"color\" class=\"w-100 btn btn-primary\" value=\"body\">
-                                </div>
-                            </div>
+                            $colorRadioButtonsHTML
                             <div class=\"row mb-3\">
                                 <div class=\"col-12\">
                                     <label class=\"form-label\" for=\"custom\">Eigene Farbe auswählen (evtl. fortgeschritten):</label>
@@ -108,11 +118,11 @@ class AppearanceManagementView implements IAppearanceManagementView
         }
         else
         {
-            $this->showInvalidRequest($companyData);
+            return "Ungültige Anfrage - Formular nicht vorhanden.";
         }
     }
 
-    public function show(array $companyData, string $action, string $target = "", string $element = "", int $messageValue = 0, array $validElements = []): void
+    public function show(array $companyData, string $action, string $target = "", string $element = "", int $messageValue = 0, array $validElements = [], array $validColors = []): void
     {
         if(empty($companyData))
         {
@@ -187,7 +197,7 @@ class AppearanceManagementView implements IAppearanceManagementView
                     {
                         if(strcmp($target, "color") === 0)
                         {
-                            $feedContentHTML = $this->genForm($companyData, $target, $element, $validElements);
+                            $feedContentHTML = $this->genColorForm($target, $element, $validColors);
                         }
                         else if(strcmp($target, "image") === 0)
                         {
