@@ -86,12 +86,27 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
 
                         foreach($validElementNames as $validElementName)
                         {
-                            var_dump($validElementName); die();
                             // $validColorElementName = $validElements["Color"][$validElementName];
 
-                            if($request->isPostParameterMatching("element", $validElementName /* $validColorElementName */))
+                            if($request->isPostParameterMatching("element", $validElementName /* $validColorElementName */) && ($request->isPostParameterExisting("colorBootstrap") || $request->isPostParameterExisting("colorBootstrap") || $request->isPostParameterExisting("colorPicked") || $request->isPostParameterExisting("colorHexCode")))
                             {
                                 $responseCode = 1; // TODO Use here corresponding model function to update the specific appearance element. Also, use preg_match to verify the color sent (HTML color code hexadecimal - also for Bootstrap colors).
+
+                                if($request->isPostParameterMatching("element", "#000000"))
+                                {
+
+                                }
+                                $colorHexCodeTransmitted = $request->getPOSTValue("colorHexCode");
+                                $colorPickedTransmitted = $request->getPOSTValue("colorPicked");
+                                $colorBootstrapTransmitted = $request->getPOSTValue("colorBootstrap");
+
+                                $this->appearanceModel->setColor();
+
+                                var_dump($colorBootstrapTransmitted);
+                                var_dump($colorPickedTransmitted);
+                                var_dump($colorHexCodeTransmitted);
+                                var_dump($validElementName);
+                                die();
 
                                 $this->appearanceManagementView->show($companyData, "update", "Color", $validElementName /* $validColorElementName */, $responseCode, $validElements, $validColors);
 

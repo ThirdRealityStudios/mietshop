@@ -62,12 +62,12 @@ class AppearanceManagementView implements IAppearanceManagementView
         return $colorRadioButtons;
     }
 
-    private function genColorForm(string $target, string $element, array $validColors) : string
+    private function genColorForm(string $element, array $validColors) : string
     {
         $colorRadioButtonsHTML = $this->genFormColorRadioButtons($validColors);
 
         // Want to see a specific form for an element to change the color for?
-        if(strcmp($target, "Color") === 0 && !empty($element))
+        if(!empty($element))
         {
             return
             "
@@ -77,7 +77,11 @@ class AppearanceManagementView implements IAppearanceManagementView
                         <p class=\"fs-2 fw-bold\">Bearbeiten</p>
                     </div>
                 </div>
-                <form class=\"row form\" action=\"/?view=appearance&action=update&target=$target&element=$element\" method=\"post\">
+                <form class=\"row form\" action=\"/\" method=\"post\">
+                    <input type=\"hidden\" name=\"view\" value=\"appearance\">
+                    <input type=\"hidden\" name=\"action\" value=\"update\">
+                    <input type=\"hidden\" name=\"target\" value=\"Color\">
+                    <input type=\"hidden\" name=\"element\" value=\"$element\">
                     <div class=\"col-12\">
                         <div class=\"container-fluid p-0\">
                             $colorRadioButtonsHTML
@@ -88,8 +92,8 @@ class AppearanceManagementView implements IAppearanceManagementView
                             </div>
                             <div class=\"row mb-3\">
                                 <div class=\"col-12 p-0 w-100\">
-                                    <label class=\"form-label fw-bold w-100 fs-6\" for=\"colorPicker\">Eigene Farbe auswählen (evtl. fortgeschritten):</label>
-                                    <input class=\"w-100 form-control form-control-color p-0\" name=\"colorPicker\" type=\"color\" id=\"colorPicker\" value=\"\">
+                                    <label class=\"form-label fw-bold w-100 fs-6\" for=\"colorPicker\">Eigene Farbe auswählen (außer schwarz):</label>
+                                    <input class=\"w-100 form-control form-control-color p-0\" name=\"colorPicked\" type=\"color\" id=\"colorPicker\" value=\"\">
                                 </div>
                             </div>
                             <div class=\"row mb-3\">
@@ -100,7 +104,7 @@ class AppearanceManagementView implements IAppearanceManagementView
                             <div class=\"row mb-3\">
                                 <div class=\"col-12 p-0 w-100\">
                                     <label class=\"form-label fw-bold w-100 fs-6\" for=\"colorHex\">Farb-Code eingeben (RGBA Hex Code):</label>
-                                    <input class=\"w-100 form-control\" placeholder=\"z.B. #11223344\" name=\"colorHex\" type=\"text\" id=\"colorHex\" value=\"\">
+                                    <input class=\"w-100 form-control\" placeholder=\"z.B. #11223344\" name=\"colorHexCode\" type=\"text\" id=\"colorHex\" value=\"\">
                                 </div>
                             </div>
                             <div class=\"row mb-3\">
@@ -122,14 +126,6 @@ class AppearanceManagementView implements IAppearanceManagementView
                     </div>
                 </form>   
             </div>
-            ";
-        }
-        // Want to see a specific form for an element to change the image for?
-        else if(strcmp($target, "Image") === 0 && !empty($element))
-        {
-            return
-            "
-                This image upload form cannot be shown yet, due to not implemented.
             ";
         }
         else
@@ -225,7 +221,7 @@ class AppearanceManagementView implements IAppearanceManagementView
                     }
                     else // = want to change the color of a specific element.
                     {
-                        $feedContentHTML = $this->genColorForm($target, $element, $validColors);
+                        $feedContentHTML = $this->genColorForm($element, $validColors);
                     }
 
                     /*
