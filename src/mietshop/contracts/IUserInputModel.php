@@ -40,4 +40,16 @@ interface IUserInputModel
      * @return bool True if the string represents a valid usual full name. Otherwise, false.
      */
     public function isValidFullName(string $fullName): bool;
+
+    /**
+     * Will tell you if the given hex code is a valid hex RGB(A) code,
+     * beginning with # and in the format #RRGGBBAA,
+     * e.g. #11223344.
+     * The format #RRGGBB is also accepted,
+     * so without alpha.
+     *
+     * @param string $hexCode RGB(A) code to test
+     * @return bool True if it is a valid hex RGB(A) code. Otherwise, false.
+     */
+    public function isValidHexRGBCode(string $hexCode): bool;
 }

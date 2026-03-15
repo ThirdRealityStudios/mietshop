@@ -23,4 +23,9 @@ class UserInputModel implements IUserInputModel
          */
         return preg_match('#^[\p{L}\s\-\.\'()]+$#u', $fullName) === 1;
     }
+
+    public function isValidHexRGBCode(string $hexCode): bool
+    {
+        return preg_match('#^\#[0-9A-Fa-f]{6}$#', $hexCode) === 1 || preg_match('#^\#[0-9A-Fa-f]{8}$#', $hexCode) === 1;
+    }
 }
