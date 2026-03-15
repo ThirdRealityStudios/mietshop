@@ -39,7 +39,7 @@ class AppearanceManagementView implements IAppearanceManagementView
     {
         return
         "
-        <div class=\"row text- p-0 mb-3 bg-$acceptedBsColorName rounded border border-1 border-black align-items-center\">
+        <div class=\"row darker-hover p-0 mb-3 bg-$acceptedBsColorName rounded border border-1 border-black align-items-center\">
             <div class=\"col-1 ps-0 h-100 d-inline\">
                 <input type=\"radio\" id=\"$id\" name=\"colorBootstrap\" class=\"form-check-input ms-3 border border-1 border-black d-inline-block\" value=\"$postValue\">
             </div>
