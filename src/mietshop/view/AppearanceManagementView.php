@@ -161,6 +161,13 @@ class AppearanceManagementView implements IAppearanceManagementView
 
     private function genCustomColorForm(string $element, string $hexCodeColor) : string
     {
+        $hexCodeHint = "";
+
+        if(!empty($hexCodeColor))
+        {
+            $hexCodeHint = " ( derzeit $hexCodeColor )";
+        }
+
         return
         "
         <div class=\"container-fluid\">
@@ -179,7 +186,7 @@ class AppearanceManagementView implements IAppearanceManagementView
                     <div class=\"container-fluid p-0\">
                         <div class=\"row mb-3\">
                             <div class=\"col-12 p-0 w-100\">
-                                <label class=\"form-label fw-bold w-100 fs-6\" for=\"colorPicker\">Farbe auswählen (außer schwarz):</label>
+                                <label class=\"form-label fw-bold w-100 fs-6\" for=\"colorPicker\">Farbe auswählen$hexCodeHint:</label>
                                 <input class=\"w-100 form-control form-control-color p-0\" name=\"colorPicked\" type=\"color\" id=\"colorPicker\" value=\"$hexCodeColor\">
                             </div>
                         </div>

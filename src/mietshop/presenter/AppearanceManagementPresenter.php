@@ -199,16 +199,16 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
                                         {
                                             $colorChosen = "";
 
-                                            if($this->userInputModel->isValidHexRGBCode($possibleColorHexCode))
+                                            if(empty($possibleColorHexCode))
                                             {
-                                                // Custom color code has higher priority than color picker.
-                                                $colorChosen = $possibleColorHexCode;
+                                                // Just choose the color picker hex code.
+                                                // If it was manipulated, setColor(..) will fail anyway (so it is safe).
+                                                $colorChosen = $possibleColorPicked;
                                             }
                                             else
                                             {
-                                                // Otherwise just choose the color picker hex code.
-                                                // If it was manipulated, setColor(..) will fail anyway (so it is safe).
-                                                $colorChosen = $possibleColorPicked;
+                                                // Custom color code has higher priority than color picker.
+                                                $colorChosen = $possibleColorHexCode;
                                             }
 
                                             $updatedColorSuccessfully = $this->appearanceModel->setColor($colorChosen, $postElementValue);
