@@ -240,6 +240,7 @@ class AppearanceManagementView implements IAppearanceManagementView
                 <input type=\"hidden\" name=\"action\" value=\"update\">
                 <input type=\"hidden\" name=\"target\" value=\"Color\">
                 <input type=\"hidden\" name=\"element\" value=\"$element\">
+                <input type=\"hidden\" name=\"custom\" value=\"no\">
                 <div class=\"col-12\">
                     <div class=\"container-fluid p-0\">
                         $colorRadioButtonsHTML
