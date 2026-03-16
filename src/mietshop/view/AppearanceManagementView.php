@@ -149,7 +149,7 @@ class AppearanceManagementView implements IAppearanceManagementView
                             <div class=\"row mb-3\">
                                 <div class=\"col-12 p-0 w-100\">
                                     <label class=\"form-label fw-bold w-100 fs-6$possibleLabelHexCodeBSClass\" for=\"colorHex\">Farb-Code eingeben (RGBA Hex Code):</label>
-                                    <input class=\"w-100 form-control$possibleHexColorCodeBSClass\" placeholder=\"z.B. #11223344\" name=\"colorHexCode\" type=\"text\" id=\"colorHex\" value=\"$possibleHexColorCode\">
+                                    <input class=\"w-100 form-control$possibleHexColorCodeBSClass\" placeholder=\"z.B. #11223344\" name=\"colorHexCode\" type=\"text\" id=\"colorHex\" value=\"\">
                                 </div>
                             </div>
                             <div class=\"row mb-3\">

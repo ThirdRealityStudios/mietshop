@@ -64,10 +64,10 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
 
                         $possibleOldColorSaved = $this->appearanceModel->getColor($elementValue);
 
-                        $isCustomColor = $this->userInputModel->isValidHexRGBCode($possibleOldColorSaved);
+                        $isColorPickedOrHexadecimal = $this->userInputModel->isValidHexRGBCode($possibleOldColorSaved);
 
                         // Request or show all colors choosable and such..
-                        $this->appearanceManagementView->show($companyData, "update", "Color", $elementValue, 0, $validElements, $validBootstrapColors, $possibleOldColorSaved, $isCustomColor);
+                        $this->appearanceManagementView->show($companyData, "update", "Color", $elementValue, 0, $validElements, $validBootstrapColors, $possibleOldColorSaved, $isColorPickedOrHexadecimal);
                     }
                     else if($request->isQueryParameterMatching("target", "Image"))
                     {
@@ -116,55 +116,85 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
                         {
                             // Load previous old color saved (if no custom color gets chosen)
                             $colorChosen = "";
-                            $sentColorStatusCode = 0; // Neutral code to show that at this moment all fields seem to be valid (until further processed).
-                            $isCustomColor = false;
+                            $messageValue = 0; // No problems
 
-                            if(empty($possibleColorHexCode)) // Regard Bootstrap color or the color picker?
+                            if(empty($possibleColorHexCode))
                             {
-                                // Was a custom color picked? (pure black not supported currently - because interpreted as "color not picked").
-                                if(strcmp($possibleColorPicked, "#000000") !== 0)
+                                // No custom hex color code was provided.
+
+                                if(strcmp($possibleColorPicked, "#000000") === 0)
                                 {
+                                    // Then no color was picked or no hex code was provided.
+
+                                    if(empty($possibleColorBootstrap))
+                                    {
+                                        // Also no Bootstrap color was provided (likely a form generation bug or manipulated request)
+
+                                        $this->showPageDoesNotExist($companyData);
+                                    }
+                                    else
+                                    {
+                                        // Nothing was provided but a Bootstrap color.
+
+                                        if(in_array($possibleColorBootstrap, $validBootstrapColors))
+                                        {
+                                            // The Bootstrap color is also valid.
+
+                                            $colorChosen = $possibleColorBootstrap;
+                                        }
+                                        else
+                                        {
+                                            // But it is not valid (so likely manipulated request).
+
+                                            $this->showPageDoesNotExist($companyData);
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    // Then a color was picked.
+
                                     if($this->userInputModel->isValidHexRGBCode($possibleColorPicked))
                                     {
+                                        // It is also valid.
+
                                         $colorChosen = $possibleColorPicked;
-                                        $isCustomColor = true;
                                     }
-                                    else // picked color is for some reason invalid (probably request manipulated)
+                                    else
                                     {
-                                        $sentColorStatusCode = -3; // say that the given picked color (hex code) is invalid, so the field gets highlighted correspondingly.
+                                        // But the request was likely manipulated.
+
+                                        $this->showPageDoesNotExist($companyData);
                                     }
-                                }
-                                // Is it a known pre-defined Bootstrap color? (to prevent manipulation)
-                                else if(in_array($possibleColorBootstrap, $validBootstrapColors))
-                                {
-                                    $colorChosen = $possibleColorBootstrap;
-                                }
-                                else // Invalid Bootstrap color given (request probably manipulated), so tell "Invalid request".
-                                {
-                                    $this->showPageDoesNotExist($companyData);
-                                    // $sentColorStatusCode = -2; // say that the sent Bootstrap color name is invalid, so the field gets highlighted correspondingly.
                                 }
                             }
-                            else // Regard the custom hex color code?
+                            else
                             {
+                                // A custom hex color code was provided.
+
                                 if($this->userInputModel->isValidHexRGBCode($possibleColorHexCode))
                                 {
+                                    // It is in a valid format.
+
                                     $colorChosen = $possibleColorHexCode;
-                                    $isCustomColor = true;
                                 }
-                                else // sent custom hex code is invalid.
+                                else
                                 {
-                                    $sentColorStatusCode = -4; // say that the given hex code is invalid, so the field gets highlighted correspondingly.
+                                    // It is not valid though (likely user issue - but not a manipulated request mostly).
+
+                                    $messageValue = -4; // Mark the custom hex color code field as invalid.
                                 }
                             }
 
-                            // valid color was sent and determined, so further try to save it.
-                            if($sentColorStatusCode >= 0)
+                            // Try to save it.
+                            if($messageValue >= 0)
                             {
-                                $sentColorStatusCode = $this->appearanceModel->setColor($colorChosen, $postElementValue) ? 1 : -1;
+                                $messageValue = $this->appearanceModel->setColor($colorChosen, $postElementValue) ? 1 : -1;
                             }
 
-                            $this->appearanceManagementView->show($companyData, "update", "Color", $postElementValue, $sentColorStatusCode, $validElements, $validBootstrapColors, $colorChosen, $isCustomColor);
+                            $isColorPickedOrHexadecimal = $this->userInputModel->isValidHexRGBCode($colorChosen);
+
+                            $this->appearanceManagementView->show($companyData, "update", "Color", $postElementValue, $messageValue, $validElements, $validBootstrapColors, $colorChosen, $isColorPickedOrHexadecimal);
 
                             return;
                         }
@@ -190,9 +220,9 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
 
                                 // TODO Process $image, maybe convert it correctly and such...
 
-                                $sentColorStatusCode = 1; // TODO Use here corresponding model function to update the specific appearance element.
+                                $messageValue = 1; // TODO Use here corresponding model function to update the specific appearance element.
 
-                                $this->appearanceManagementView->show($companyData, "update", "Image", $validImageElementName, $sentColorStatusCode, $validElements);
+                                $this->appearanceManagementView->show($companyData, "update", "Image", $validImageElementName, $messageValue, $validElements);
 
                                 return;
                             }
