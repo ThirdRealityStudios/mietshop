@@ -18,7 +18,7 @@ interface IAppearanceModel
      * The elements (whether color elements (like website windows, website texts) or image elements (company logo))
      * which are allowed and known to the system to be changed.
      */
-    public const ACCEPTED_ELEMENTS = [ "Color" => [ "Frame" => "Farbe für Rahmen", "Window" => "Farbe für Fenster", "Background" => "Farbe für Hintergrund", "Text" => "Text-Farbe", "Link" => "Link-Farbe", "Interesting" => "Hauptfarbe", "Uninteresting" => "Nebenfarbe", "ActionExecute" => "Ausführen-Schaltfläche-Farbe", "ActionAbort" => "Abbruch-Schaltfläche-Farbe" ], "Image" => [ "Logo" => "Firmenlogo" ] ];
+    public const ACCEPTED_ELEMENTS = [ "Color" => [ "Frame" => "äußere Linien von Rahmen", "Window" => "Fläche von Fenstern", "Background" => "Hintergrund jeder Seite", "Text" => "Texte", "Link" => "Links", "Interesting" => "Hauptfarbe", "Uninteresting" => "Nebenfarbe", "ActionExecute" => "Ausführen-Schaltfläche-Farbe", "ActionAbort" => "Abbruch-Schaltfläche-Farbe" ], "Image" => [ "Logo" => "Firmenlogo" ] ];
 
     /**
      * @param string $elementName Element to get the color code from (usually Bootstrap color name - like "primary", "danger", "info", "secondary" - or hex RGBA code, beginning with hashtag, e.g. #11223344)
