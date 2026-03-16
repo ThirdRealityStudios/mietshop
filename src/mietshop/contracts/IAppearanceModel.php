@@ -12,7 +12,7 @@ interface IAppearanceModel
     /**
      * Boostrap color names
      */
-    public const ACCEPTED_BS_COLORS = [ "black", "dark", "secondary", "light", "body", "white", "primary", "primary-subtle", "info", "danger", "success", "warning" ];
+    public const ACCEPTED_BOOTSTRAP_COLORS = [ "black", "dark", "secondary", "light", "body", "white", "primary", "primary-subtle", "info", "danger", "success", "warning" ];
 
     /**
      * The elements (whether color elements (like website windows, website texts) or image elements (company logo))

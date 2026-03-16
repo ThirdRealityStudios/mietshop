@@ -7,31 +7,14 @@ use src\mietshop\contracts\IAppearanceModel;
 use src\mietshop\contracts\IUserInputModel;
 use src\mietshop\infrastructure\database\IDatabaseAdapter;
 
-/**
- * CREATE TABLE IF NOT EXISTS AppearanceModel
- * (
- * ID INT(8) AUTO_INCREMENT PRIMARY KEY UNIQUE,
- *
- * ColorFrame TINYTEXT NOT NULL DEFAULT \"#0D6EFD\",
- * ColorWindow TINYTEXT NOT NULL DEFAULT \"#CFE2FF\",
- * ColorBackground TINYTEXT NOT NULL DEFAULT \"#E9ECEF\",
- * ColorText TINYTEXT NOT NULL DEFAULT \"#212529\",
- * ColorLink TINYTEXT NOT NULL DEFAULT \"#0D6EFD\",
- * ColorInteresting TINYTEXT NOT NULL DEFAULT \"#0D6EFD\",
- * ColorUninteresting TINYTEXT NOT NULL DEFAULT \"#6C757D\",
- * ColorActionExecute TINYTEXT NOT NULL DEFAULT \"#198754\",
- * ColorActionAbort TINYTEXT NOT NULL DEFAULT \"#DC3545\",
- * ImageLogo TINYTEXT NOT NULL DEFAULT \"/img/logo/company/logo.png\"
- * );
- */
 class AppearanceModel implements IAppearanceModel
 {
     private IUserInputModel $userInputModel;
     private IDatabaseAdapter $databaseAdapter;
 
-    private function genTableCreateColumnSQLText(string $elementTypeName, string $elementName)
+    private function genTableCreateColumnSQLText(string $elementTypeName, string $elementName, string $bootstrapColor)
     {
-        return ", $elementTypeName$elementName TINYTEXT NOT NULL DEFAULT \"\"";
+        return ", $elementTypeName$elementName TINYTEXT NOT NULL DEFAULT \"$bootstrapColor\"";
     }
 
     private function genTableCreateColumnsSQLText(array $acceptedElements)
@@ -46,9 +29,15 @@ class AppearanceModel implements IAppearanceModel
 
             $elementNameKeys = array_keys($elementNames);
 
+            $count = 0;
+
             foreach($elementNameKeys as $elementNameKey)
             {
-                $sqlCreateColumns .= $this->genTableCreateColumnSQLText($elementType, $elementNameKey);
+                $bootstrapColorChosen = IAppearanceModel::ACCEPTED_BOOTSTRAP_COLORS[$count % sizeof(IAppearanceModel::ACCEPTED_BOOTSTRAP_COLORS)];
+
+                $sqlCreateColumns .= $this->genTableCreateColumnSQLText($elementType, $elementNameKey, $bootstrapColorChosen);
+
+                $count++;
             }
         }
 
@@ -197,13 +186,13 @@ class AppearanceModel implements IAppearanceModel
     public function setColor(string $colorCode, string $elementName): bool
     {
         // See if the given color is valid color (whether an accepted Bootstrap color name or an accepted RGB(A) hex color code) or if it is an empty string (then to delete the saved color).
-        if( (($this->userInputModel->isValidHexRGBCode($colorCode) || in_array($colorCode, IAppearanceModel::ACCEPTED_BS_COLORS)) && (mb_strlen($colorCode, "UTF-8") <= $this->getColorCharacterLimit($elementName))) || empty($colorCode) )
+        if( (($this->userInputModel->isValidHexRGBCode($colorCode) || in_array($colorCode, IAppearanceModel::ACCEPTED_BOOTSTRAP_COLORS)) && (mb_strlen($colorCode, "UTF-8") <= $this->getColorCharacterLimit($elementName))) || empty($colorCode) )
         {
             if(empty($colorCode))
             {
-                if(sizeof(IAppearanceModel::ACCEPTED_BS_COLORS) > 0)
+                if(sizeof(IAppearanceModel::ACCEPTED_BOOTSTRAP_COLORS) > 0)
                 {
-                    $colorCode = IAppearanceModel::ACCEPTED_BS_COLORS[0];
+                    $colorCode = IAppearanceModel::ACCEPTED_BOOTSTRAP_COLORS[0];
                 }
                 else
                 {

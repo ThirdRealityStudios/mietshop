@@ -31,15 +31,19 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
         $this->errorView = $errorView;
     }
 
-    private function showPageDoesNotExist(array $companyData)
+    private function showInvalidRequestView(array $companyData)
     {
         $this->errorView->show($companyData, "Anfrage ungültig", "Die angeforderte Funktion oder Seite existiert nicht.");
-        exit(0);
+    }
+
+    private function showIntegrityErrorView(array $companyData)
+    {
+        $this->errorView->show($companyData, "Datenintegritätsfehler", "Die Seite kann aufgrund eines Integritätsfehlers nicht geladen werden. Bitte versuchen Sie es später erneut oder konsultieren Sie einen Administrator.");
     }
 
     public function process(IHTTPRequest $request, array $sessionValues): void
     {
-        $validBootstrapColors = IAppearanceModel::ACCEPTED_BS_COLORS;
+        $validBootstrapColors = IAppearanceModel::ACCEPTED_BOOTSTRAP_COLORS;
         $validElements = IAppearanceModel::ACCEPTED_ELEMENTS;
 
         if(isset($sessionValues["Email"]) && is_string($sessionValues["Email"])) // Is the visitor logged in?
@@ -54,20 +58,85 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
 
                 if($request->isQueryParameterMatching("action", "all"))
                 {
-                    $this->appearanceManagementView->show($companyData, "all");
+                    $this->appearanceManagementView->showOptions($companyData);
                 }
                 else if($request->isQueryParameterMatching("action", "update"))
                 {
                     if($request->isQueryParameterMatching("target", "Color"))
                     {
-                        $elementValue = $request->getQueryValue("element") ?? "";
+                        $elementValue = $request->getQueryValue("element");
 
-                        $possibleOldColorSaved = $this->appearanceModel->getColor($elementValue);
+                        $validColorElements = $validElements["Color"];
 
-                        $isColorPickedOrHexadecimal = $this->userInputModel->isValidHexRGBCode($possibleOldColorSaved);
+                        if(is_string($elementValue))
+                        {
+                            // Then show the color form for the given element
 
-                        // Request or show all colors choosable and such..
-                        $this->appearanceManagementView->show($companyData, "update", "Color", $elementValue, 0, $validElements, $validBootstrapColors, $possibleOldColorSaved, $isColorPickedOrHexadecimal);
+                            $isValidColorElementSent = in_array($elementValue, $validColorElements);
+
+                            if($isValidColorElementSent)
+                            {
+                                // Then a valid color element was given via GET
+
+                                $savedColor = $this->appearanceModel->getColor($elementValue);
+
+                                // Could the color be loaded successfully?
+                                if(empty($savedColor))
+                                {
+                                    $this->showIntegrityErrorView($companyData);
+
+                                    return;
+                                }
+
+                                $customValue = $request->getQueryValue("custom");
+
+                                if(is_string($customValue))
+                                {
+                                    // Then see if user-custom or default colors are wanted to see
+
+                                    if(strcmp($customValue, "yes") === 0)
+                                    {
+                                        // Then load the form for user-custom colors
+
+                                        $isHexCodeColor = $this->userInputModel->isValidHexRGBCode($savedColor);
+                                        $preparedHexCodeColor = $isHexCodeColor ? $savedColor : "";
+
+                                        $this->appearanceManagementView->showCustomColorForm($companyData, $elementValue, $preparedHexCodeColor);
+                                    }
+                                    else if(strcmp($customValue, "no") === 0)
+                                    {
+                                        // Then load the default color form
+
+                                        $isBootstrapColor = in_array($savedColor, $validBootstrapColors);
+                                        $preparedBootstrapColor = $isBootstrapColor ? $savedColor : $validBootstrapColors[0];
+
+                                        $this->appearanceManagementView->showDefaultColorForm($companyData, $elementValue, $validBootstrapColors, $preparedBootstrapColor);
+                                    }
+                                    else
+                                    {
+                                        $this->showInvalidRequestView($companyData);
+
+                                        return;
+                                    }
+                                }
+                                else
+                                {
+                                    $this->showInvalidRequestView($companyData);
+
+                                    return;
+                                }
+                            }
+                            else
+                            {
+                                $this->showInvalidRequestView($companyData);
+                            }
+                        }
+                        else
+                        {
+                            // Then show all elements which are possible to change the color of.
+
+                            $this->appearanceManagementView->showAllColorElements($companyData, $validColorElements);
+                        }
                     }
                     else if($request->isQueryParameterMatching("target", "Image"))
                     {
@@ -78,13 +147,17 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
                         else
                         {
                             // This feature does not exist / not implemented.
-                            $this->showPageDoesNotExist($companyData);
+                            $this->showInvalidRequestView($companyData);
+
+                            return;
                         }
                     }
                     else
                     {
                         // This feature does not exist / not implemented.
-                        $this->showPageDoesNotExist($companyData);
+                        $this->showInvalidRequestView($companyData);
+
+                        return;
                     }
                 }
                 else if($request->isPostParameterMatching("action", "update"))
@@ -98,7 +171,9 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
 
                         if(!$isAcceptedElement)
                         {
-                            $this->showPageDoesNotExist($companyData);
+                            $this->showInvalidRequestView($companyData);
+
+                            return;
                         }
 
                         $oldColor = $this->appearanceModel->getColor($postElementValue);
@@ -130,7 +205,9 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
                                     {
                                         // Also no Bootstrap color was provided (likely a form generation bug or manipulated request)
 
-                                        $this->showPageDoesNotExist($companyData);
+                                        $this->showInvalidRequestView($companyData);
+
+                                        return;
                                     }
                                     else
                                     {
@@ -146,7 +223,9 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
                                         {
                                             // But it is not valid (so likely manipulated request).
 
-                                            $this->showPageDoesNotExist($companyData);
+                                            $this->showInvalidRequestView($companyData);
+
+                                            return;
                                         }
                                     }
                                 }
@@ -164,7 +243,9 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
                                     {
                                         // But the request was likely manipulated.
 
-                                        $this->showPageDoesNotExist($companyData);
+                                        $this->showInvalidRequestView($companyData);
+
+                                        return;
                                     }
                                 }
                             }
@@ -201,7 +282,9 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
                         else
                         {
                             // Expected some valid kind of transmitted color code BUT instead got something invalid or nothing.
-                            $this->showPageDoesNotExist($companyData);
+                            $this->showInvalidRequestView($companyData);
+
+                            return;
                         }
                     }
                     else if($request->isPostParameterMatching("target", "Image"))
@@ -229,24 +312,32 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
                         }
 
                         // Expected a transmitted image as a new company logo BUT instead got nothing.
-                        $this->showPageDoesNotExist($companyData);
+                        $this->showInvalidRequestView($companyData);
+
+                        return;
                     }
                     else
                     {
                         // This update feature does not exist for the desired appearance element.
-                        $this->showPageDoesNotExist($companyData);
+                        $this->showInvalidRequestView($companyData);
+
+                        return;
                     }
                 }
                 else
                 {
                     // This feature does not exist / not implemented.
-                    $this->showPageDoesNotExist($companyData);
+                    $this->showInvalidRequestView($companyData);
+
+                    return;
                 }
             }
             else
             {
                 // Account does not exist or access denied (missing permissions)
-                $this->showPageDoesNotExist([]);
+                $this->showInvalidRequestView([]);
+
+                return;
             }
         }
         else
