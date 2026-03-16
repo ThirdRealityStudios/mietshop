@@ -104,13 +104,8 @@ class AppearanceManagementView implements IAppearanceManagementView
         // Want to see a specific form for an element to change the color for?
         if(!empty($element))
         {
-            $possibleColorBootstrapBSClass = ($messageValue === -2) ? "is-invalid text-danger" : "";
-
-            $possibleColorPickedBSClass = ($messageValue === -3) ? " is-invalid" : "";
-            $possibleLabelPickedBSClass = ($messageValue === -3) ? " fw-bold text-danger" : "";
-
-            $possibleHexColorCodeBSClass = ($messageValue === -4) ? " is-invalid" : "";
-            $possibleLabelHexCodeBSClass = ($messageValue === -4) ? " fw-bold text-danger" : "";
+            $possibleHexColorCodeBSClass = ($messageValue === -2) ? " is-invalid" : "";
+            $possibleLabelHexCodeBSClass = ($messageValue === -2) ? " fw-bold text-danger" : "";
 
             return
             "
@@ -127,9 +122,7 @@ class AppearanceManagementView implements IAppearanceManagementView
                     <input type=\"hidden\" name=\"element\" value=\"$element\">
                     <div class=\"col-12\">
                         <div class=\"container-fluid p-0\">
-                            <div class=\"$possibleColorBootstrapBSClass\">
-                                $colorRadioButtonsHTML
-                            </div>
+                            $colorRadioButtonsHTML
                             <div class=\"row mb-3\">
                                 <div class=\"col-12 p-0\">
                                     <hr class=\"w-100 border border-1 border-primary\">
@@ -137,8 +130,8 @@ class AppearanceManagementView implements IAppearanceManagementView
                             </div>
                             <div class=\"row mb-3\">
                                 <div class=\"col-12 p-0 w-100\">
-                                    <label class=\"form-label fw-bold w-100 fs-6$possibleLabelPickedBSClass\" for=\"colorPicker\">Eigene Farbe auswählen (außer schwarz):</label>
-                                    <input class=\"w-100 form-control form-control-color p-0$possibleColorPickedBSClass\" name=\"colorPicked\" type=\"color\" id=\"colorPicker\" value=\"$possibleHexColorCode\">
+                                    <label class=\"form-label fw-bold w-100 fs-6\" for=\"colorPicker\">Eigene Farbe auswählen (außer schwarz):</label>
+                                    <input class=\"w-100 form-control form-control-color p-0\" name=\"colorPicked\" type=\"color\" id=\"colorPicker\" value=\"$possibleHexColorCode\">
                                 </div>
                             </div>
                             <div class=\"row mb-3\">
@@ -177,6 +170,66 @@ class AppearanceManagementView implements IAppearanceManagementView
         {
             return "Ungültige Anfrage - Formular nicht vorhanden.";
         }
+    }
+
+    private function genColorUpdateFailedHTML(string $element) : string
+    {
+        return
+        "
+        <div class=\"container-fluid p-0\">
+            <div class=\"row mt-3 mb-5\">
+                <div class=\"col-2\" style=\"background-image: url('/img/symbol/paint-bucket-danger.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\"></div>
+                <div class=\"col-10\">
+                    <span class=\"fs-2 fw-bold text-danger\">Farbe ändern fehlgeschlagen</span>
+                </div>
+            </div>
+            <div class=\"row mb-5\">
+                <div class=\"col-12\">
+                    <span class=\"fs-6 w-100\">Es scheint so, als wenn die Farbe nicht geändert werden konnte. Entweder haben Sie eine falsche Farbe angegeben (z.B. im falschen Format) oder es liegt derzeit eine technische Störung vor. Bitte versuchen Sie es (später) nochmal.</span>
+                </div>
+            </div>
+            <div class=\"row mb-3\">
+                <div class=\"col-12\">
+                    <a class=\"btn btn-primary w-100\" href=\"/?view=appearance&action=update&target=Color&element=$element\">Nochmal versuchen</a>
+                </div>
+            </div>
+            <div class=\"row mb-3\">
+                <div class=\"col-12\">
+                    <a class=\"btn btn-secondary w-100\" href=\"/?view=appearance&action=update&target=Color\">Zurück zur Übersicht</a>
+                </div>
+            </div>
+        </div>
+        ";
+    }
+
+    private function genColorUpdateSuccessHTML(string $element) : string
+    {
+        return
+        "
+        <div class=\"container-fluid p-0\">
+            <div class=\"row mt-3 mb-5\">
+                <div class=\"col-2\" style=\"background-image: url('/img/symbol/paint-bucket-success.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\"></div>
+                <div class=\"col-10\">
+                    <span class=\"fs-2 fw-bold text-success\">Farbe ändern erfolgreich</span>
+                </div>
+            </div>
+            <div class=\"row mb-5\">
+                <div class=\"col-12\">
+                    <span class=\"fs-6 w-100\">Farbe erfolgreich geändert ✓</span>
+                </div>
+            </div>
+            <div class=\"row mb-3\">
+                <div class=\"col-12\">
+                    <a class=\"btn btn-primary w-100\" href=\"/?view=appearance&action=update&target=Color&element=$element\">Farbe erneut ändern</a>
+                </div>
+            </div>
+            <div class=\"row mb-3\">
+                <div class=\"col-12\">
+                    <a class=\"btn btn-secondary w-100\" href=\"/?view=appearance&action=update&target=Color\">Zurück zur Übersicht</a>
+                </div>
+            </div>
+        </div>
+        ";
     }
 
     public function show(array $companyData, string $action, string $target = "", string $element = "", int $messageValue = 0, array $validElements = [], array $validColors = [], string $oldColorSaved = "", bool $isCustomColor = false): void
@@ -253,67 +306,17 @@ class AppearanceManagementView implements IAppearanceManagementView
                         </div>
                         ";
                     }
-                    else if($messageValue <= -2 || $messageValue === 0) // = want to change the color of a specific element. Or was specific field marked that is invalid?
+                    else if($messageValue === -2 || $messageValue === 0) // = want to change the color of a specific element. Or was specific field marked that is invalid?
                     {
                         $feedContentHTML = $this->genColorForm($element, $validColors, $oldColorSaved, $isCustomColor, $messageValue);
                     }
                     else if($messageValue === -1)
                     {
-                        $feedContentHTML =
-                        "
-                        <div class=\"container-fluid p-0\">
-                            <div class=\"row mt-3 mb-5\">
-                                <div class=\"col-2\" style=\"background-image: url('/img/symbol/paint-bucket-danger.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\"></div>
-                                <div class=\"col-10\">
-                                    <span class=\"fs-2 fw-bold text-danger\">Farbe ändern fehlgeschlagen</span>
-                                </div>
-                            </div>
-                            <div class=\"row mb-5\">
-                                <div class=\"col-12\">
-                                    <span class=\"fs-6 w-100\">Es scheint so, als wenn die Farbe nicht geändert werden konnte. Entweder haben Sie eine falsche Farbe angegeben (z.B. im falschen Format) oder es liegt derzeit eine technische Störung vor. Bitte versuchen Sie es (später) nochmal.</span>
-                                </div>
-                            </div>
-                            <div class=\"row mb-3\">
-                                <div class=\"col-12\">
-                                    <a class=\"btn btn-primary w-100\" href=\"/?view=appearance&action=update&target=Color&element=$element\">Nochmal versuchen</a>
-                                </div>
-                            </div>
-                            <div class=\"row mb-3\">
-                                <div class=\"col-12\">
-                                    <a class=\"btn btn-secondary w-100\" href=\"/?view=appearance&action=update&target=Color\">Zurück zur Übersicht</a>
-                                </div>
-                            </div>
-                        </div>
-                        ";
+                        $feedContentHTML = $this->genColorUpdateFailedHTML($element);
                     }
                     else if($messageValue === 1)
                     {
-                        $feedContentHTML =
-                        "
-                        <div class=\"container-fluid p-0\">
-                            <div class=\"row mt-3 mb-5\">
-                                <div class=\"col-2\" style=\"background-image: url('/img/symbol/paint-bucket-success.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\"></div>
-                                <div class=\"col-10\">
-                                    <span class=\"fs-2 fw-bold text-success\">Farbe ändern erfolgreich</span>
-                                </div>
-                            </div>
-                            <div class=\"row mb-5\">
-                                <div class=\"col-12\">
-                                    <span class=\"fs-6 w-100\">Farbe erfolgreich geändert ✓</span>
-                                </div>
-                            </div>
-                            <div class=\"row mb-3\">
-                                <div class=\"col-12\">
-                                    <a class=\"btn btn-primary w-100\" href=\"/?view=appearance&action=update&target=Color&element=$element\">Farbe erneut ändern</a>
-                                </div>
-                            </div>
-                            <div class=\"row mb-3\">
-                                <div class=\"col-12\">
-                                    <a class=\"btn btn-secondary w-100\" href=\"/?view=appearance&action=update&target=Color\">Zurück zur Übersicht</a>
-                                </div>
-                            </div>
-                        </div>
-                        ";
+                        $feedContentHTML = $this->genColorUpdateSuccessHTML($element);
                     }
                     else
                     {

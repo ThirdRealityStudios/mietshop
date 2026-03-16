@@ -182,7 +182,7 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
                                 {
                                     // It is not valid though (likely user issue - but not a manipulated request mostly).
 
-                                    $messageValue = -4; // Mark the custom hex color code field as invalid.
+                                    $messageValue = -2; // Mark the custom hex color code field as invalid.
                                 }
                             }
 
