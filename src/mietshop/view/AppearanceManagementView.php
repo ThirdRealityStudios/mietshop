@@ -43,7 +43,7 @@ class AppearanceManagementView implements IAppearanceManagementView
         "
         <div class=\"row mb-3\">
             <div class=\"col-12\">
-                <a class=\"btn btn-primary w-100\" href=\"/?view=appearance&action=update&target=$urlTargetValue&element=$urlElementValue\">$title</a>
+                <a class=\"btn btn-primary w-100\" href=\"/?view=appearance&action=update&target=$urlTargetValue&element=$urlElementValue&custom=no\">$title</a>
             </div>
         </div>
         ";
@@ -192,7 +192,7 @@ class AppearanceManagementView implements IAppearanceManagementView
                         </div>
                         <div class=\"row mb-3\">
                             <div class=\"col-12 p-0\">
-                                <a class=\"w-100 btn btn-secondary\" href=\"/?view=appearance&action=update&target=Color&element=$element\">Abbrechen</a>
+                                <a class=\"w-100 btn btn-secondary\" href=\"/?view=appearance&action=update&target=Color&element=$element&custom=no\">Abbrechen</a>
                             </div>
                         </div> 
                     </div>
@@ -371,7 +371,7 @@ class AppearanceManagementView implements IAppearanceManagementView
                     }
                     else if($messageValue === 0 || $messageValue === -2) // = want to change the color of a specific element. Or was the custom hex code field marked as invalid?
                     {
-                        $feedContentHTML = $this->genDefaultColorForm($element, $validColors, $oldColorSaved, $isCustomColor);
+                        $feedContentHTML = $this->genDefaultColorForm($element, $validColors, $oldColorSaved);
 
                         // TODO choose this color form if URL property custom=yes: $feedContentHTML = $this->genCustomColorForm($element, $oldColorSaved, $messageValue);
                     }

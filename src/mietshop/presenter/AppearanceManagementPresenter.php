@@ -72,7 +72,7 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
                         {
                             // Then show the color form for the given element
 
-                            $isValidColorElementSent = in_array($elementValue, $validColorElements);
+                            $isValidColorElementSent = in_array($elementValue, array_keys($validColorElements));
 
                             if($isValidColorElementSent)
                             {
@@ -129,6 +129,8 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
                             else
                             {
                                 $this->showInvalidRequestView($companyData);
+
+                                return;
                             }
                         }
                         else
