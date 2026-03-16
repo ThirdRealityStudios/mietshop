@@ -102,43 +102,48 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
                         die();
                         */
 
-                        foreach($validElementNames as $validElementName)
+                        if($areColorFieldsSentTechnically)
                         {
-                            if($request->isPostParameterMatching("element", $validElementName) && $areColorFieldsSentTechnically)
+                            $colorChosen = "";
+
+                            // Was a custom hex code sent?
+                            if($this->userInputModel->isValidHexRGBCode($possibleColorHexCode))
                             {
-                                $colorChosen = "";
+                                $colorChosen = $possibleColorHexCode;
+                            }
+                            // Was a valid color transmitted by the color picker (black #000000 currently not supported and interpreted as "not sent" or "not chosen" - because it is easier currently)
+                            else if(strcmp($possibleColorPicked, "#000000") !== 0 && $this->userInputModel->isValidHexRGBCode($possibleColorPicked))
+                            {
+                                $colorChosen = $possibleColorPicked;
+                            }
+                            // Is it a known pre-defined Bootstrap color? (to prevent manipulation)
+                            else if(in_array($possibleColorBootstrap, $validColors))
+                            {
+                                $colorChosen = $possibleColorBootstrap;
+                            }
+                            else
+                            {
+                                // Something went wrong. Invalid request.
+                                $this->showPageDoesNotExist($companyData);
+                            }
 
-                                // Was a custom hex code sent?
-                                if($this->userInputModel->isValidHexRGBCode($possibleColorHexCode))
+                            foreach($validElementNames as $validElementName)
+                            {
+                                if($request->isPostParameterMatching("element", $validElementName))
                                 {
-                                    $colorChosen = $possibleColorHexCode;
-                                }
-                                // Was a valid color transmitted by the color picker (black #000000 currently not supported and interpreted as "not sent" or "not chosen" - because it is easier currently)
-                                else if(strcmp($possibleColorPicked, "#000000") !== 0 && $this->userInputModel->isValidHexRGBCode($possibleColorPicked))
-                                {
-                                    $colorChosen = $possibleColorPicked;
-                                }
-                                // Is it a known pre-defined Bootstrap color? (to prevent manipulation)
-                                else if(in_array($possibleColorBootstrap, $validColors))
-                                {
-                                    $colorChosen = $possibleColorBootstrap;
-                                }
-                                else
-                                {
-                                    // Something went wrong. Invalid request.
-                                    $this->showPageDoesNotExist($companyData);
-                                }
+                                    $updateResponse = $this->appearanceModel->setColor($colorChosen, $validElementName);
 
-                                $updateResponse = $this->appearanceModel->setColor($colorChosen, $validElementName);
+                                    $this->appearanceManagementView->show($companyData, "update", "Color", $validElementName, $updateResponse ? 1 : -1, $validElements, $validColors);
 
-                                $this->appearanceManagementView->show($companyData, "update", "Color", $validElementName, $updateResponse ? 1 : -1, $validElements, $validColors);
-
-                                return;
+                                    return;
+                                }
                             }
                         }
-
-                        // Expected some valid kind of transmitted color code BUT instead got something invalid or nothing.
-                        $this->showPageDoesNotExist($companyData);
+                        else
+                        {
+                            // Expected some valid kind of transmitted color code BUT instead got something invalid or nothing.
+                            $this->showPageDoesNotExist($companyData);
+                        }
                     }
                     else if($request->isPostParameterMatching("target", "Image"))
                     {

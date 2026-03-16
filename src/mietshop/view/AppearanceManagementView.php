@@ -235,9 +235,71 @@ class AppearanceManagementView implements IAppearanceManagementView
                             $this->showInvalidRequest($companyData);
                         }
                     }
-                    else // = want to change the color of a specific element.
+                    else if($messageValue === 0) // = want to change the color of a specific element.
                     {
                         $feedContentHTML = $this->genColorForm($element, $validColors);
+                    }
+                    else if($messageValue === -1)
+                    {
+                        $feedContentHTML =
+                        "
+                        <div class=\"container-fluid p-0\">
+                            <div class=\"row mt-3 mb-5\">
+                                <div class=\"col-2\" style=\"background-image: url('/img/symbol/paint-bucket-danger.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\"></div>
+                                <div class=\"col-10\">
+                                    <span class=\"fs-2 fw-bold text-danger\">Farbe ändern fehlgeschlagen</span>
+                                </div>
+                            </div>
+                            <div class=\"row mb-5\">
+                                <div class=\"col-12\">
+                                    <span class=\"fs-6 w-100\">Es scheint so, als wenn die Farbe nicht geändert werden konnte. Entweder haben Sie eine falsche Farbe angegeben (z.B. im falschen Format) oder es liegt derzeit eine technische Störung vor. Bitte versuchen Sie es (später) nochmal.</span>
+                                </div>
+                            </div>
+                            <div class=\"row mb-3\">
+                                <div class=\"col-12\">
+                                    <a class=\"btn btn-primary w-100\" href=\"/?view=appearance&action=update&target=Color&element=$element\">Nochmal versuchen</a>
+                                </div>
+                            </div>
+                            <div class=\"row mb-3\">
+                                <div class=\"col-12\">
+                                    <a class=\"btn btn-secondary w-100\" href=\"/?view=appearance&action=update&target=Color\">Zurück zur Übersicht</a>
+                                </div>
+                            </div>
+                        </div>
+                        ";
+                    }
+                    else if($messageValue === 1)
+                    {
+                        $feedContentHTML =
+                        "
+                        <div class=\"container-fluid p-0\">
+                            <div class=\"row mt-3 mb-5\">
+                                <div class=\"col-2\" style=\"background-image: url('/img/symbol/paint-bucket-success.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\"></div>
+                                <div class=\"col-10\">
+                                    <span class=\"fs-2 fw-bold text-success\">Farbe ändern erfolgreich</span>
+                                </div>
+                            </div>
+                            <div class=\"row mb-5\">
+                                <div class=\"col-12\">
+                                    <span class=\"fs-6 w-100\">Farbe erfolgreich geändert ✓</span>
+                                </div>
+                            </div>
+                            <div class=\"row mb-3\">
+                                <div class=\"col-12\">
+                                    <a class=\"btn btn-primary w-100\" href=\"/?view=appearance&action=update&target=Color&element=$element\">Farbe erneut ändern</a>
+                                </div>
+                            </div>
+                            <div class=\"row mb-3\">
+                                <div class=\"col-12\">
+                                    <a class=\"btn btn-secondary w-100\" href=\"/?view=appearance&action=update&target=Color\">Zurück zur Übersicht</a>
+                                </div>
+                            </div>
+                        </div>
+                        ";
+                    }
+                    else
+                    {
+                        $this->showInvalidRequest($companyData);
                     }
 
                     /*
