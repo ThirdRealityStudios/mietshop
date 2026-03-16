@@ -12,7 +12,7 @@ interface IAppearanceModel
     /**
      * Boostrap color names
      */
-    public const ACCEPTED_COLORS = [ "black", "dark", "secondary", "light", "body", "white", "primary", "primary-subtle", "info", "danger", "success", "warning" ];
+    public const ACCEPTED_BS_COLORS = [ "black", "dark", "secondary", "light", "body", "white", "primary", "primary-subtle", "info", "danger", "success", "warning" ];
 
     /**
      * The elements (whether color elements (like website windows, website texts) or image elements (company logo))
@@ -22,7 +22,7 @@ interface IAppearanceModel
 
     /**
      * @param string $elementName Element to get the color code from (usually Bootstrap color name - like "primary", "danger", "info", "secondary" - or hex RGBA code, beginning with hashtag, e.g. #11223344)
-     * @return string Color code as a simple Bootstrap color name or the hex RGBA color code (beginning with hashtag #)
+     * @return string Color code as a simple Bootstrap color name or the hex RGBA color code (beginning with hashtag #). Or empty string if retrieving value failed.
      */
     public function getColor(string $elementName): string;
 

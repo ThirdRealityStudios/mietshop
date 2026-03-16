@@ -52,7 +52,7 @@ class AppearanceManagementView implements IAppearanceManagementView
         ";
     }
 
-    private function genFormColorRadioButtons(array $validColors) : string
+    private function genFormColorRadioButtons(array $validColors, string $oldColorSaved, bool $isCustomColor) : string
     {
         $colorRadioButtons = "";
 
@@ -60,13 +60,27 @@ class AppearanceManagementView implements IAppearanceManagementView
 
         foreach($validColors as $acceptedBsColorName)
         {
-            if($count === 0)
+            if($isCustomColor) // If a custom hex digit color is saved, then there is no Bootstrap color name chosen, so choose the first always.
             {
-                $isChecked = true;
+                if($count === 0)
+                {
+                    $isChecked = true;
+                }
+                else
+                {
+                    $isChecked = false;
+                }
             }
-            else
+            else // If a Bootstrap color name was chosen or is saved, then select the correct one.
             {
-                $isChecked = false;
+                if(strcmp($oldColorSaved, $acceptedBsColorName) === 0)
+                {
+                    $isChecked = true;
+                }
+                else
+                {
+                    $isChecked = false;
+                }
             }
 
             // Some radio button needs to be checked by default, because otherwise no radio button is transmitted via POST request (which is interpreted as wrong request - because programmed this way)
@@ -78,13 +92,26 @@ class AppearanceManagementView implements IAppearanceManagementView
         return $colorRadioButtons;
     }
 
-    private function genColorForm(string $element, array $validColors) : string
+
+    // // Determine if the old color is a Bootstrap color or a custom hex code color.
+    private function genColorForm(string $element, array $validColors, string $oldColorSaved, bool $isCustomColor, int $messageValue) : string
     {
-        $colorRadioButtonsHTML = $this->genFormColorRadioButtons($validColors);
+        $colorRadioButtonsHTML = $this->genFormColorRadioButtons($validColors, $oldColorSaved, $isCustomColor);
+
+        // See if a custom hex code color was set before or is saved. If so, then use it. Otherwise, leave it clear, so the Bootstrap color will only appear.
+        $possibleHexColorCode = $isCustomColor ? $oldColorSaved : "";
 
         // Want to see a specific form for an element to change the color for?
         if(!empty($element))
         {
+            $possibleColorBootstrapBSClass = ($messageValue === -2) ? "is-invalid text-danger" : "";
+
+            $possibleColorPickedBSClass = ($messageValue === -3) ? " is-invalid" : "";
+            $possibleLabelPickedBSClass = ($messageValue === -3) ? " fw-bold text-danger" : "";
+
+            $possibleHexColorCodeBSClass = ($messageValue === -4) ? " is-invalid" : "";
+            $possibleLabelHexCodeBSClass = ($messageValue === -4) ? " fw-bold text-danger" : "";
+
             return
             "
             <div class=\"container-fluid\">
@@ -100,17 +127,8 @@ class AppearanceManagementView implements IAppearanceManagementView
                     <input type=\"hidden\" name=\"element\" value=\"$element\">
                     <div class=\"col-12\">
                         <div class=\"container-fluid p-0\">
-                            $colorRadioButtonsHTML
-                            <div class=\"row mb-3\">
-                                <div class=\"col-12 p-0\">
-                                    <hr class=\"w-100 border border-1 border-primary\">
-                                </div>
-                            </div>
-                            <div class=\"row mb-3\">
-                                <div class=\"col-12 p-0 w-100\">
-                                    <label class=\"form-label fw-bold w-100 fs-6\" for=\"colorPicker\">Eigene Farbe auswählen (außer schwarz):</label>
-                                    <input class=\"w-100 form-control form-control-color p-0\" name=\"colorPicked\" type=\"color\" id=\"colorPicker\" value=\"\">
-                                </div>
+                            <div class=\"$possibleColorBootstrapBSClass\">
+                                $colorRadioButtonsHTML
                             </div>
                             <div class=\"row mb-3\">
                                 <div class=\"col-12 p-0\">
@@ -119,8 +137,19 @@ class AppearanceManagementView implements IAppearanceManagementView
                             </div>
                             <div class=\"row mb-3\">
                                 <div class=\"col-12 p-0 w-100\">
-                                    <label class=\"form-label fw-bold w-100 fs-6\" for=\"colorHex\">Farb-Code eingeben (RGBA Hex Code):</label>
-                                    <input class=\"w-100 form-control\" placeholder=\"z.B. #11223344\" name=\"colorHexCode\" type=\"text\" id=\"colorHex\" value=\"\">
+                                    <label class=\"form-label fw-bold w-100 fs-6$possibleLabelPickedBSClass\" for=\"colorPicker\">Eigene Farbe auswählen (außer schwarz):</label>
+                                    <input class=\"w-100 form-control form-control-color p-0$possibleColorPickedBSClass\" name=\"colorPicked\" type=\"color\" id=\"colorPicker\" value=\"$possibleHexColorCode\">
+                                </div>
+                            </div>
+                            <div class=\"row mb-3\">
+                                <div class=\"col-12 p-0\">
+                                    <hr class=\"w-100 border border-1 border-primary\">
+                                </div>
+                            </div>
+                            <div class=\"row mb-3\">
+                                <div class=\"col-12 p-0 w-100\">
+                                    <label class=\"form-label fw-bold w-100 fs-6$possibleLabelHexCodeBSClass\" for=\"colorHex\">Farb-Code eingeben (RGBA Hex Code):</label>
+                                    <input class=\"w-100 form-control$possibleHexColorCodeBSClass\" placeholder=\"z.B. #11223344\" name=\"colorHexCode\" type=\"text\" id=\"colorHex\" value=\"$possibleHexColorCode\">
                                 </div>
                             </div>
                             <div class=\"row mb-3\">
@@ -150,7 +179,7 @@ class AppearanceManagementView implements IAppearanceManagementView
         }
     }
 
-    public function show(array $companyData, string $action, string $target = "", string $element = "", int $messageValue = 0, array $validElements = [], array $validColors = []): void
+    public function show(array $companyData, string $action, string $target = "", string $element = "", int $messageValue = 0, array $validElements = [], array $validColors = [], string $oldColorSaved = "", bool $isCustomColor = false): void
     {
         if(empty($companyData))
         {
@@ -158,6 +187,8 @@ class AppearanceManagementView implements IAppearanceManagementView
         }
         else
         {
+            $feedContentHTML = "Unknown page";
+
             if(strcmp($action, "all") === 0)
             {
                 $feedContentHTML =
@@ -221,23 +252,10 @@ class AppearanceManagementView implements IAppearanceManagementView
                             </div>
                         </div>
                         ";
-
-                        if(strcmp($target, "Color") === 0)
-                        {
-
-                        }
-                        else if(strcmp($target, "Image") === 0)
-                        {
-                            $feedContentHTML = "Requested overview for all image update forms not implemented yet.";
-                        }
-                        else
-                        {
-                            $this->showInvalidRequest($companyData);
-                        }
                     }
-                    else if($messageValue === 0) // = want to change the color of a specific element.
+                    else if($messageValue <= -2 || $messageValue === 0) // = want to change the color of a specific element. Or was specific field marked that is invalid?
                     {
-                        $feedContentHTML = $this->genColorForm($element, $validColors);
+                        $feedContentHTML = $this->genColorForm($element, $validColors, $oldColorSaved, $isCustomColor, $messageValue);
                     }
                     else if($messageValue === -1)
                     {
@@ -301,26 +319,6 @@ class AppearanceManagementView implements IAppearanceManagementView
                     {
                         $this->showInvalidRequest($companyData);
                     }
-
-                    /*
-                    if($messageValue === 0)
-                    {
-                        // Show normal update form
-                        $this->showForm($companyData, "color", $element);
-                    }
-                    else if($messageValue === 1)
-                    {
-                        // Updated successfully
-                    }
-                    else if($messageValue === -1)
-                    {
-                        // Update failed
-                    }
-                    else
-                    {
-                        $this->showInvalidRequest($companyData);
-                    }
-                    */
                 }
                 else if(strcmp($target, "Image") === 0)
                 {

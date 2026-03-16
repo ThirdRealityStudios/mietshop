@@ -196,8 +196,21 @@ class AppearanceModel implements IAppearanceModel
 
     public function setColor(string $colorCode, string $elementName): bool
     {
-        if(($this->userInputModel->isValidHexRGBCode($colorCode) || in_array($colorCode, IAppearanceModel::ACCEPTED_COLORS)) && mb_strlen($colorCode, "UTF-8") <= $this->getColorCharacterLimit($elementName))
+        // See if the given color is valid color (whether an accepted Bootstrap color name or an accepted RGB(A) hex color code) or if it is an empty string (then to delete the saved color).
+        if( (($this->userInputModel->isValidHexRGBCode($colorCode) || in_array($colorCode, IAppearanceModel::ACCEPTED_BS_COLORS)) && (mb_strlen($colorCode, "UTF-8") <= $this->getColorCharacterLimit($elementName))) || empty($colorCode) )
         {
+            if(empty($colorCode))
+            {
+                if(sizeof(IAppearanceModel::ACCEPTED_BS_COLORS) > 0)
+                {
+                    $colorCode = IAppearanceModel::ACCEPTED_BS_COLORS[0];
+                }
+                else
+                {
+                    $colorCode = "#000000";
+                }
+            }
+
             return $this->updateValue("Color$elementName", $colorCode);
         }
         else
