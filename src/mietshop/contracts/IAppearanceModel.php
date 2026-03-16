@@ -35,7 +35,7 @@ interface IAppearanceModel
     /**
      * @param string $colorCode Color code for the specific element (e.g. Window, Frame, Text, Link). Valid values are usually the Bootstrap color names (e.g. primary, light, danger, secondary) or the RGBA hex codes (format #RRGGBBAA like #11223344).
      * @param string $elementName The specific element to change the color for.
-     * @return bool True if the color could be set successfully. Otherwise, false (e.g. due to technical issues).
+     * @return bool True if the color could be set successfully. Otherwise, false (e.g. because it is no accepted Bootstrap color nor valid hex color code or due to technical issues).
      */
     public function setColor(string $colorCode, string $elementName): bool;
 

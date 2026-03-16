@@ -85,10 +85,10 @@ class AppearanceManagementView implements IAppearanceManagementView
         return $colorRadioButtons;
     }
 
-    private function genColorUpdateFailedHTML(string $element) : string
+    private function genColorUpdateFailed(string $element, string $custom) : string
     {
         return
-            "
+        "
         <div class=\"container-fluid p-0\">
             <div class=\"row mt-3 mb-5\">
                 <div class=\"col-2\" style=\"background-image: url('/img/symbol/paint-bucket-danger.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\"></div>
@@ -103,7 +103,7 @@ class AppearanceManagementView implements IAppearanceManagementView
             </div>
             <div class=\"row mb-3\">
                 <div class=\"col-12\">
-                    <a class=\"btn btn-primary w-100\" href=\"/?view=appearance&action=update&target=Color&element=$element\">Nochmal versuchen</a>
+                    <a class=\"btn btn-primary w-100\" href=\"/?view=appearance&action=update&target=Color&element=$element&custom=$custom\">Nochmal versuchen</a>
                 </div>
             </div>
             <div class=\"row mb-3\">
@@ -115,7 +115,14 @@ class AppearanceManagementView implements IAppearanceManagementView
         ";
     }
 
-    private function genColorUpdateSuccessHTML(string $element) : string
+    public function showColorUpdateFailed(array $companyData, string $element, string $custom) : void
+    {
+        $feedContentHTML = $this->genColorUpdateFailed($element, $custom);
+
+        $this->showPageFeed($companyData, $feedContentHTML);
+    }
+
+    private function genColorUpdateSuccessful(string $element, string $custom) : string
     {
         return
             "
@@ -133,7 +140,7 @@ class AppearanceManagementView implements IAppearanceManagementView
             </div>
             <div class=\"row mb-3\">
                 <div class=\"col-12\">
-                    <a class=\"btn btn-primary w-100\" href=\"/?view=appearance&action=update&target=Color&element=$element\">Farbe erneut ändern</a>
+                    <a class=\"btn btn-primary w-100\" href=\"/?view=appearance&action=update&target=Color&element=$element&custom=$custom\">Farbe erneut ändern</a>
                 </div>
             </div>
             <div class=\"row mb-3\">
@@ -143,6 +150,13 @@ class AppearanceManagementView implements IAppearanceManagementView
             </div>
         </div>
         ";
+    }
+
+    public function showColorUpdateSuccessful(array $companyData, string $element, string $custom) : void
+    {
+        $feedContentHTML = $this->genColorUpdateSuccessful($element, $custom);
+
+        $this->showPageFeed($companyData, $feedContentHTML);
     }
 
     private function genCustomColorForm(string $element, string $hexCodeColor) : string
@@ -202,7 +216,7 @@ class AppearanceManagementView implements IAppearanceManagementView
         ";
     }
 
-    public function showCustomColorForm(array $companyData, string $element, string $hexCodeColor) : string
+    public function showCustomColorForm(array $companyData, string $element, string $hexCodeColor) : void
     {
         $feedContentHTML = $this->genCustomColorForm($element, $hexCodeColor);
 
@@ -344,74 +358,5 @@ class AppearanceManagementView implements IAppearanceManagementView
         $feedContentHTML = $this->genOptions();
 
         $this->showPageFeed($companyData, $feedContentHTML);
-    }
-
-    public function show(array $companyData, string $action, string $target = "", string $element = "", int $messageValue = 0, array $validElements = [], array $validColors = [], string $oldColorSaved = "", bool $isCustomColor = false): void
-    {
-        if(empty($companyData))
-        {
-            $this->showInvalidRequest([]);
-        }
-        else
-        {
-            $feedContentHTML = "Unknown page";
-
-            if(strcmp($action, "all") === 0)
-            {
-
-            }
-            else if(strcmp($action, "update") === 0)
-            {
-                if(strcmp($target, "Color") === 0)
-                {
-                    // Is an overview requested to show all changeable elements which do exist?
-                    if(empty($element))
-                    {
-
-                    }
-                    else if($messageValue === 0 || $messageValue === -2) // = want to change the color of a specific element. Or was the custom hex code field marked as invalid?
-                    {
-                        $feedContentHTML = $this->genDefaultColorForm($element, $validColors, $oldColorSaved);
-
-                        // TODO choose this color form if URL property custom=yes: $feedContentHTML = $this->genCustomColorForm($element, $oldColorSaved, $messageValue);
-                    }
-                    else if($messageValue === -1)
-                    {
-                        $feedContentHTML = $this->genColorUpdateFailedHTML($element);
-                    }
-                    else if($messageValue === 1)
-                    {
-                        $feedContentHTML = $this->genColorUpdateSuccessHTML($element);
-                    }
-                    else
-                    {
-                        $this->showInvalidRequest($companyData);
-                    }
-                }
-                else if(strcmp($target, "Image") === 0)
-                {
-                    $this->showInvalidRequest($companyData);
-                }
-                else
-                {
-                    $this->showInvalidRequest($companyData);
-                }
-            }
-            else
-            {
-                $this->showInvalidRequest($companyData);
-            }
-
-            $feedHTML = $this->globalView->genFeed(null, $feedContentHTML);
-
-            $body =
-            "
-            <div class=\"container-fluid\">
-                $feedHTML
-            </div>
-            ";
-
-            $this->globalView->show($companyData, $body);
-        }
     }
 }

@@ -185,8 +185,8 @@ class AppearanceModel implements IAppearanceModel
 
     public function setColor(string $colorCode, string $elementName): bool
     {
-        // See if the given color is valid color (whether an accepted Bootstrap color name or an accepted RGB(A) hex color code) or if it is an empty string (then to delete the saved color).
-        if( (($this->userInputModel->isValidHexRGBCode($colorCode) || in_array($colorCode, IAppearanceModel::ACCEPTED_BOOTSTRAP_COLORS)) && (mb_strlen($colorCode, "UTF-8") <= $this->getColorCharacterLimit($elementName))) || empty($colorCode) )
+        // See if the given color is valid color (whether an accepted Bootstrap color name or an accepted RGB(A) hex color code).
+        if( (($this->userInputModel->isValidHexRGBCode($colorCode) || in_array($colorCode, IAppearanceModel::ACCEPTED_BOOTSTRAP_COLORS)) && (mb_strlen($colorCode, "UTF-8") <= $this->getColorCharacterLimit($elementName))) )
         {
             if(empty($colorCode))
             {
