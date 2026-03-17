@@ -536,8 +536,8 @@ class GlobalView implements IGlobalView
         {
             $optionalSocialMediaTitle =
             "
-            <p class=\"fs-6\">Alternativ können Sie uns auch auf den gängigen sozialen Medien ansprechen und einen Termin vereinbaren.</p>
-            <p class=\"fs-4\">Social Media:</p>
+            <p class=\"fs-6$linkAdditionalClass\">Alternativ können Sie uns auch auf den gängigen sozialen Medien ansprechen und einen Termin vereinbaren.</p>
+            <p class=\"fs-4$linkAdditionalClass\">Social Media:</p>
             ";
         }
 
@@ -550,7 +550,7 @@ class GlobalView implements IGlobalView
             $mapsServiceEmbedded = $this->genFeed(null, "<iframe src=\"$mapLocationURLSafe\" allowfullscreen=\"\" loading=\"lazy\" class=\"rounded bg-white\" style=\"width: 100%;\" height=\"480\"></iframe>");
         }
 
-        $copyrightRow = $this->preGenDefaultRow("<p class=\"mb-0 text-center\">Copyright&nbsp;©&nbsp;$companyNameHTMLSafe&nbsp;-&nbsp;Alle&nbsp;Rechte&nbsp;vorbehalten.</p>", true);
+        $copyrightRow = $this->preGenDefaultRow("<p$textPossibleStyleProperties class=\"mb-0 text-center$textAdditionalClass\">Copyright&nbsp;©&nbsp;$companyNameHTMLSafe&nbsp;-&nbsp;Alle&nbsp;Rechte&nbsp;vorbehalten.</p>", true);
 
         $footerContent = "$contactFeed$socialMediaFeed$mapsServiceEmbedded$copyrightRow";
 
