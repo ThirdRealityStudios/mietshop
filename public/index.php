@@ -45,7 +45,7 @@ function run()
     $router = new Router();
 
     $databaseAdapter = new MySQLAdapter();
-    $databaseAdapter->connect("localhost", "myWebsite", "root", "myPassword");
+    $databaseAdapter->connect("database-5020030573.webspace-host.com", "dbs15445439", "dbu2088104", "z.8-CPm@mJG_iQ2");
 
     $router -> route($request, $_SESSION, $databaseAdapter);
 }

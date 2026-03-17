@@ -26,15 +26,8 @@ class HomePresenter implements IPresenter
 
     public function process(IHTTPRequest $request): void
     {
-        // $this->companyModel->setCompanyName("Sehr cooles Unternehmen GmbH");
-        // $this->companyModel->setOwner("Gutfried Alman");
-
-        // $this->companyModel->setStreet("Kurwa Mac Str. 3a");
-
         $companyData = $this->companyModel->getCompanyData();
         $categories = $this->categoryModel->readAllCategories();
-
-        // var_dump($companyData);
 
         if(empty($companyData))
         {

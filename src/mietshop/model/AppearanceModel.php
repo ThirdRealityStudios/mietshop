@@ -12,12 +12,12 @@ class AppearanceModel implements IAppearanceModel
     private IUserInputModel $userInputModel;
     private IDatabaseAdapter $databaseAdapter;
 
-    private function genTableCreateColumnSQLText(string $elementTypeName, string $elementName, string $bootstrapColor)
+    private function genTableCreateColumnSQLText(string $elementTypeName, string $elementName) : string
     {
-        return ", $elementTypeName$elementName TINYTEXT NOT NULL DEFAULT \"$bootstrapColor\"";
+        return ", $elementTypeName$elementName TINYTEXT NOT NULL";
     }
 
-    private function genTableCreateColumnsSQLText(array $acceptedElements)
+    private function genTableCreateColumnsSQLText(array $acceptedElements) : string
     {
         $sqlCreateColumns = "";
 
@@ -29,19 +29,89 @@ class AppearanceModel implements IAppearanceModel
 
             $elementNameKeys = array_keys($elementNames);
 
-            $count = 0;
-
             foreach($elementNameKeys as $elementNameKey)
             {
-                $bootstrapColorChosen = IAppearanceModel::ACCEPTED_BOOTSTRAP_COLORS[$count % sizeof(IAppearanceModel::ACCEPTED_BOOTSTRAP_COLORS)];
-
-                $sqlCreateColumns .= $this->genTableCreateColumnSQLText($elementType, $elementNameKey, $bootstrapColorChosen);
-
-                $count++;
+                $sqlCreateColumns .= $this->genTableCreateColumnSQLText($elementType, $elementNameKey);
             }
         }
 
         return $sqlCreateColumns;
+    }
+
+    /**
+     * Constructs an array of all concatenated column names,
+     * e.g. concatenating "Image" with "Logo" (= "ImageLogo" as one element of the returned array).
+     *
+     * @param array $acceptedElements
+     * @return array
+     */
+    private function genSQLColumnNames(array $acceptedElements) : array
+    {
+        $columns = [];
+
+        $elementTypeNames = array_keys($acceptedElements);
+
+        foreach($elementTypeNames as $elementTypeName)
+        {
+            $elementNames = array_keys($acceptedElements[$elementTypeName]);
+
+            foreach($elementNames as $elementName)
+            {
+                $columns[] = "$elementTypeName$elementName";
+            }
+        }
+
+        return $columns;
+    }
+
+    private function genValuesForInsert(array $acceptedElements) : string
+    {
+        $sql = "";
+
+        $columnNames = $this->genSQLColumnNames($acceptedElements);
+
+        for($count = 0; $count < sizeof($columnNames); $count++)
+        {
+            $bootstrapColorChosen = IAppearanceModel::ACCEPTED_BOOTSTRAP_COLORS[$count % sizeof(IAppearanceModel::ACCEPTED_BOOTSTRAP_COLORS)];
+
+            $sql .= ($count < (sizeof($columnNames)-1)) ? "'$bootstrapColorChosen', " : "'$bootstrapColorChosen'";
+        }
+
+        return $sql;
+    }
+
+    private function genColumnsForInsert(array $acceptedElements) : string
+    {
+        $sql = "";
+
+        $columns = $this->genSQLColumnNames($acceptedElements);
+
+        for($count = 0; $count < sizeof($columns); $count++)
+        {
+            if($count < (sizeof($columns)-1))
+            {
+                $sql .= $columns[$count].', ';
+            }
+            else
+            {
+                $sql .= $columns[$count];
+            }
+        }
+
+        return $sql;
+    }
+
+    private function insertDefaultDatasetIfNotExists(array $acceptedElements) : string
+    {
+        $columns = $this->genColumnsForInsert($acceptedElements);
+        $values = $this->genValuesForInsert($acceptedElements);
+
+        $sql =
+        "
+            INSERT IGNORE INTO AppearanceModel($columns) VALUES($values)
+        ";
+
+        return $sql;
     }
 
     /**
@@ -86,7 +156,9 @@ class AppearanceModel implements IAppearanceModel
 
         if(sizeof($query) === 1 && isset($query[$firstRowKey]["RowCount"]) && $query[$firstRowKey]["RowCount"] === 0)
         {
-            $this->databaseAdapter->execute("INSERT INTO AppearanceModel() VALUES()");
+            $sql = $this->insertDefaultDatasetIfNotExists(IAppearanceModel::ACCEPTED_ELEMENTS);
+
+            $this->databaseAdapter->execute($sql);
         }
     }
 

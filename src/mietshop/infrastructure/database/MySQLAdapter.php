@@ -97,9 +97,13 @@ class MySQLAdapter implements IDatabaseAdapter
                 $firstRowKey = array_keys($fetchData)[0];
                 $fetchDataFirstRow = $fetchData[$firstRowKey];
 
-                if(isset($fetchDataFirstRow["character_maximum_length"]) && is_numeric($fetchDataFirstRow["character_maximum_length"]))
+                // Bugfix for different MySQL versions and environments, where sometimes "character_maximum_length" is upper case (probably newer versions provided by web hosters) or lower case (probably older versions).
+                $isMaxLengthSetUpperCase = isset($fetchDataFirstRow["CHARACTER_MAXIMUM_LENGTH"]) && is_numeric($fetchDataFirstRow["CHARACTER_MAXIMUM_LENGTH"]);
+                $isMaxLengthSetLowerCase = isset($fetchDataFirstRow["character_maximum_length"]) && is_numeric($fetchDataFirstRow["character_maximum_length"]);
+
+                if($isMaxLengthSetUpperCase || $isMaxLengthSetLowerCase)
                 {
-                    return $fetchDataFirstRow["character_maximum_length"];
+                    return $isMaxLengthSetUpperCase ? $fetchDataFirstRow["CHARACTER_MAXIMUM_LENGTH"] : $fetchDataFirstRow["character_maximum_length"];
                 }
                 else
                 {

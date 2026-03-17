@@ -110,6 +110,7 @@ class CompanyModel implements ICompanyModel
             // If the name is known in the DB table as a column AND if the data was not fetched yet for the array.
             if(in_array($name, $columnNames))
             {
+
                 $dataFetched = $this->databaseAdapter->fetch("SELECT $name FROM CompanyModel");
 
                 $firstRowKey = array_keys($dataFetched)[0]; // Key for the first row fetched
@@ -591,6 +592,8 @@ class CompanyModel implements ICompanyModel
                                 if($this->databaseAdapter->isString("CompanyModel", $columnName)) // Then very likely some usual string type (like varchar, normal char, text etc.)
                                 {
                                     $maximumCharacterLimit = $this->databaseAdapter->readCharacterLimit("CompanyModel", $columnName);
+
+                                    // TODO Examine why readCHaracterLimit returns -1 sometimes..
 
                                     // Could you fetch character limit information (does not apply for booleans e.g.) ?
                                     if($maximumCharacterLimit >= 0)
