@@ -345,7 +345,7 @@ class AppearanceModel implements IAppearanceModel
                     $classCode = "bg-$savedColor";
                 }
             }
-            else if(strcmp($colorElement, "Text") === 0)
+            else if(strcmp($colorElement, "Text") === 0 || strcmp($colorElement, "Link") === 0)
             {
                 if($isCustom)
                 {
@@ -354,17 +354,6 @@ class AppearanceModel implements IAppearanceModel
                 else
                 {
                     $classCode = "text-$savedColor";
-                }
-            }
-            else if(strcmp($colorElement, "Link") === 0)
-            {
-                if($isCustom)
-                {
-                    $styleCode = "color: $savedColor;";
-                }
-                else
-                {
-                    $classCode = "link-$savedColor";
                 }
             }
             else if(strcmp($colorElement, "Interesting") === 0 || strcmp($colorElement, "Uninteresting") === 0 || strcmp($colorElement, "ActionExecute") === 0 || strcmp($colorElement, "ActionAbort") === 0)
