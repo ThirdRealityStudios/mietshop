@@ -310,6 +310,12 @@ class GlobalView implements IGlobalView
         $navOptionalBorderClasses = empty($frameColorClass) ? "" : " border-bottom border-3";
         $navAdditionalClasses = empty($navAdditionalClasses) ? "" : " $navAdditionalClasses$navOptionalBorderClasses";
 
+        $sideMenuPossibleStyleProperties = $navPossibleStyleProperties; // for readability
+        $sideMenuAdditionalClasses = $navAdditionalClasses;
+
+        $sideMenuContentPossibleStyleProperties = empty($windowColorStyle) ? "" : " style=\"$windowColorStyle\"";
+        $sideMenuContentAdditionalClasses = empty($windowColorClass) ? "" : " $windowColorClass";
+
         return "
         <nav$navPossibleStyleProperties class=\"navbar$navAdditionalClasses sticky-top w-100 z-2\">
 	        <div class=\"container-fluid\">
@@ -318,11 +324,11 @@ class GlobalView implements IGlobalView
                         <span class=\"navbar-toggler-icon\"></span>
                     </button>
                     <div class=\"offcanvas offcanvas-end\" tabindex=\"-1\" id=\"offcanvasNavbar\" aria-labelledby=\"offcanvasNavbarLabel\" role=\"dialog\">
-                        <div class=\"offcanvas-header bg-primary-subtle border-bottom border-3 border-primary\">
+                        <div$sideMenuPossibleStyleProperties class=\"offcanvas-header $sideMenuAdditionalClasses\">
                             <h5 class=\"offcanvas-title\" id=\"offcanvasNavbarLabel\">{$companyName}</h5>
                             <button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"offcanvas\" aria-label=\"Close\"></button>
                         </div>
-                        <div class=\"offcanvas-body bg-primary-subtle\">
+                        <div$sideMenuContentPossibleStyleProperties class=\"offcanvas-body$sideMenuContentAdditionalClasses\">
                             <ul class=\"navbar-nav justify-content-end flex-grow-1 pe-3\">
                                 <li class=\"nav-item\">
                                     <a class=\"nav-link active\" aria-current=\"page\" href=\"/\">Startseite 🏠</a>
