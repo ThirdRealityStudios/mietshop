@@ -19,7 +19,7 @@ class AppearanceManagementView implements IAppearanceManagementView
 
     private function showPageFeed(array $companyData, array $appearanceData, string $feedContentHTML): void
     {
-        $feedHTML = $this->globalView->genFeed(null, $feedContentHTML);
+        $feedHTML = $this->globalView->genFeed($appearanceData, null, $feedContentHTML);
 
         $body =
         "

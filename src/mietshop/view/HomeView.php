@@ -14,7 +14,7 @@ class HomeView implements IHomeView
         $this->globalView = $globalView;
     }
 
-    public function show(array $companyData, array $appearanceModel, array $categories): void
+    public function show(array $companyData, array $appearanceData, array $categories): void
     {
         $body = "";
 
@@ -74,8 +74,8 @@ class HomeView implements IHomeView
             }
         }
 
-        $body .= "<div class=\"container-fluid\">{$this->globalView->genFeed(null, $ourRentalObjectsHTMLContent)}</div>";
+        $body .= "<div class=\"container-fluid\">{$this->globalView->genFeed($appearanceData, null, $ourRentalObjectsHTMLContent)}</div>";
 
-        $this->globalView->show($companyData, $appearanceModel, $body);
+        $this->globalView->show($companyData, $appearanceData, $body);
     }
 }

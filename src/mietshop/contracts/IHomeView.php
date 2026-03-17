@@ -46,8 +46,8 @@ interface IHomeView
      *
      *
      * @param array $companyData
-     * @param array $appearanceModel
+     * @param array $appearanceData
      * @param array $categories
      */
-    public function show(array $companyData, array $appearanceModel, array $categories): void;
+    public function show(array $companyData, array $appearanceData, array $categories): void;
 }

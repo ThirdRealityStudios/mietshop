@@ -73,13 +73,39 @@ class GlobalView implements IGlobalView
         return $this -> preGenRow($rowContentHTML, $applyTopMargin, 1, 3, 4, 10, 6, 4, 1, 3, 4);
     }
 
-    public function genFeed(?string $pictureURL, string $descriptionHTML) : string
+    public function genFeed(array $appearanceData, ?string $pictureURL, string $descriptionHTML) : string
     {
+        ////////////////////////////////////////////////
+        /// Here preparing window and frame colors
+
+        $feedAdditionalClasses = "";
+        $feedPossibleStyleProperties = "";
+
+        $windowColorClass = $appearanceData["Color"]["Window"][0];
+        $windowAdditionalClasses = empty($windowColorClass) ? "" : " $windowColorClass";
+        $feedAdditionalClasses .= $windowAdditionalClasses;
+
+        $windowColorStyle = $appearanceData["Color"]["Window"][1];
+        $feedPossibleStyleProperties .= empty($windowColorStyle) ? "" : "$windowColorStyle";
+
+        $frameColorClass = $appearanceData["Color"]["Frame"][0];
+        $feedAdditionalClasses .= empty($frameColorClass) ? "" : " $frameColorClass";
+
+        $frameColorStyle = $appearanceData["Color"]["Frame"][1];
+        $feedPossibleStyleProperties .= empty($frameColorStyle) ? "" : "$frameColorStyle";
+
+        // Finally prepare a possible stylesheet property for the tag
+        $feedPossibleStyleProperties = empty($feedPossibleStyleProperties) ? "" : " style=\"border-style: solid; border-width: 1px; $feedPossibleStyleProperties\"";
+        $feedPossibleStylePropertiesWithoutImage = empty($windowColorStyle) ? "" : " style=\"$windowColorStyle\"";
+        $feedOptionalBorderClasses = empty($frameColorClass) ? "" : " border-1";
+        $feedAdditionalClasses = empty($feedAdditionalClasses) ? "" : " $feedAdditionalClasses$feedOptionalBorderClasses";
+        $feedAdditionalClassesWithoutImage = " border-0 $windowAdditionalClasses";
+
         if(is_string($pictureURL))
         {
             $html =
             "
-            <div class=\"card container border-1 border-primary bg-primary-subtle\">
+            <div$feedPossibleStyleProperties class=\"card container$feedAdditionalClasses\">
                 <div class=\"row pt-3 pb-3\">
                     <div class=\"col-6 col-sm-4 col-md-3 col-lg-3 col-xl-3 col-xxl-4 align-self-center\">
                         <div class=\"border border-primary rounded bg-light\" style=\"display: flex; justify-content: center; align-items: center; text-align: center; min-width: 120px; width: 120px; min-height: 120px; max-width: 120px; height: 120px;\">
@@ -97,7 +123,7 @@ class GlobalView implements IGlobalView
         {
             $html =
             "
-            <div class=\"card container border-0 bg-primary-subtle\">
+            <div$feedPossibleStylePropertiesWithoutImage class=\"card container$feedAdditionalClassesWithoutImage\">
                 <div class=\"col-md\">
                     <div class=\"card-body\">$descriptionHTML</div>
                 </div>
@@ -438,6 +464,29 @@ class GlobalView implements IGlobalView
         $linkPossibleStyleProperties = $appearanceData["Color"]["Link"][1];
         $linkPossibleStyleProperties = empty($linkPossibleStyleProperties) ? "" : " style=\"$linkPossibleStyleProperties\"";
 
+        ////////////////////////////////////////////////
+        /// Here preparing window and frame colors
+
+        $footerAdditionalClasses = "";
+        $footerPossibleStyleProperties = "";
+
+        $windowColorClass = $appearanceData["Color"]["Window"][0];
+        $footerAdditionalClasses .= empty($windowColorClass) ? "" : " $windowColorClass";
+
+        $windowColorStyle = $appearanceData["Color"]["Window"][1];
+        $footerPossibleStyleProperties .= empty($windowColorStyle) ? "" : "$windowColorStyle";
+
+        $frameColorClass = $appearanceData["Color"]["Frame"][0];
+        $footerAdditionalClasses .= empty($frameColorClass) ? "" : " $frameColorClass";
+
+        $frameColorStyle = $appearanceData["Color"]["Frame"][1];
+        $footerPossibleStyleProperties .= empty($frameColorStyle) ? "" : "$frameColorStyle";
+
+        // Finally prepare a possible stylesheet property for the tag
+        $footerPossibleStyleProperties = empty($footerPossibleStyleProperties) ? "" : " style=\"border-top-style: solid; border-top-width: 3px; $footerPossibleStyleProperties\"";
+        $footerOptionalBorderClasses = empty($frameColorClass) ? "" : " border-top border-3";
+        $footerAdditionalClasses = empty($footerAdditionalClasses) ? "" : " $footerAdditionalClasses$footerOptionalBorderClasses";
+
         ///////////////////////////////////////////////////////////
         /// Here loading content data and making it output safe
 
@@ -494,7 +543,7 @@ class GlobalView implements IGlobalView
             </div>
             ";
 
-            $contactFeed = $this->genFeed(null, $contactCardText);
+            $contactFeed = $this->genFeed($appearanceData, null, $contactCardText);
         }
         else
         {
@@ -541,13 +590,13 @@ class GlobalView implements IGlobalView
             ";
         }
 
-        $socialMediaFeed = $this->genFeed(null, $optionalSocialMediaTitle.$socialMedia);
+        $socialMediaFeed = $this->genFeed($appearanceData, null, $optionalSocialMediaTitle.$socialMedia);
 
         $mapsServiceEmbedded = "";
 
         if(!empty($mapLocationURLSafe))
         {
-            $mapsServiceEmbedded = $this->genFeed(null, "<iframe src=\"$mapLocationURLSafe\" allowfullscreen=\"\" loading=\"lazy\" class=\"rounded bg-white\" style=\"width: 100%;\" height=\"480\"></iframe>");
+            $mapsServiceEmbedded = $this->genFeed($appearanceData, null, "<iframe src=\"$mapLocationURLSafe\" allowfullscreen=\"\" loading=\"lazy\" class=\"rounded bg-white\" style=\"width: 100%;\" height=\"480\"></iframe>");
         }
 
         $copyrightRow = $this->preGenDefaultRow("<p$textPossibleStyleProperties class=\"mb-0 text-center$textAdditionalClass\">Copyright&nbsp;©&nbsp;$companyNameHTMLSafe&nbsp;-&nbsp;Alle&nbsp;Rechte&nbsp;vorbehalten.</p>", true);
@@ -555,7 +604,7 @@ class GlobalView implements IGlobalView
         $footerContent = "$contactFeed$socialMediaFeed$mapsServiceEmbedded$copyrightRow";
 
         return "
-        <div class=\"container-fluid mt-5 pb-5 bg-primary-subtle border-top border-3 border-primary\">
+        <div$footerPossibleStyleProperties class=\"container-fluid mt-5 pb-5$footerAdditionalClasses\">
             $footerContent
         </div>
         ";

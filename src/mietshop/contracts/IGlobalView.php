@@ -23,11 +23,12 @@ interface IGlobalView
      *
      * <div class="container-fluid"><?= genFeed(..); ?></div>
      *
+     * @param array $appearanceData
      * @param string|null $pictureURL Simply the URL to your picture which should be displayed in the post. Otherwise pass NULL here (then no picture generated / embedded).
      * @param string $descriptionHTML The HTML code you want to show in your feed (usually formatted text, a button etc.).
      * @return string Feed HTML
      */
-    public function genFeed(?string $pictureURL, string $descriptionHTML) : string;
+    public function genFeed(array $appearanceData, ?string $pictureURL, string $descriptionHTML) : string;
 
     /**
      * Shows a default view,

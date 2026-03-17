@@ -89,7 +89,7 @@ class AccountView implements IAccountView
             </div>
         ";
 
-        $feedHTML = $this->globalView->genFeed(null, $feedContent);
+        $feedHTML = $this->globalView->genFeed($appearanceData, null, $feedContent);
 
         $body = "<div class=\"container-fluid\">{$feedHTML}</div>";
 

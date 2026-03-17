@@ -637,7 +637,7 @@ class AccountManagementView implements IAccountManagementView
                 ";
             }
 
-            $feedHTML = $this->globalView->genFeed(null, $feedContentHTML);
+            $feedHTML = $this->globalView->genFeed($appearanceData, null, $feedContentHTML);
 
             $body =
             "
