@@ -70,7 +70,10 @@ class AccountModel implements IAccountModel
 
     public function createAccount(string $supervisorEmail, string $supervisorPassword, string $email, string $password, int $permissionLevel) : int
     {
-        $supervisorAccountData = $this->readAccount($supervisorEmail);
+        $lowerCaseSupervisorEmail = strtolower($supervisorEmail);
+        $lowerCaseEmail = strtolower($email);
+
+        $supervisorAccountData = $this->readAccount($lowerCaseSupervisorEmail);
 
         // Does the account exist?
         if(!empty($supervisorAccountData))
@@ -78,12 +81,12 @@ class AccountModel implements IAccountModel
             // Can the person verify the action (as a supervisor or does he know the credentials at least) ?
             if(password_verify($supervisorPassword, $supervisorAccountData["PasswordHash"]))
             {
-                $accountPermissionLevel = $this->readPermissionLevel($supervisorEmail);
+                $accountPermissionLevel = $this->readPermissionLevel($lowerCaseSupervisorEmail);
 
                 // Check if the given permission level exists
-                if($this->isSupervisor($supervisorEmail) && $accountPermissionLevel >= $permissionLevel)
+                if($this->isSupervisor($lowerCaseSupervisorEmail) && $accountPermissionLevel >= $permissionLevel)
                 {
-                    if($this->userInputModel->isValidEmail($email))
+                    if($this->userInputModel->isValidEmail($lowerCaseEmail))
                     {
                         if(strlen($password) > 0)
                         {
@@ -98,7 +101,7 @@ class AccountModel implements IAccountModel
 
                                 try
                                 {
-                                    return $this->databaseAdapter->execute($sql, [$email, $passwordHashed, $permissionLevel]) === 1 ? 1 : -4;
+                                    return $this->databaseAdapter->execute($sql, [$lowerCaseEmail, $passwordHashed, $permissionLevel]) === 1 ? 1 : -4;
                                 }
                                 catch(PDOException $e)
                                 {
@@ -144,6 +147,8 @@ class AccountModel implements IAccountModel
 
     public function readAccount(string $email): array
     {
+        $lowerCaseEmail = strtolower($email);
+
         $sql =
         "
             SELECT * FROM AccountModel WHERE Email = ?
@@ -151,7 +156,7 @@ class AccountModel implements IAccountModel
 
         try
         {
-            $fetchData = $this->databaseAdapter->fetch($sql, [$email]);
+            $fetchData = $this->databaseAdapter->fetch($sql, [$lowerCaseEmail]);
 
             if(sizeof($fetchData) === 1) // there should only be exactly one account with that email address.
             {
@@ -249,6 +254,8 @@ class AccountModel implements IAccountModel
 
     public function readPermissionLevel(string $email): int
     {
+        $lowerCaseEmail = strtolower($email);
+
         $sql =
         "
             SELECT PermissionLevel FROM AccountModel WHERE Email = ?
@@ -256,7 +263,7 @@ class AccountModel implements IAccountModel
 
         try
         {
-            $result = $this->databaseAdapter->fetch($sql, [$email]);
+            $result = $this->databaseAdapter->fetch($sql, [$lowerCaseEmail]);
 
             if(sizeof($result) === 1 && isset($result[0]["PermissionLevel"]) && is_numeric($result[0]["PermissionLevel"]))
             {
@@ -275,7 +282,7 @@ class AccountModel implements IAccountModel
 
     public function updatePassword(string $email, string $oldPassword, string $newPassword): bool
     {
-        // Check permission for password change
+        $lowerCaseEmail = strtolower($email);
 
         try
         {
@@ -284,7 +291,7 @@ class AccountModel implements IAccountModel
                 SELECT PasswordHash FROM AccountModel WHERE Email = ?
             ";
 
-            $fetchData = $this->databaseAdapter->fetch($sql, [$email]);
+            $fetchData = $this->databaseAdapter->fetch($sql, [$lowerCaseEmail]);
 
             if(isset($fetchData[0]["PasswordHash"]) && is_string($fetchData[0]["PasswordHash"]))
             {
@@ -301,7 +308,7 @@ class AccountModel implements IAccountModel
 
                     $passwordNewHashed = password_hash($newPassword, PASSWORD_DEFAULT);
 
-                    return $this->databaseAdapter->execute($sql, [$passwordNewHashed, $email]) === 1;
+                    return $this->databaseAdapter->execute($sql, [$passwordNewHashed, $lowerCaseEmail]) === 1;
                 }
                 else
                 {
@@ -323,6 +330,9 @@ class AccountModel implements IAccountModel
     {
         // First check permission
 
+        $lowerCaseEmail = strtolower($currentEmail);
+        $lowerCaseNewMail = strtolower($newEmail);
+
         $sql =
         "
             SELECT PasswordHash FROM AccountModel WHERE Email = ?
@@ -330,7 +340,7 @@ class AccountModel implements IAccountModel
 
         try
         {
-            $result = $this->databaseAdapter->fetch($sql, [$currentEmail]);
+            $result = $this->databaseAdapter->fetch($sql, [$lowerCaseEmail]);
 
             if(isset($result[0]["PasswordHash"]) && is_string($result[0]["PasswordHash"]))
             {
@@ -340,20 +350,20 @@ class AccountModel implements IAccountModel
                 {
                     // Password verified. Now can change email.
 
-                    if(strcmp($currentEmail, $newEmail) === 0) // No update needed (remains the same)
+                    if(strcmp($lowerCaseEmail, $lowerCaseNewMail) === 0) // No update needed (remains the same)
                     {
                         return true;
                     }
                     else
                     {
-                        if($this->userInputModel->isValidEmail($newEmail))
+                        if($this->userInputModel->isValidEmail($lowerCaseNewMail))
                         {
                             $sql =
                             "
                                 UPDATE AccountModel SET Email = ? WHERE Email = ?
                             ";
 
-                            return $this->databaseAdapter->execute($sql, [$newEmail, $currentEmail]) === 1;
+                            return $this->databaseAdapter->execute($sql, [$lowerCaseNewMail, $lowerCaseEmail]) === 1;
                         }
                         else
                         {
@@ -379,6 +389,9 @@ class AccountModel implements IAccountModel
 
     public function updatePermissionLevel(string $supervisorEmail, string $supervisorPassword, string $email, int $newPermissionLevel): int
     {
+        $lowerCaseEmail = strtolower($email);
+        $lowerCaseSupervisorEmail = strtolower($supervisorEmail);
+
         $sql =
         "
             SELECT PasswordHash FROM AccountModel WHERE Email = ?
@@ -386,7 +399,7 @@ class AccountModel implements IAccountModel
 
         try
         {
-            $result = $this->databaseAdapter->fetch($sql, [$supervisorEmail]);
+            $result = $this->databaseAdapter->fetch($sql, [$lowerCaseSupervisorEmail]);
 
             if(!empty($result))
             {
@@ -398,14 +411,14 @@ class AccountModel implements IAccountModel
                     {
                         // Supervisor access was verified to change the permission level of an account.
 
-                        $supervisorCurrentPermissionLevel = $this->readPermissionLevel($supervisorEmail);
-                        $targetAccountCurrentPermissionLevel = $this->readPermissionLevel($email);
+                        $supervisorCurrentPermissionLevel = $this->readPermissionLevel($lowerCaseSupervisorEmail);
+                        $targetAccountCurrentPermissionLevel = $this->readPermissionLevel($lowerCaseEmail);
 
                         if($targetAccountCurrentPermissionLevel > -1)
                         {
                             // Make sure the user is generally permitted (a verified supervisor) and cannot give a higher permission level than his own.
                             // Also make sure you cannot modify ranks of accounts with the same permission level.
-                            $canManageAccounts = $this->isSupervisor($supervisorEmail);
+                            $canManageAccounts = $this->isSupervisor($lowerCaseSupervisorEmail);
                             $isNewPermissionLevelOK = $newPermissionLevel <= $supervisorCurrentPermissionLevel;
                             $isTargetAccountLowerRank = $targetAccountCurrentPermissionLevel < $supervisorCurrentPermissionLevel;
 
@@ -421,7 +434,7 @@ class AccountModel implements IAccountModel
                                     UPDATE AccountModel SET PermissionLevel = ? WHERE Email = ? AND PermissionLevel < ?
                                 ";
 
-                                return $this->databaseAdapter->execute($sql, [$newPermissionLevel, $email, $adminPermissionLevel]) === 1 ? 1 : 1;
+                                return $this->databaseAdapter->execute($sql, [$newPermissionLevel, $lowerCaseEmail, $adminPermissionLevel]) === 1 ? 1 : 1;
                             }
                             else
                             {
@@ -462,6 +475,8 @@ class AccountModel implements IAccountModel
 
     public function deleteAccount(string $email, string $password): bool
     {
+        $lowerCaseEmail = strtolower($email);
+
         $sql =
         "
             SELECT PermissionLevel FROM AccountModel WHERE Email = ?
@@ -469,7 +484,7 @@ class AccountModel implements IAccountModel
 
         try
         {
-            $result = $this->databaseAdapter->fetch($sql, [$email]);
+            $result = $this->databaseAdapter->fetch($sql, [$lowerCaseEmail]);
 
             $adminPermissionLevel = max(array_keys(IAccountModel::PERMISSION_ROLE));
 
@@ -482,7 +497,7 @@ class AccountModel implements IAccountModel
                     SELECT PasswordHash FROM AccountModel WHERE Email = ?
                 ";
 
-                $result = $this->databaseAdapter->fetch($sql, [$email]);
+                $result = $this->databaseAdapter->fetch($sql, [$lowerCaseEmail]);
 
                 if(isset($result[0]["PasswordHash"]) && is_string($result[0]["PasswordHash"]))
                 {
@@ -498,7 +513,7 @@ class AccountModel implements IAccountModel
                             DELETE FROM AccountModel WHERE Email = ?
                         ";
 
-                        return $this->databaseAdapter->execute($sql, [$email]) === 1;
+                        return $this->databaseAdapter->execute($sql, [$lowerCaseEmail]) === 1;
                     }
                     else
                     {
@@ -523,8 +538,11 @@ class AccountModel implements IAccountModel
 
     public function deleteAccountBySupervisor(string $supervisorEmail, string $supervisorPassword, string $email) : int
     {
+        $lowerCaseEmail = strtolower($email);
+        $lowerCaseSupervisorEmail = strtolower($supervisorEmail);
+
         // Make sure a supervisor does not want to delete his own account.
-        if(strcmp($supervisorEmail, $email) !== 0)
+        if(strcmp($lowerCaseSupervisorEmail, $lowerCaseEmail) !== 0)
         {
             $sql =
             "
@@ -535,7 +553,7 @@ class AccountModel implements IAccountModel
 
             try
             {
-                $result = $this->databaseAdapter->fetch($sql, [$supervisorEmail, $ownerPermissionLevel]);
+                $result = $this->databaseAdapter->fetch($sql, [$lowerCaseSupervisorEmail, $ownerPermissionLevel]);
 
                 if(isset($result[0]["PasswordHash"]) && is_string($result[0]["PasswordHash"])) // password of supervisor can be read, so the action is generally granted (still need to check if the user has the correct password below).
                 {
@@ -544,8 +562,8 @@ class AccountModel implements IAccountModel
                     // Make sure the supervisor can verify himself to delete the other account.
                     if(password_verify($supervisorPassword, $supervisorPasswordHash)) // the deletion action is now granted, judging by the supervisor account itself (access verification and permission level)
                     {
-                        $supervisorPermissionLevel = $this->readPermissionLevel($supervisorEmail);
-                        $userPermissionLevel = $this->readPermissionLevel($email);
+                        $supervisorPermissionLevel = $this->readPermissionLevel($lowerCaseSupervisorEmail);
+                        $userPermissionLevel = $this->readPermissionLevel($lowerCaseEmail);
 
                         if($userPermissionLevel > -1) // Does the account exist with that email?
                         {
@@ -557,7 +575,7 @@ class AccountModel implements IAccountModel
                                     DELETE FROM AccountModel WHERE Email = ?
                                 ";
 
-                                return $this->databaseAdapter->execute($sql, [$email]) === 1 ? 1 : -1;
+                                return $this->databaseAdapter->execute($sql, [$lowerCaseEmail]) === 1 ? 1 : -1;
                             }
                             else
                             {
@@ -592,8 +610,10 @@ class AccountModel implements IAccountModel
 
     public function isSupervisor(string $email) : bool
     {
+        $lowerCaseEmail = strtolower($email);
+
         $ownerPermissionLevel = max(array_keys(IAccountModel::PERMISSION_ROLE))-1;
 
-        return $this->readPermissionLevel($email) >= $ownerPermissionLevel;
+        return $this->readPermissionLevel($lowerCaseEmail) >= $ownerPermissionLevel;
     }
 }
