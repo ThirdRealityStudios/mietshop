@@ -319,7 +319,67 @@ class AppearanceModel implements IAppearanceModel
             $savedColor = $this->getColor($colorElement);
             $isCustom = $this->userInputModel->isValidHexRGBCode($savedColor);
 
-            $preparedArray["Color"][$colorElement] = [$savedColor, $isCustom ? "yes" : "no"];
+            $classCode = "";
+            $styleCode = "";
+
+            if(strcmp($colorElement, "Frame") === 0)
+            {
+                if($isCustom)
+                {
+                    $styleCode = "border-color: $savedColor;";
+                }
+                else
+                {
+                    $classCode = "border-$savedColor";
+                }
+
+            }
+            else if(strcmp($colorElement, "Window") === 0 || strcmp($colorElement, "Background") === 0)
+            {
+                if($isCustom)
+                {
+                    $styleCode = "background-color: $savedColor;";
+                }
+                else
+                {
+                    $classCode = "bg-$savedColor";
+                }
+            }
+            else if(strcmp($colorElement, "Text") === 0)
+            {
+                if($isCustom)
+                {
+                    $styleCode = "color: $savedColor;";
+                }
+                else
+                {
+                    $classCode = "text-$savedColor";
+                }
+            }
+            else if(strcmp($colorElement, "Link") === 0)
+            {
+                if($isCustom)
+                {
+                    $styleCode = "color: $savedColor;";
+                }
+                else
+                {
+                    $classCode = "link-$savedColor";
+                }
+            }
+            else if(strcmp($colorElement, "Interesting") === 0 || strcmp($colorElement, "Uninteresting") === 0 || strcmp($colorElement, "ActionExecute") === 0 || strcmp($colorElement, "ActionAbort") === 0)
+            {
+                if($isCustom)
+                {
+                    $styleCode = "background-color: $savedColor;";
+                }
+                else
+                {
+                    $classCode = "btn-$savedColor";
+                }
+            }
+
+            $preparedArray["Color"][$colorElement] = [$classCode, $styleCode];
         }
 
         return $preparedArray;
