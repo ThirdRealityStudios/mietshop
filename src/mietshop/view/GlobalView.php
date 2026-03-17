@@ -290,14 +290,28 @@ class GlobalView implements IGlobalView
 
     private function genBootstrapHeader(string $companyName, array $appearanceData) : string
     {
+        $navAdditionalClasses = "";
+        $navPossibleStyleProperties = "";
+
         $windowColorClass = $appearanceData["Color"]["Window"][0];
-        $windowColorClass = empty($windowColorClass) ? "" : " $windowColorClass";
+        $navAdditionalClasses .= empty($windowColorClass) ? "" : " $windowColorClass";
 
         $windowColorStyle = $appearanceData["Color"]["Window"][1];
-        $windowColorStyle = empty($windowColorStyle) ? "" : " style=\"$windowColorStyle\"";
+        $navPossibleStyleProperties .= empty($windowColorStyle) ? "" : "$windowColorStyle";
+
+        $frameColorClass = $appearanceData["Color"]["Frame"][0];
+        $navAdditionalClasses .= empty($frameColorClass) ? "" : " $frameColorClass";
+
+        $frameColorStyle = $appearanceData["Color"]["Frame"][1];
+        $navPossibleStyleProperties .= empty($frameColorStyle) ? "" : "$frameColorStyle";
+
+        // Finally prepare a possible stylesheet property for the tag
+        $navPossibleStyleProperties = empty($navPossibleStyleProperties) ? "" : " style=\"border-bottom-style: solid; border-bottom-width: 3px; $navPossibleStyleProperties\"";
+        $navOptionalBorderClasses = empty($frameColorClass) ? "" : " border-bottom border-3";
+        $navAdditionalClasses = empty($navAdditionalClasses) ? "" : " $navAdditionalClasses$navOptionalBorderClasses";
 
         return "
-        <nav$windowColorStyle class=\"navbar$windowColorClass sticky-top border-bottom border-3 border-primary w-100 z-2\">
+        <nav$navPossibleStyleProperties class=\"navbar$navAdditionalClasses sticky-top w-100 z-2\">
 	        <div class=\"container-fluid\">
 		        <img src=\"/favicon.png\" alt=\"favicon.png\" width=\"70\" height=\"70\">
                     <button class=\"navbar-toggler\" type=\"button\" data-bs-toggle=\"offcanvas\" data-bs-target=\"#offcanvasNavbar\" aria-controls=\"offcanvasNavbar\" aria-label=\"Toggle navigation\">
