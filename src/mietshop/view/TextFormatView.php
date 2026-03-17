@@ -1,6 +1,6 @@
 <?php
 
-namespace src\mietshop\model;
+namespace src\mietshop\view;
 
 use src\mietshop\contracts\ITextFormatView;
 

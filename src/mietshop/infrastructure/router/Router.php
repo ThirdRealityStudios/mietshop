@@ -2,7 +2,6 @@
 
 namespace src\mietshop\infrastructure\router;
 
-use src\mietshop\contracts\ICompanyModel;
 use src\mietshop\contracts\IErrorView;
 use src\mietshop\infrastructure\database\IDatabaseAdapter;
 use src\mietshop\infrastructure\http\IHTTPRequest;
@@ -10,7 +9,6 @@ use src\mietshop\model\AccountModel;
 use src\mietshop\model\AppearanceModel;
 use src\mietshop\model\CategoryModel;
 use src\mietshop\model\CompanyModel;
-use src\mietshop\model\TextFormatView;
 use src\mietshop\model\UserInputModel;
 use src\mietshop\presenter\AccountManagementPresenter;
 use src\mietshop\presenter\AccountPresenter;
@@ -29,6 +27,7 @@ use src\mietshop\view\HomeView;
 use src\mietshop\view\ImprintView;
 use src\mietshop\view\LegalView;
 use src\mietshop\view\LoginView;
+use src\mietshop\view\TextFormatView;
 
 class Router implements IRouter
 {
