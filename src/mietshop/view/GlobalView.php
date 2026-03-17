@@ -435,9 +435,21 @@ class GlobalView implements IGlobalView
         ";
     }
 
-    private function genDefaultHTMLDoc(string $bodyHTML, string $companyName) : string
+    private function genDefaultHTMLDoc(array $appearanceData, string $bodyHTML, string $companyName) : string
     {
-        return "<!DOCTYPE html><html lang=\"de\">{$this->genHeadHTML($companyName)}<body class=\"bg-primary-subtle\"><div class=\"bg-body-secondary\">$bodyHTML</div></body></html>";
+        ////////////////////////////////////////////////
+        /// Here preparing window color for when footer does not cover the whole page down (a view bug if not done)
+
+        $footerAdditionalClasses = "";
+        $footerPossibleStyleProperties = "";
+
+        $windowColorClass = $appearanceData["Color"]["Window"][0];
+        $footerAdditionalClasses .= empty($windowColorClass) ? "" : " class=\"$windowColorClass\"";
+
+        $windowColorStyle = $appearanceData["Color"]["Window"][1];
+        $footerPossibleStyleProperties .= empty($windowColorStyle) ? "" : " style=\"$windowColorStyle\"";
+
+        return "<!DOCTYPE html><html lang=\"de\">{$this->genHeadHTML($companyName)}<body$footerPossibleStyleProperties$footerAdditionalClasses><div class=\"bg-body-secondary\">$bodyHTML</div></body></html>";
     }
 
     /**
@@ -508,7 +520,7 @@ class GlobalView implements IGlobalView
             $phoneMobileSafe = htmlspecialchars($companyData["PhoneMobile"][0], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 
             $contactCardText =
-            "
+                "
             <div class=\"container-fluid\">
                 <div class=\"row mb-4\">
                     <div class=\"col-12\">
@@ -537,7 +549,7 @@ class GlobalView implements IGlobalView
                 </div>
                 <div class=\"row mb-3 mb-3\">
                     <div class=\"col-12\">
-                        <div$textPossibleStyleProperties$textAdditionalClassProperty>Mobil:&nbsp;<a$linkPossibleStyleProperties href=\"tel:$phoneMobileSafe\"$linkAdditionalClassProperty title=\"Uns anrufen\">$phoneMobileSafe</a>
+                        <span$textPossibleStyleProperties$textAdditionalClassProperty>Mobil:&nbsp;</span><a$linkPossibleStyleProperties href=\"tel:$phoneMobileSafe\"$linkAdditionalClassProperty title=\"Uns anrufen\">$phoneMobileSafe</a>
                     </div>
                 </div>
             </div>
@@ -618,6 +630,6 @@ class GlobalView implements IGlobalView
 
         $bodyHTML = $this->genBootstrapHeader($companyNameHTMLSafe, $appearanceData).$body.$this->genBootstrapFooter($companyData, $appearanceData);
 
-        echo $this->genDefaultHTMLDoc($bodyHTML, $companyNameHTMLSafe);
+        echo $this->genDefaultHTMLDoc($appearanceData, $bodyHTML, $companyNameHTMLSafe);
     }
 }
