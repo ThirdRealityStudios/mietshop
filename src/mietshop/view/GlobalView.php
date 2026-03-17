@@ -290,6 +290,9 @@ class GlobalView implements IGlobalView
 
     private function genBootstrapHeader(string $companyName, array $appearanceData) : string
     {
+        ////////////////////////////////////////////////
+        /// Here preparing window and frame colors
+
         $navAdditionalClasses = "";
         $navPossibleStyleProperties = "";
 
@@ -316,6 +319,15 @@ class GlobalView implements IGlobalView
         $sideMenuContentPossibleStyleProperties = empty($windowColorStyle) ? "" : " style=\"$windowColorStyle\"";
         $sideMenuContentAdditionalClasses = empty($windowColorClass) ? "" : " $windowColorClass";
 
+        //////////////////////////////////////////////
+        /// Now preparing text colors
+
+        $textAdditionalClass = $appearanceData["Color"]["Text"][0];
+        $textAdditionalClass = empty($textAdditionalClass) ? "" : " $textAdditionalClass";
+
+        $textPossibleStyleProperties = $appearanceData["Color"]["Text"][1];
+        $textPossibleStyleProperties = empty($textPossibleStyleProperties) ? "" : " style=\"$textPossibleStyleProperties\"";
+
         return "
         <nav$navPossibleStyleProperties class=\"navbar$navAdditionalClasses sticky-top w-100 z-2\">
 	        <div class=\"container-fluid\">
@@ -325,28 +337,28 @@ class GlobalView implements IGlobalView
                     </button>
                     <div class=\"offcanvas offcanvas-end\" tabindex=\"-1\" id=\"offcanvasNavbar\" aria-labelledby=\"offcanvasNavbarLabel\" role=\"dialog\">
                         <div$sideMenuPossibleStyleProperties class=\"offcanvas-header $sideMenuAdditionalClasses\">
-                            <h5 class=\"offcanvas-title\" id=\"offcanvasNavbarLabel\">{$companyName}</h5>
+                            <h5$textPossibleStyleProperties class=\"offcanvas-title$textAdditionalClass\" id=\"offcanvasNavbarLabel\">{$companyName}</h5>
                             <button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"offcanvas\" aria-label=\"Close\"></button>
                         </div>
                         <div$sideMenuContentPossibleStyleProperties class=\"offcanvas-body$sideMenuContentAdditionalClasses\">
                             <ul class=\"navbar-nav justify-content-end flex-grow-1 pe-3\">
                                 <li class=\"nav-item\">
-                                    <a class=\"nav-link active\" aria-current=\"page\" href=\"/\">Startseite 🏠</a>
+                                    <a$textPossibleStyleProperties class=\"nav-link active$textAdditionalClass\" aria-current=\"page\" href=\"/\">Startseite 🏠</a>
                                 </li>
                                 <li class=\"nav-item\">
-                                    <a class=\"nav-link\" href=\"/?view=search\">Jetzt Mietobjekte entdecken 🔎</a>
+                                    <a$textPossibleStyleProperties class=\"nav-link$textAdditionalClass\" href=\"/?view=search\">Jetzt Mietobjekte entdecken 🔎</a>
                                 </li>
                                 <li class=\"nav-item\">
-                                    <a class=\"nav-link\" href=\"/?view=login\">Konto 👤</a>
+                                    <a$textPossibleStyleProperties class=\"nav-link$textAdditionalClass\" href=\"/?view=login\">Konto 👤</a>
                                 </li>
                                 <li class=\"nav-item\">
-                                    <a class=\"nav-link\" href=\"/?view=termsofservice\">AGBs</a>
+                                    <a$textPossibleStyleProperties class=\"nav-link$textAdditionalClass\" href=\"/?view=termsofservice\">AGBs</a>
                                 </li>
                                 <li class=\"nav-item\">
-                                    <a class=\"nav-link\" href=\"/?view=privacypolicy\">Datenschutzerklärung</a>
+                                    <a$textPossibleStyleProperties class=\"nav-link$textAdditionalClass\" href=\"/?view=privacypolicy\">Datenschutzerklärung</a>
                                 </li>
                                 <li class=\"nav-item\">
-                                    <a class=\"nav-link\" href=\"/?view=imprint\">Impressum</a>
+                                    <a$textPossibleStyleProperties class=\"nav-link$textAdditionalClass\" href=\"/?view=imprint\">Impressum</a>
                                 </li>
                             </ul>
                         </div>
