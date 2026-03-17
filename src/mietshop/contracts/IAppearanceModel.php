@@ -75,11 +75,16 @@ interface IAppearanceModel
      *
      * [
      *
-     *  "Color" => [ "Frame" => "primary", "Window" => "primary-subtle", "Text" => "black", ... ]
+     *  "Color" => [ "Frame" => [ "primary", "no" ], "Window" => [ "primary-subtle", "no" ], "Text" => [ "#000000", "yes" ], ... ]
      *
      * ]
      *
      * Whereas "Color" saves all accepted and saved Bootstrap colors or valid hex color codes.
+     * If it is hex color code,
+     * then you will see "yes" as the second array element always.
+     * If pre-defined Bootstrap colors were used,
+     * then "no" will be saved as every second array element.
+     * This helps the views to quickly decide how to display colors and where on the HTML tags.
      *
      * @return array
      */

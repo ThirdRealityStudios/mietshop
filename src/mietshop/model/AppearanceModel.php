@@ -317,8 +317,9 @@ class AppearanceModel implements IAppearanceModel
         foreach($colorElements as $colorElement)
         {
             $savedColor = $this->getColor($colorElement);
+            $isCustom = $this->userInputModel->isValidHexRGBCode($savedColor);
 
-            $preparedArray["Color"][$colorElement] = $savedColor;
+            $preparedArray["Color"][$colorElement] = [$savedColor, $isCustom ? "yes" : "no"];
         }
 
         return $preparedArray;

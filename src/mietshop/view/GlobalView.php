@@ -290,10 +290,14 @@ class GlobalView implements IGlobalView
 
     private function genBootstrapHeader(string $companyName, array $appearanceData) : string
     {
-        $colorFrame = $appearanceData["Color"]["Frame"];
+        $colorWindowData = $appearanceData["Color"]["Window"];
+        $colorWindow = $colorWindowData[0];
+
+        $frameColorStyle = strcmp($colorWindowData[1], "yes") === 0 ? " style=\"background-color: $colorWindow;\"" : "";
+        $frameColorClass = strcmp($colorWindowData[1], "no") === 0 ? " bg-$colorWindow" : "";
 
         return "
-        <nav class=\"navbar bg-primary-subtle sticky-top border-bottom border-3 border-primary w-100 z-2\">
+        <nav$frameColorStyle class=\"navbar$frameColorClass sticky-top border-bottom border-3 border-primary w-100 z-2\">
 	        <div class=\"container-fluid\">
 		        <img src=\"/favicon.png\" alt=\"favicon.png\" width=\"70\" height=\"70\">
                     <button class=\"navbar-toggler\" type=\"button\" data-bs-toggle=\"offcanvas\" data-bs-target=\"#offcanvasNavbar\" aria-controls=\"offcanvasNavbar\" aria-label=\"Toggle navigation\">
