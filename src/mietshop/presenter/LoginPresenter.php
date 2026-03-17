@@ -4,6 +4,7 @@ namespace src\mietshop\presenter;
 
 use src\mietshop\contracts\IAccountModel;
 use src\mietshop\contracts\IAccountView;
+use src\mietshop\contracts\IAppearanceModel;
 use src\mietshop\contracts\ICompanyModel;
 use src\mietshop\contracts\IErrorView;
 use src\mietshop\contracts\ILoginPresenter;
@@ -14,14 +15,18 @@ class LoginPresenter implements ILoginPresenter
 {
     private ICompanyModel $companyModel;
     private IAccountModel $accountModel;
+    private IAppearanceModel $appearanceModel;
+
     private ILoginView $loginView;
     private IAccountView $accountView;
     private IErrorView $errorView;
 
-    public function __construct(ICompanyModel $companyModel, IAccountModel $accountModel, ILoginView $loginView, IAccountView $accountView, IErrorView $errorView)
+    public function __construct(ICompanyModel $companyModel, IAppearanceModel $appearanceModel, IAccountModel $accountModel, ILoginView $loginView, IAccountView $accountView, IErrorView $errorView)
     {
         $this->companyModel = $companyModel;
+        $this->appearanceModel = $appearanceModel;
         $this->accountModel = $accountModel;
+
         $this->loginView = $loginView;
         $this->accountView = $accountView;
         $this->errorView = $errorView;
@@ -33,15 +38,10 @@ class LoginPresenter implements ILoginPresenter
         exit(0);
     }
 
-    private function redirectToLogin() : void
-    {
-        header('Location: /?view=login');
-        exit(0);
-    }
-
     public function process(IHTTPRequest &$httpRequest, array &$sessionValues): void
     {
         $companyData = $this->companyModel->getCompanyData();
+        $appearanceData = $this->appearanceModel->getAppearanceData();
         $queryViewValue = $httpRequest->getQueryValue("view");
 
         if(!empty($companyData) && is_string($queryViewValue) && strcmp($queryViewValue, "login") === 0)
@@ -80,18 +80,18 @@ class LoginPresenter implements ILoginPresenter
                 else
                 {
                     // Then the password is not correct.
-                    $this->loginView->show($companyData, "Anmeldedaten ungültig");
+                    $this->loginView->show($companyData, $appearanceData, "Anmeldedaten ungültig");
                 }
             }
             else // Then I am not valid logged in yet.
             {
                 // Then show the login page.
-                $this->loginView->show($companyData, null);
+                $this->loginView->show($companyData, $appearanceData, null);
             }
         }
         else
         {
-            $this->errorView->show($companyData, "Ungültige Anfrage", "Der angeforderte Dienst ist nicht verfügbar.");
+            $this->errorView->show($companyData, $appearanceData, "Ungültige Anfrage", "Der angeforderte Dienst ist nicht verfügbar.");
         }
     }
 }

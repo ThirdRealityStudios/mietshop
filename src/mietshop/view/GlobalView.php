@@ -288,8 +288,10 @@ class GlobalView implements IGlobalView
     /////////////////////////////////////////////////////////////////////////////////////////////////
     /// HTML Doc Basic Functions
 
-    private function genBootstrapHeader(string $companyName) : string
+    private function genBootstrapHeader(string $companyName, array $appearanceData) : string
     {
+        $colorFrame = $appearanceData["Color"]["Frame"];
+
         return "
         <nav class=\"navbar bg-primary-subtle sticky-top border-bottom border-3 border-primary w-100 z-2\">
 	        <div class=\"container-fluid\">
@@ -467,13 +469,13 @@ class GlobalView implements IGlobalView
         ";
     }
 
-    public function show(array $companyData, string $body): void
+    public function show(array $companyData, array $appearanceData, string $body): void
     {
         // TODO Check if cookies and services accepted. Otherwise, show fullscreen cookie popup.
 
         $companyNameHTMLSafe = htmlspecialchars($companyData["CompanyName"][0] ?? "Internal Loading Error", ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 
-        $bodyHTML = $this->genBootstrapHeader($companyNameHTMLSafe).$body.$this->genBootstrapFooter($companyData);
+        $bodyHTML = $this->genBootstrapHeader($companyNameHTMLSafe, $appearanceData).$body.$this->genBootstrapFooter($companyData);
 
         echo $this->genDefaultHTMLDoc($bodyHTML, $companyNameHTMLSafe);
     }

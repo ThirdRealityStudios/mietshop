@@ -290,6 +290,11 @@ class AppearanceModel implements IAppearanceModel
         return $this->databaseAdapter->readCharacterLimit("AppearanceModel", "Image$elementName");
     }
 
+    public function getColorElements() : array
+    {
+        return array_keys(IAppearanceModel::ACCEPTED_ELEMENTS["Color"]);
+    }
+
     public function setImage(string $elementName, string $imagePath): bool
     {
         // TODO Check if $imagePath reflects a valid path (by webserver syntax only)
@@ -301,5 +306,21 @@ class AppearanceModel implements IAppearanceModel
         {
             return false;
         }
+    }
+
+    public function getAppearanceData(): array
+    {
+        $colorElements = $this->getColorElements();
+
+        $preparedArray = [];
+
+        foreach($colorElements as $colorElement)
+        {
+            $savedColor = $this->getColor($colorElement);
+
+            $preparedArray["Color"][$colorElement] = $savedColor;
+        }
+
+        return $preparedArray;
     }
 }

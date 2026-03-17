@@ -81,7 +81,7 @@ class AccountManagementView implements IAccountManagementView
         return "$selectHTML</select>";
     }
 
-    public function show(array $companyData, array $accountResults, array $permissionRoles, string $action, int $messageValue = 0, int $pageIndex = 0, int $pagesAmount = 0): void
+    public function show(array $companyData, array $appearanceData, array $accountResults, array $permissionRoles, string $action, int $messageValue = 0, int $pageIndex = 0, int $pagesAmount = 0): void
     {
         if(empty($companyData))
         {
@@ -646,7 +646,7 @@ class AccountManagementView implements IAccountManagementView
             </div>
             ";
 
-            $this->globalView->show($companyData, $body);
+            $this->globalView->show($companyData, $appearanceData, $body);
         }
     }
 }

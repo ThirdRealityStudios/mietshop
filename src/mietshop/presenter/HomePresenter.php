@@ -2,6 +2,7 @@
 
 namespace src\mietshop\presenter;
 
+use src\mietshop\contracts\IAppearanceModel;
 use src\mietshop\contracts\ICategoryModel;
 use src\mietshop\contracts\ICompanyModel;
 use src\mietshop\contracts\IErrorView;
@@ -12,14 +13,18 @@ use src\mietshop\infrastructure\http\IHTTPRequest;
 class HomePresenter implements IPresenter
 {
     private ICompanyModel $companyModel;
+    private IAppearanceModel $appearanceModel;
     private ICategoryModel $categoryModel;
+
     private IHomeView $homeView;
     private IErrorView $errorView;
 
-    public function __construct(ICompanyModel $companyModel, ICategoryModel $categoryModel, IHomeView $homeView, IErrorView $errorView)
+    public function __construct(ICompanyModel $companyModel, IAppearanceModel $appearanceModel, ICategoryModel $categoryModel, IHomeView $homeView, IErrorView $errorView)
     {
         $this->companyModel = $companyModel;
+        $this->appearanceModel = $appearanceModel;
         $this->categoryModel = $categoryModel;
+
         $this->homeView = $homeView;
         $this->errorView = $errorView;
     }
@@ -27,6 +32,7 @@ class HomePresenter implements IPresenter
     public function process(IHTTPRequest $request): void
     {
         $companyData = $this->companyModel->getCompanyData();
+        $appearanceModel = $this->appearanceModel->getAppearanceData();
         $categories = $this->categoryModel->readAllCategories();
 
         if(empty($companyData))
@@ -36,6 +42,6 @@ class HomePresenter implements IPresenter
             return;
         }
 
-        $this->homeView->show($companyData, $categories);
+        $this->homeView->show($companyData, $appearanceModel, $categories);
     }
 }

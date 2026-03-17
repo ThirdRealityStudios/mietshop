@@ -4,5 +4,5 @@ namespace src\mietshop\contracts;
 
 interface IErrorView
 {
-    public function show(array $companyData, string $errorFeedTitle, string $errorFeedContent) : void;
+    public function show(array $companyData, array $appearanceData, string $errorFeedTitle, string $errorFeedContent) : void;
 }

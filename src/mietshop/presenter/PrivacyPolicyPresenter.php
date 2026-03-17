@@ -3,6 +3,7 @@
 namespace src\mietshop\presenter;
 
 use src\mietshop\contracts\IAccountModel;
+use src\mietshop\contracts\IAppearanceModel;
 use src\mietshop\contracts\ICompanyModel;
 use src\mietshop\contracts\IErrorView;
 use src\mietshop\contracts\ILegalView;
@@ -12,21 +13,26 @@ use src\mietshop\infrastructure\http\IHTTPRequest;
 class PrivacyPolicyPresenter implements IPrivacyPolicyPresenter
 {
     private ILegalView $legalView;
-    private ICompanyModel $companyModel;
     private IErrorView $errorView;
+
+    private ICompanyModel $companyModel;
+    private IAppearanceModel $appearanceModel;
     private IAccountModel $accountModel;
 
-    public function __construct(ILegalView $legalView, IErrorView $errorView, ICompanyModel $companyModel, IAccountModel $accountModel)
+    public function __construct(ILegalView $legalView, IErrorView $errorView, ICompanyModel $companyModel, IAppearanceModel $appearanceModel, IAccountModel $accountModel)
     {
         $this->legalView = $legalView;
-        $this->companyModel = $companyModel;
         $this->errorView = $errorView;
+
+        $this->companyModel = $companyModel;
+        $this->appearanceModel = $appearanceModel;
         $this->accountModel = $accountModel;
     }
 
     public function process(IHTTPRequest &$httpRequest, array &$sessionValues)
     {
         $companyData = $this->companyModel->getCompanyData();
+        $appearanceData = $this->appearanceModel->getAppearanceData();
 
         if(empty($companyData))
         {
@@ -58,27 +64,27 @@ class PrivacyPolicyPresenter implements IPrivacyPolicyPresenter
                         }
                         else
                         {
-                            $this->legalView->show($companyData, false, true, "update", $updateResponseCode ? 1 : -1);
+                            $this->legalView->show($companyData, $appearanceData, false, true, "update", $updateResponseCode ? 1 : -1);
                         }
                     }
                     else // Does the user want to see the submit form?
                     {
-                        $this->legalView->show($companyData, false, true, "update");
+                        $this->legalView->show($companyData, $appearanceData, false, true, "update");
                     }
                 }
                 else
                 {
                     // Is no supervisor or not logged in. Just show the normal visitor privacy policy page.
-                    $this->legalView->show($companyData, false, true);
+                    $this->legalView->show($companyData, $appearanceData, false, true);
                 }
             }
             else if($canUpdatePrivacyPolicyPage) // Else just watch the privacy policy page (visitor with supervisor rights - usually owner and admin - so he can use the edit button)
             {
-                $this->legalView->show($companyData, true, true);
+                $this->legalView->show($companyData, $appearanceData, true, true);
             }
             else // Else just a visitor with no rights at all or insufficient permissions.
             {
-                $this->legalView->show($companyData, false, true);
+                $this->legalView->show($companyData, $appearanceData, false, true);
             }
         }
     }

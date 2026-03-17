@@ -3,6 +3,7 @@
 namespace src\mietshop\presenter;
 
 use src\mietshop\contracts\IAccountModel;
+use src\mietshop\contracts\IAppearanceModel;
 use src\mietshop\contracts\ICompanyModel;
 use src\mietshop\contracts\IErrorView;
 use src\mietshop\contracts\IImprintPresenter;
@@ -13,14 +14,18 @@ class ImprintPresenter implements IImprintPresenter
 {
     private IErrorView $errorView;
     private IImprintView $imprintView;
+
     private ICompanyModel $companyModel;
+    private IAppearanceModel $appearanceModel;
     private IAccountModel $accountModel;
 
-    public function __construct(IErrorView $errorView, IImprintView $imprintView, ICompanyModel $companyModel, IAccountModel $accountModel)
+    public function __construct(IErrorView $errorView, IImprintView $imprintView, ICompanyModel $companyModel, IAppearanceModel $appearanceModel, IAccountModel $accountModel)
     {
         $this->errorView = $errorView;
         $this->imprintView = $imprintView;
+
         $this->companyModel = $companyModel;
+        $this->appearanceModel = $appearanceModel;
         $this->accountModel = $accountModel;
     }
 
@@ -82,10 +87,11 @@ class ImprintPresenter implements IImprintPresenter
     public function process(IHTTPRequest &$httpRequest, array &$sessionValues): void
     {
         $companyData = $this->companyModel->getCompanyData();
+        $appearanceData = $this->appearanceModel->getAppearanceData();
 
         if(empty($companyData))
         {
-            $this->errorView->show([], "Abfragefehler", "Derzeit scheint es einen technischen Fehler mit der Datenabfrage im System zu geben. Bitte versuchen Sie es später erneut.");
+            $this->errorView->show([], $appearanceData, "Abfragefehler", "Derzeit scheint es einen technischen Fehler mit der Datenabfrage im System zu geben. Bitte versuchen Sie es später erneut.");
         }
         else // Should be the usual case
         {
@@ -107,31 +113,31 @@ class ImprintPresenter implements IImprintPresenter
 
                         if(empty($companyData))
                         {
-                            $this->errorView->show([], "Abfragefehler", "Derzeit scheint es einen technischen Fehler mit der Datenabfrage im System zu geben. Bitte versuchen es später erneut.");
+                            $this->errorView->show([], $appearanceData, "Abfragefehler", "Derzeit scheint es einen technischen Fehler mit der Datenabfrage im System zu geben. Bitte versuchen es später erneut.");
                         }
                         else
                         {
-                            $this->imprintView->show($companyData, false, "update", $firstInvalidField);
+                            $this->imprintView->show($companyData, $appearanceData, false, "update", $firstInvalidField);
                         }
                     }
                     else // Does the user want to see the submit form?
                     {
-                        $this->imprintView->show($companyData, false, "update");
+                        $this->imprintView->show($companyData, $appearanceData, false, "update");
                     }
                 }
                 else
                 {
                     // Is no supervisor or not logged in. Just show the normal visitor imprint page.
-                    $this->imprintView->show($companyData, false);
+                    $this->imprintView->show($companyData, $appearanceData, false);
                 }
             }
             else if($canUpdateImprintPage) // Else just watch the imprint page (visitor with supervisor rights - usually owner and admin - so he can use the edit button)
             {
-                $this->imprintView->show($companyData, true);
+                $this->imprintView->show($companyData, $appearanceData, true);
             }
             else // Else just a visitor with no rights at all or insufficient permissions.
             {
-                $this->imprintView->show($companyData, false);
+                $this->imprintView->show($companyData, $appearanceData, false);
             }
         }
     }

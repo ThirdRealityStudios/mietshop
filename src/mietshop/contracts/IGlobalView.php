@@ -40,8 +40,9 @@ interface IGlobalView
      * (which will, depending on the value, determine the exact view output).
      *
      * @param array $companyData Array as described in ICompanyModel by function getCompanyData()
-     * @param string $body
+     * @param array $appearanceData Data provided by the AppearanceModel to know which color to choose for what element.
+     * @param string $body Your body HTML
      * @return void
      */
-    public function show(array $companyData, string $body) : void;
+    public function show(array $companyData, array $appearanceData, string $body) : void;
 }

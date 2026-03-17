@@ -38,7 +38,7 @@ class LegalView implements ILegalView
         }
     }
 
-    public function show(array $companyData, bool $showEditButton, bool $isPrivacyPolicy, string $actionValue = "", int $messageValue = 0) : void
+    public function show(array $companyData, array $appearanceData, bool $showEditButton, bool $isPrivacyPolicy, string $actionValue = "", int $messageValue = 0) : void
     {
         $legalTextKey = $isPrivacyPolicy ? "PrivacyPolicy" : "TermsOfService";
         $legalTextTitleLong = $isPrivacyPolicy ? "Datenschutzerklärung" : "Allgemeine Geschäftsbedingungen";
@@ -181,6 +181,6 @@ class LegalView implements ILegalView
 
         $feedHTML = "<div class=\"container-fluid\">".$this->globalView->genFeed(null, $legalTextContentHTML)."</div>";
 
-        $this->globalView->show($companyData, $feedHTML);
+        $this->globalView->show($companyData, $appearanceData, $feedHTML);
     }
 }

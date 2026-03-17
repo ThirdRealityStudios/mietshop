@@ -3,6 +3,7 @@
 namespace src\mietshop\presenter;
 
 use src\mietshop\contracts\IAccountModel;
+use src\mietshop\contracts\IAppearanceModel;
 use src\mietshop\contracts\ICompanyModel;
 use src\mietshop\contracts\IErrorView;
 use src\mietshop\contracts\ILegalView;
@@ -13,24 +14,29 @@ class TermsOfServicePresenter implements ITermsOfServicePresenter
 {
     private ILegalView $legalView;
     private IErrorView $errorView;
+
     private ICompanyModel $companyModel;
+    private IAppearanceModel $appearanceModel;
     private IAccountModel $accountModel;
 
-    public function __construct(ILegalView $legalView, IErrorView $errorView, ICompanyModel $companyModel, IAccountModel $accountModel)
+    public function __construct(ILegalView $legalView, IErrorView $errorView, ICompanyModel $companyModel, IAppearanceModel $appearanceModel, IAccountModel $accountModel)
     {
         $this->legalView = $legalView;
         $this->errorView = $errorView;
+
         $this->companyModel = $companyModel;
+        $this->appearanceModel = $appearanceModel;
         $this->accountModel = $accountModel;
     }
 
     public function process(IHTTPRequest &$httpRequest, array &$sessionValues) : void
     {
         $companyData = $this->companyModel->getCompanyData();
+        $appearanceData = $this->appearanceModel->getAppearanceData();
 
         if(empty($companyData))
         {
-            $this->errorView->show([], "Abfragefehler", "Derzeit scheint es einen technischen Fehler mit der Datenabfrage im System zu geben. Bitte versuchen Sie es später erneut.");
+            $this->errorView->show([], $appearanceData, "Abfragefehler", "Derzeit scheint es einen technischen Fehler mit der Datenabfrage im System zu geben. Bitte versuchen Sie es später erneut.");
         }
         else
         {
@@ -54,31 +60,31 @@ class TermsOfServicePresenter implements ITermsOfServicePresenter
 
                         if(empty($companyData))
                         {
-                            $this->errorView->show([], "Abfragefehler", "Derzeit scheint es einen technischen Fehler mit der Datenabfrage im System zu geben. Bitte versuchen es später erneut.");
+                            $this->errorView->show([], $appearanceData, "Abfragefehler", "Derzeit scheint es einen technischen Fehler mit der Datenabfrage im System zu geben. Bitte versuchen es später erneut.");
                         }
                         else
                         {
-                            $this->legalView->show($companyData, false, false, "update", $updateResponseCode ? 1 : -1);
+                            $this->legalView->show($companyData, $appearanceData, false, false, "update", $updateResponseCode ? 1 : -1);
                         }
                     }
                     else // Does the user want to see the submit form?
                     {
-                        $this->legalView->show($companyData, false, false, "update");
+                        $this->legalView->show($companyData, $appearanceData, false, false, "update");
                     }
                 }
                 else
                 {
                     // Is no supervisor or not logged in. Just show the normal visitor terms of service page.
-                    $this->legalView->show($companyData, false, false);
+                    $this->legalView->show($companyData, $appearanceData, false, false);
                 }
             }
             else if($canUpdateTermsOfServicePage) // Else just watch the terms of service page (visitor with supervisor rights - usually owner and admin - so he can use the edit button)
             {
-                $this->legalView->show($companyData, true, false);
+                $this->legalView->show($companyData, $appearanceData, true, false);
             }
             else // Else just a visitor with no rights at all or insufficient permissions.
             {
-                $this->legalView->show($companyData, false, false);
+                $this->legalView->show($companyData, $appearanceData, false, false);
             }
         }
     }

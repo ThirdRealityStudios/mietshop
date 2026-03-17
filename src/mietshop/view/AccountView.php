@@ -28,7 +28,7 @@ class AccountView implements IAccountView
         return $menuButtonHTML;
     }
 
-    public function show(array $companyData, string $email, bool $isSupervisor, string $permissionRoleName) : void
+    public function show(array $companyData, array $appearanceData, string $email, bool $isSupervisor, string $permissionRoleName) : void
     {
         $cutFromLength = 30;
 
@@ -93,6 +93,6 @@ class AccountView implements IAccountView
 
         $body = "<div class=\"container-fluid\">{$feedHTML}</div>";
 
-        $this->globalView->show($companyData, $body);
+        $this->globalView->show($companyData, $appearanceData, $body);
     }
 }

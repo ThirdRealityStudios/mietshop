@@ -14,7 +14,7 @@ class LoginView implements ILoginView
         $this->globalView = $globalView;
     }
 
-    public function show(array $companyData, ?string $optionalErrorMessage): void
+    public function show(array $companyData, array $appearanceData, ?string $optionalErrorMessage): void
     {
         if(is_string($optionalErrorMessage))
         {
@@ -62,6 +62,6 @@ class LoginView implements ILoginView
 
         $body = "<div class=\"container-fluid\">$feedHTML</div>";
 
-        $this->globalView->show($companyData, $body);
+        $this->globalView->show($companyData, $appearanceData, $body);
     }
 }

@@ -5,6 +5,7 @@ namespace src\mietshop\presenter;
 use src\mietshop\contracts\IAccountModel;
 use src\mietshop\contracts\IAccountPresenter;
 use src\mietshop\contracts\IAccountView;
+use src\mietshop\contracts\IAppearanceModel;
 use src\mietshop\contracts\ICompanyModel;
 use src\mietshop\contracts\IErrorView;
 use src\mietshop\contracts\ILoginView;
@@ -13,14 +14,18 @@ use src\mietshop\infrastructure\http\IHTTPRequest;
 class AccountPresenter implements IAccountPresenter
 {
     private ICompanyModel $companyModel;
+    private IAppearanceModel $appearanceModel;
     private IAccountModel $accountModel;
+
     private IAccountView $accountView;
     private IErrorView $errorView;
 
-    public function __construct(ICompanyModel $companyModel, IAccountModel $accountModel, IAccountView $accountView, IErrorView $errorView)
+    public function __construct(ICompanyModel $companyModel, IAppearanceModel $appearanceModel, IAccountModel $accountModel, IAccountView $accountView, IErrorView $errorView)
     {
         $this->companyModel = $companyModel;
+        $this->appearanceModel = $appearanceModel;
         $this->accountModel = $accountModel;
+
         $this->accountView = $accountView;
         $this->errorView = $errorView;
     }
@@ -34,6 +39,8 @@ class AccountPresenter implements IAccountPresenter
     public function process(IHTTPRequest &$httpRequest, array &$sessionValues): void
     {
         $companyData = $this->companyModel->getCompanyData();
+        $appearanceData = $this->appearanceModel->getAppearanceData();
+
         $queryViewValue = $httpRequest->getQueryValue("view");
         $queryActionValue = $httpRequest->getQueryValue("action");
 
@@ -64,17 +71,17 @@ class AccountPresenter implements IAccountPresenter
 
                             $isSupervisor = $this->accountModel->isSupervisor($sessionValues["Email"]);
 
-                            $this->accountView->show($companyData, $accountEmail, $isSupervisor, $permissionRoleName);
+                            $this->accountView->show($companyData, $appearanceData, $accountEmail, $isSupervisor, $permissionRoleName);
                         }
                         else
                         {
-                            $this->errorView->show($companyData, "Integritätsfehler", "Ihre Befugnisse scheinen ungültig zu sein."); // Else there is a bug because more roles do not exist ("Loading Error")
+                            $this->errorView->show($companyData, $appearanceData, "Integritätsfehler", "Ihre Befugnisse scheinen ungültig zu sein."); // Else there is a bug because more roles do not exist ("Loading Error")
                             exit(0);
                         }
                     }
                     else // For some reason the account does not exist anymore, although you have a verified session access generally to an account (most likely deleted by admin meanwhile).
                     {
-                        $this->errorView->show($companyData, "Integritätsfehler", "Ihre Anmeldung ist nicht mehr gültig. Bitte melden Sie sich erneut an. Sollte das Problem weiterhin bestehen, wenden Sie sich an den Support.");
+                        $this->errorView->show($companyData, $appearanceData, "Integritätsfehler", "Ihre Anmeldung ist nicht mehr gültig. Bitte melden Sie sich erneut an. Sollte das Problem weiterhin bestehen, wenden Sie sich an den Support.");
                         session_destroy();
                     }
                 }
@@ -88,7 +95,7 @@ class AccountPresenter implements IAccountPresenter
         }
         else
         {
-            $this->errorView->show($companyData, "Ungültige Anfrage", "Der angeforderte Dienst ist nicht verfügbar.");
+            $this->errorView->show($companyData, $appearanceData, "Ungültige Anfrage", "Der angeforderte Dienst ist nicht verfügbar.");
         }
     }
 }

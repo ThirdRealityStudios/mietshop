@@ -5,6 +5,7 @@ namespace src\mietshop\presenter;
 use src\mietshop\contracts\IAccountManagementPresenter;
 use src\mietshop\contracts\IAccountManagementView;
 use src\mietshop\contracts\IAccountModel;
+use src\mietshop\contracts\IAppearanceModel;
 use src\mietshop\contracts\ICompanyModel;
 use src\mietshop\contracts\IErrorView;
 use src\mietshop\infrastructure\http\IHTTPRequest;
@@ -13,13 +14,15 @@ class AccountManagementPresenter implements IAccountManagementPresenter
 {
     private ICompanyModel $companyModel;
     private IAccountModel $accountModel;
+    private IAppearanceModel $appearanceModel;
     private IAccountManagementView $accountManagementView;
     private IErrorView $errorView;
 
-    public function __construct(ICompanyModel $companyModel, IAccountModel $accountModel, IAccountManagementView $accountManagementView, IErrorView $errorView)
+    public function __construct(ICompanyModel $companyModel, IAccountModel $accountModel, IAppearanceModel $appearanceModel, IAccountManagementView $accountManagementView, IErrorView $errorView)
     {
         $this->companyModel = $companyModel;
         $this->accountModel = $accountModel;
+        $this->appearanceModel = $appearanceModel;
         $this->accountManagementView = $accountManagementView;
         $this->errorView = $errorView;
     }
@@ -58,6 +61,8 @@ class AccountManagementPresenter implements IAccountManagementPresenter
 
     public function process(IHTTPRequest $request, array $sessionValues): void
     {
+        $appearanceData = $this->appearanceModel->getAppearanceData();
+
         if(isset($sessionValues["Email"]) && is_string($sessionValues["Email"])) // Is the visitor logged in?
         {
             $accountFetchData = $this->accountModel->readAccount($sessionValues["Email"]);
@@ -73,7 +78,7 @@ class AccountManagementPresenter implements IAccountManagementPresenter
 
                 if($request->isParameterMatching("action", "all"))
                 {
-                    $this->accountManagementView->show($companyData, [], [], "all");
+                    $this->accountManagementView->show($companyData, $appearanceData, [], [], "all");
                 }
                 else if($request->isParameterMatching("action" , "create"))
                 {
@@ -89,11 +94,11 @@ class AccountManagementPresenter implements IAccountManagementPresenter
                     {
                         $responseCode = $this->accountModel->createAccount($supervisorEmail, $postPasswordSupervisorValue, $postEmailAccountValue, $potentialPostPasswordNewAccountValue, $postPermissionLevelAccountValue);
 
-                        $this->accountManagementView->show($companyData, [], $filteredPermissionRoleArray, "create", $responseCode);
+                        $this->accountManagementView->show($companyData, $appearanceData, [], $filteredPermissionRoleArray, "create", $responseCode);
                     }
                     else // Does the supervisor only wants to see the form page? (always a GET action)
                     {
-                        $this->accountManagementView->show($companyData, [], $filteredPermissionRoleArray, "create");
+                        $this->accountManagementView->show($companyData, $appearanceData, [], $filteredPermissionRoleArray, "create");
                     }
                 }
                 else if($request->isParameterMatching("action", "read"))
@@ -105,14 +110,14 @@ class AccountManagementPresenter implements IAccountManagementPresenter
                     {
                         $accountResults = $this->accountModel->readAccounts($pageNonIndexed-1);
 
-                        $this->accountManagementView->show($companyData, $accountResults, [], "read", 0, $pageNonIndexed-1, $pagesAmount);
+                        $this->accountManagementView->show($companyData, $appearanceData, $accountResults, [], "read", 0, $pageNonIndexed-1, $pagesAmount);
                     }
                     else
                     {
                         // Invalid page number requested. Instead, show the first page by default:
 
                         $accountResults = $this->accountModel->readAccounts(0);
-                        $this->accountManagementView->show($companyData, $accountResults, [], "read", 0, 0, $pagesAmount);
+                        $this->accountManagementView->show($companyData, $appearanceData, $accountResults, [], "read", 0, 0, $pagesAmount);
                     }
                 }
                 else if($request->isParameterMatching("action", "update"))
@@ -128,11 +133,11 @@ class AccountManagementPresenter implements IAccountManagementPresenter
                     {
                         $responseCode = $this->accountModel->updatePermissionLevel($supervisorEmail, $postPasswordSupervisorValue, $postEmailAccountValue, $postPermissionLevelAccountValue);
 
-                        $this->accountManagementView->show($companyData, [], $filteredPermissionRoleArray, "update", $responseCode);
+                        $this->accountManagementView->show($companyData, $appearanceData, [], $filteredPermissionRoleArray, "update", $responseCode);
                     }
                     else // Does the supervisor only wants to see the form page? (always a GET action)
                     {
-                        $this->accountManagementView->show($companyData, [], $filteredPermissionRoleArray, "update");
+                        $this->accountManagementView->show($companyData, $appearanceData, [], $filteredPermissionRoleArray, "update");
                     }
                 }
                 else if($request->isParameterMatching("action", "delete"))
@@ -145,11 +150,11 @@ class AccountManagementPresenter implements IAccountManagementPresenter
                     {
                         $responseCode = $this->accountModel->deleteAccountBySupervisor($supervisorEmail, $postPasswordSupervisorValue, $postEmailAccountValue);
 
-                        $this->accountManagementView->show($companyData, [], [], "delete", $responseCode);
+                        $this->accountManagementView->show($companyData, $appearanceData, [], [], "delete", $responseCode);
                     }
                     else // Does the supervisor only wants to see the form page? (always a GET action)
                     {
-                        $this->accountManagementView->show($companyData, [], [], "delete");
+                        $this->accountManagementView->show($companyData, $appearanceData, [], [], "delete");
                     }
                 }
                 else

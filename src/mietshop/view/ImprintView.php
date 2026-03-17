@@ -14,7 +14,7 @@ class ImprintView implements IImprintView
         $this->globalView = $globalView;
     }
 
-    public function show(array $companyData, bool $showEditButton, string $actionValue = "", int $messageValue = 0) : void
+    public function show(array $companyData, array $appearanceData, bool $showEditButton, string $actionValue = "", int $messageValue = 0) : void
     {
         $companyNameHTMLSafe = htmlspecialchars($companyData["CompanyName"][0], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         $ownerHTMLSafe = htmlspecialchars($companyData["Owner"][0], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
@@ -318,6 +318,6 @@ class ImprintView implements IImprintView
 
         $body = "<div class=\"container-fluid\">$feedHTML</div>";
 
-        $this->globalView->show($companyData, $body);
+        $this->globalView->show($companyData, $appearanceData, $body);
     }
 }

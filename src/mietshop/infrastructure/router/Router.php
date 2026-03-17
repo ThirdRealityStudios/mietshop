@@ -32,9 +32,9 @@ use src\mietshop\view\LoginView;
 
 class Router implements IRouter
 {
-    private function showPageNotFoundError(IErrorView $errorView, ICompanyModel $companyModel) : void
+    private function showPageNotFoundError(IErrorView $errorView, array $companyData, array $appearanceData) : void
     {
-        $errorView->show($companyModel->getCompanyData(), "Seite existiert nicht", "Entweder haben Sie sich vertippt oder derzeit gibt es technische Probleme. Bitte versuchen Sie es später erneut.");
+        $errorView->show($companyData, $appearanceData, "Seite existiert nicht", "Entweder haben Sie sich vertippt oder derzeit gibt es technische Probleme. Bitte versuchen Sie es später erneut.");
     }
 
     public function route(IHTTPRequest $request, array &$sessionValues, IDatabaseAdapter $databaseAdapter) : void
@@ -50,7 +50,7 @@ class Router implements IRouter
         if(empty($request->getQueryKeys()) && empty($request->getPOSTKeys()))
         {
             $homeView = new HomeView($globalView);
-            $homePresenter = new HomePresenter($companyModel, $categoryModel, $homeView, $errorView);
+            $homePresenter = new HomePresenter($companyModel, $appearanceModel, $categoryModel, $homeView, $errorView);
             $homePresenter->process($request);
         }
         else
@@ -63,25 +63,25 @@ class Router implements IRouter
 
             $accountModel = new AccountModel($userInputModel, $databaseAdapter);
 
-            $loginPresenter = new LoginPresenter($companyModel, $accountModel, $loginView, $accountView, $errorView);
-            $accountPresenter = new AccountPresenter($companyModel, $accountModel, $accountView, $errorView);
-            $accountManagementPresenter = new AccountManagementPresenter($companyModel, $accountModel, $accountManagementView, $errorView);
+            $loginPresenter = new LoginPresenter($companyModel, $appearanceModel, $accountModel, $loginView, $accountView, $errorView);
+            $accountPresenter = new AccountPresenter($companyModel, $appearanceModel, $accountModel, $accountView, $errorView);
+            $accountManagementPresenter = new AccountManagementPresenter($companyModel, $accountModel, $appearanceModel, $accountManagementView, $errorView);
             $appearanceManagementPresenter = new AppearanceManagementPresenter($companyModel, $accountModel, $appearanceModel, $userInputModel, $appearanceManagementView, $errorView);
 
             if($request->isParameterMatching("view", "imprint"))
             {
                 $imprintView = new ImprintView($globalView);
-                $imprintPresenter = new ImprintPresenter($errorView, $imprintView, $companyModel, $accountModel);
+                $imprintPresenter = new ImprintPresenter($errorView, $imprintView, $companyModel, $appearanceModel, $accountModel);
                 $imprintPresenter->process($request, $sessionValues);
             }
             else if($request->isParameterMatching("view", "termsofservice"))
             {
-                $termsOfServicePresenter = new TermsOfServicePresenter($legalView, $errorView, $companyModel, $accountModel);
+                $termsOfServicePresenter = new TermsOfServicePresenter($legalView, $errorView, $companyModel, $appearanceModel, $accountModel);
                 $termsOfServicePresenter->process($request, $sessionValues);
             }
             else if($request->isParameterMatching("view", "privacypolicy"))
             {
-                $privacyPolicyPresenter = new PrivacyPolicyPresenter($legalView, $errorView, $companyModel, $accountModel);
+                $privacyPolicyPresenter = new PrivacyPolicyPresenter($legalView, $errorView, $companyModel, $appearanceModel, $accountModel);
                 $privacyPolicyPresenter->process($request, $sessionValues);
             }
             else if($request->isParameterMatching("view", "login"))
@@ -105,7 +105,7 @@ class Router implements IRouter
             }
             else
             {
-                $this->showPageNotFoundError($errorView, $companyModel);
+                $this->showPageNotFoundError($errorView, $companyModel->getCompanyData(), $appearanceModel->getAppearanceData());
             }
         }
     }

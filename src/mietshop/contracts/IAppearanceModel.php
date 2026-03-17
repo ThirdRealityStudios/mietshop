@@ -57,4 +57,31 @@ interface IAppearanceModel
      * @return bool True if set successfully. Otherwise, false.
      */
     public function setImage(string $elementName, string $imagePath): bool;
+
+    /**
+     * Returns all color elements you change the color of.
+     *
+     * It will look like this:
+     *
+     * [ "Frame", "Window", "Text", "Link", ... ]
+     *
+     * @return array
+     */
+    public function getColorElements() : array;
+
+    /**
+     * Returns an array which represents all necessary appearance information.
+     * It currently looks like this:
+     *
+     * [
+     *
+     *  "Color" => [ "Frame" => "primary", "Window" => "primary-subtle", "Text" => "black", ... ]
+     *
+     * ]
+     *
+     * Whereas "Color" saves all accepted and saved Bootstrap colors or valid hex color codes.
+     *
+     * @return array
+     */
+    public function getAppearanceData() : array;
 }

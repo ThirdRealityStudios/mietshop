@@ -17,10 +17,11 @@ interface IAccountView
      * ]
      *
      * @param array $companyData Expected as described in ICompanyModel
+     * @param array $appearanceData
      * @param string $email The email of the account
      * @param bool $isSupervisor Is the user supervisor?
      * @param string $permissionRoleName The name of the permission role in full text
      * @return void
      */
-    public function show(array $companyData, string $email, bool $isSupervisor, string $permissionRoleName) : void;
+    public function show(array $companyData, array $appearanceData, string $email, bool $isSupervisor, string $permissionRoleName) : void;
 }
