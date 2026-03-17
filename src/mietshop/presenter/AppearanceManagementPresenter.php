@@ -33,18 +33,20 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
 
     private function showInvalidRequestView(array $companyData)
     {
-        $this->errorView->show($companyData, "Anfrage ungültig", "Die angeforderte Funktion oder Seite existiert nicht.");
+        $this->errorView->show($companyData, $this->appearanceModel->getAppearanceData(), "Anfrage ungültig", "Die angeforderte Funktion oder Seite existiert nicht.");
     }
 
     private function showIntegrityErrorView(array $companyData)
     {
-        $this->errorView->show($companyData, "Datenintegritätsfehler", "Die Seite kann aufgrund eines Integritätsfehlers nicht geladen werden. Bitte versuchen Sie es später erneut oder konsultieren Sie einen Administrator.");
+        $this->errorView->show($companyData, $this->appearanceModel->getAppearanceData(), "Datenintegritätsfehler", "Die Seite kann aufgrund eines Integritätsfehlers nicht geladen werden. Bitte versuchen Sie es später erneut oder konsultieren Sie einen Administrator.");
     }
 
     public function process(IHTTPRequest $request, array $sessionValues): void
     {
         $validBootstrapColors = IAppearanceModel::ACCEPTED_BOOTSTRAP_COLORS;
         $validElements = IAppearanceModel::ACCEPTED_ELEMENTS;
+
+        $appearanceData = $this->appearanceModel->getAppearanceData();
 
         if(isset($sessionValues["Email"]) && is_string($sessionValues["Email"])) // Is the visitor logged in?
         {
@@ -58,7 +60,7 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
 
                 if($request->isQueryParameterMatching("action", "all"))
                 {
-                    $this->appearanceManagementView->showOptions($companyData);
+                    $this->appearanceManagementView->showOptions($companyData, $appearanceData);
                 }
                 else if($request->isQueryParameterMatching("action", "update"))
                 {
@@ -101,7 +103,7 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
                                         $isHexCodeColor = $this->userInputModel->isValidHexRGBCode($savedColor);
                                         $preparedHexCodeColor = $isHexCodeColor ? $savedColor : "";
 
-                                        $this->appearanceManagementView->showCustomColorForm($companyData, $elementValue, $preparedHexCodeColor);
+                                        $this->appearanceManagementView->showCustomColorForm($companyData, $appearanceData, $elementValue, $preparedHexCodeColor);
                                     }
                                     else if(strcmp($customValue, "no") === 0)
                                     {
@@ -110,7 +112,7 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
                                         $isBootstrapColor = in_array($savedColor, $validBootstrapColors);
                                         $preparedBootstrapColor = $isBootstrapColor ? $savedColor : $validBootstrapColors[0];
 
-                                        $this->appearanceManagementView->showDefaultColorForm($companyData, $elementValue, $validBootstrapColors, $preparedBootstrapColor);
+                                        $this->appearanceManagementView->showDefaultColorForm($companyData, $appearanceData, $elementValue, $validBootstrapColors, $preparedBootstrapColor);
                                     }
                                     else
                                     {
@@ -137,7 +139,7 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
                         {
                             // Then show all elements which are possible to change the color of.
 
-                            $this->appearanceManagementView->showAllColorElements($companyData, $validColorElements);
+                            $this->appearanceManagementView->showAllColorElements($companyData, $appearanceData, $validColorElements);
                         }
                     }
                     else if($request->isQueryParameterMatching("target", "Image"))
@@ -215,11 +217,11 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
 
                                             if($updatedColorSuccessfully)
                                             {
-                                                $this->appearanceManagementView->showColorUpdateSuccessful($companyData, $postElementValue, $postCustomValue);
+                                                $this->appearanceManagementView->showColorUpdateSuccessful($companyData, $appearanceData, $postElementValue, $postCustomValue);
                                             }
                                             else
                                             {
-                                                $this->appearanceManagementView->showColorUpdateFailed($companyData, $postElementValue, $postCustomValue);
+                                                $this->appearanceManagementView->showColorUpdateFailed($companyData, $appearanceData, $postElementValue, $postCustomValue);
                                             }
                                         }
                                         else
@@ -243,11 +245,11 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
 
                                             if($updatedColorSuccessfully)
                                             {
-                                                $this->appearanceManagementView->showColorUpdateSuccessful($companyData, $postElementValue, $postCustomValue);
+                                                $this->appearanceManagementView->showColorUpdateSuccessful($companyData, $appearanceData, $postElementValue, $postCustomValue);
                                             }
                                             else
                                             {
-                                                $this->appearanceManagementView->showColorUpdateFailed($companyData, $postElementValue, $postCustomValue);
+                                                $this->appearanceManagementView->showColorUpdateFailed($companyData, $appearanceData, $postElementValue, $postCustomValue);
                                             }
                                         }
                                         else

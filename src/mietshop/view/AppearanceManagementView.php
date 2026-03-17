@@ -17,13 +17,7 @@ class AppearanceManagementView implements IAppearanceManagementView
         $this->errorView = $errorView;
     }
 
-    private function showInvalidRequest(array $companyData) : void
-    {
-        $this->errorView->show($companyData, "Ungültige Anfrage", "Aktualisierung fehlgeschlagen.");
-        exit(0);
-    }
-
-    private function showPageFeed(array $companyData, string $feedContentHTML): void
+    private function showPageFeed(array $companyData, array $appearanceData, string $feedContentHTML): void
     {
         $feedHTML = $this->globalView->genFeed(null, $feedContentHTML);
 
@@ -34,7 +28,7 @@ class AppearanceManagementView implements IAppearanceManagementView
         </div>
         ";
 
-        $this->globalView->show($companyData, $body);
+        $this->globalView->show($companyData, $appearanceData, $body);
     }
 
     private function genButton(string $urlTargetValue, string $urlElementValue, string $title) : string
@@ -115,11 +109,11 @@ class AppearanceManagementView implements IAppearanceManagementView
         ";
     }
 
-    public function showColorUpdateFailed(array $companyData, string $element, string $custom) : void
+    public function showColorUpdateFailed(array $companyData, array $appearanceData, string $element, string $custom) : void
     {
         $feedContentHTML = $this->genColorUpdateFailed($element, $custom);
 
-        $this->showPageFeed($companyData, $feedContentHTML);
+        $this->showPageFeed($companyData, $appearanceData, $feedContentHTML);
     }
 
     private function genColorUpdateSuccessful(string $element, string $custom) : string
@@ -152,11 +146,11 @@ class AppearanceManagementView implements IAppearanceManagementView
         ";
     }
 
-    public function showColorUpdateSuccessful(array $companyData, string $element, string $custom) : void
+    public function showColorUpdateSuccessful(array $companyData, array $appearanceData, string $element, string $custom) : void
     {
         $feedContentHTML = $this->genColorUpdateSuccessful($element, $custom);
 
-        $this->showPageFeed($companyData, $feedContentHTML);
+        $this->showPageFeed($companyData, $appearanceData, $feedContentHTML);
     }
 
     private function genCustomColorForm(string $element, string $hexCodeColor) : string
@@ -223,11 +217,11 @@ class AppearanceManagementView implements IAppearanceManagementView
         ";
     }
 
-    public function showCustomColorForm(array $companyData, string $element, string $hexCodeColor) : void
+    public function showCustomColorForm(array $companyData, array $appearanceData, string $element, string $hexCodeColor) : void
     {
         $feedContentHTML = $this->genCustomColorForm($element, $hexCodeColor);
 
-        $this->showPageFeed($companyData, $feedContentHTML);
+        $this->showPageFeed($companyData, $appearanceData, $feedContentHTML);
     }
 
     private function genDefaultColorForm(string $element, array $validColors, string $selectedBootstrapColor) : string
@@ -283,11 +277,11 @@ class AppearanceManagementView implements IAppearanceManagementView
         ";
     }
 
-    public function showDefaultColorForm(array $companyData, string $element, array $validColors, string $selectedBootstrapColor) : void
+    public function showDefaultColorForm(array $companyData, array $appearanceData, string $element, array $validColors, string $selectedBootstrapColor) : void
     {
         $feedContentHTML = $this->genDefaultColorForm($element, $validColors, $selectedBootstrapColor);
 
-        $this->showPageFeed($companyData, $feedContentHTML);
+        $this->showPageFeed($companyData, $appearanceData, $feedContentHTML);
     }
 
     private function genAllColorElements(array $validColorElements) : string
@@ -323,11 +317,11 @@ class AppearanceManagementView implements IAppearanceManagementView
         return $feedContentHTML;
     }
 
-    public function showAllColorElements(array $companyData, array $validColorElements) : void
+    public function showAllColorElements(array $companyData, array $appearanceData, array $validColorElements) : void
     {
         $feedContentHTML = $this->genAllColorElements($validColorElements);
 
-        $this->showPageFeed($companyData, $feedContentHTML);
+        $this->showPageFeed($companyData, $appearanceData, $feedContentHTML);
     }
 
     private function genOptions() : string
@@ -361,10 +355,10 @@ class AppearanceManagementView implements IAppearanceManagementView
         return $feedContentHTML;
     }
 
-    public function showOptions(array $companyData) : void
+    public function showOptions(array $companyData, array $appearanceData) : void
     {
         $feedContentHTML = $this->genOptions();
 
-        $this->showPageFeed($companyData, $feedContentHTML);
+        $this->showPageFeed($companyData, $appearanceData, $feedContentHTML);
     }
 }
