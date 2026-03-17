@@ -416,10 +416,31 @@ class GlobalView implements IGlobalView
 
     /**
      * @param array $companyData Array as described in ICompanyModel by function getCompanyData()
+     * @param array $appearanceData Array as described in IAppearanceModel by function getAppearanceData()
      * @return string
      */
-    private function genBootstrapFooter(array $companyData): string
+    private function genBootstrapFooter(array $companyData, array $appearanceData): string
     {
+        //////////////////////////////////////////////
+        /// Here preparing text and link colors
+
+        $textClass = $appearanceData["Color"]["Text"][0];
+        $textAdditionalClass = empty($textClass) ? "" : " $textClass";
+        $textAdditionalClassProperty = empty($textClass) ? "" : " class=\"$textClass\"";
+
+        $textPossibleStyleProperties = $appearanceData["Color"]["Text"][1];
+        $textPossibleStyleProperties = empty($textPossibleStyleProperties) ? "" : " style=\"$textPossibleStyleProperties\"";
+
+        $linkClass = $appearanceData["Color"]["Link"][0];
+        $linkAdditionalClass = empty($linkClass) ? "" : " $linkClass";
+        $linkAdditionalClassProperty = empty($linkClass) ? "" : " class=\"$linkClass\"";
+
+        $linkPossibleStyleProperties = $appearanceData["Color"]["Link"][1];
+        $linkPossibleStyleProperties = empty($linkPossibleStyleProperties) ? "" : " style=\"$linkPossibleStyleProperties\"";
+
+        ///////////////////////////////////////////////////////////
+        /// Here loading content data and making it output safe
+
         $companyNameHTMLSafe = htmlspecialchars($companyData["CompanyName"][0] ?? "", ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 
         $mapLocationURLSafe = htmlspecialchars($companyData["MapLocationURL"][0] ?? "", ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
@@ -437,7 +458,42 @@ class GlobalView implements IGlobalView
             $phoneNormalSafe = htmlspecialchars($companyData["PhoneNormal"][0], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
             $phoneMobileSafe = htmlspecialchars($companyData["PhoneMobile"][0], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 
-            $contactCardText = "<p class=\"fs-4\">Kontakt:</p><br>{$streetHTMLSafe}<br>{$zipCodeHTMLSafe}&nbsp;{$placeHTMLSafe}<br><br>E-Mail:&nbsp;<a href=\"mailto:{$emailHTMLSafe}\" class=\"card-link\" title=\"E-Mail an uns senden\">$emailHTMLSafe</a><br><br>Telefon:&nbsp;<a href=\"tel:{$phoneNormalSafe}\" class=\"card-link\" title=\"Uns anrufen\">$phoneNormalSafe</a><br>Mobil:&nbsp;<a href=\"tel:$phoneMobileSafe\" class=\"card-link\" title=\"Uns anrufen\">$phoneMobileSafe</a>";
+            $contactCardText =
+            "
+            <div class=\"container-fluid\">
+                <div class=\"row mb-4\">
+                    <div class=\"col-12\">
+                        <p$textPossibleStyleProperties class=\"fs-4$textAdditionalClass\">Kontakt:</p>
+                    </div>
+                </div>
+                <div class=\"row\">
+                    <div class=\"col-12\">
+                        <span$textPossibleStyleProperties$textAdditionalClassProperty>{$streetHTMLSafe}</span>
+                    </div>
+                </div>
+                <div class=\"row mb-3\">
+                    <div class=\"col-12\">
+                        <span$textPossibleStyleProperties$textAdditionalClassProperty>{$zipCodeHTMLSafe}&nbsp;{$placeHTMLSafe}</span>
+                    </div>
+                </div>
+                <div class=\"row mb-3\">
+                    <div class=\"col-12\">
+                        <span$textPossibleStyleProperties$textAdditionalClassProperty>E-Mail:&nbsp;</span><a$linkPossibleStyleProperties href=\"mailto:{$emailHTMLSafe}\"$linkAdditionalClassProperty title=\"E-Mail an uns senden\">$emailHTMLSafe</a>
+                    </div>
+                </div>
+                <div class=\"row\">
+                    <div class=\"col-12\">
+                        <span$textPossibleStyleProperties$textAdditionalClassProperty>Telefon:&nbsp;</span><a$linkPossibleStyleProperties href=\"tel:{$phoneNormalSafe}\"$linkAdditionalClassProperty title=\"Uns anrufen\">$phoneNormalSafe</a>
+                    </div>
+                </div>
+                <div class=\"row mb-3 mb-3\">
+                    <div class=\"col-12\">
+                        <div$textPossibleStyleProperties$textAdditionalClassProperty>Mobil:&nbsp;<a$linkPossibleStyleProperties href=\"tel:$phoneMobileSafe\"$linkAdditionalClassProperty title=\"Uns anrufen\">$phoneMobileSafe</a>
+                    </div>
+                </div>
+            </div>
+            ";
+
             $contactFeed = $this->genFeed(null, $contactCardText);
         }
         else
@@ -511,7 +567,7 @@ class GlobalView implements IGlobalView
 
         $companyNameHTMLSafe = htmlspecialchars($companyData["CompanyName"][0] ?? "Internal Loading Error", ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 
-        $bodyHTML = $this->genBootstrapHeader($companyNameHTMLSafe, $appearanceData).$body.$this->genBootstrapFooter($companyData);
+        $bodyHTML = $this->genBootstrapHeader($companyNameHTMLSafe, $appearanceData).$body.$this->genBootstrapFooter($companyData, $appearanceData);
 
         echo $this->genDefaultHTMLDoc($bodyHTML, $companyNameHTMLSafe);
     }
