@@ -57,10 +57,12 @@ class LoginPresenter implements ILoginPresenter
             }
             else if(is_string($possiblePOSTEmail) && is_string($possiblePOSTPassword)) // Am I logging in after credentials submitted before?
             {
+                $sentEmailLowerCase = strtolower($possiblePOSTEmail);
+
                 // Then verify credentials and save the login status
 
                 // Try to find an account in the system, related to that email given.
-                $accountData = $this->accountModel->readAccount($possiblePOSTEmail);
+                $accountData = $this->accountModel->readAccount($sentEmailLowerCase);
 
                 // Does the account exist and is the password correct?
                 if(!empty($accountData) && password_verify($possiblePOSTPassword, $accountData["PasswordHash"])) // Is the password correct?
@@ -70,7 +72,7 @@ class LoginPresenter implements ILoginPresenter
                     session_regenerate_id(true);
 
                     // Remember the logged in user (login status)
-                    $sessionValues["Email"] = $possiblePOSTEmail;
+                    $sessionValues["Email"] = $sentEmailLowerCase;
 
                     // Show the account page
                     $this->redirectToAccount();
