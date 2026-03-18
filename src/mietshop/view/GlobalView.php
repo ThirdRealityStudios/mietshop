@@ -570,19 +570,24 @@ class GlobalView implements IGlobalView
         return "<$tag$optionalFirstWhitespace$possibleStyleTagProperty$optionalSecondWhitespace$possibleClassTagProperty$optionalThirdWhitespace$optionalHrefTagProperty>$content</$tag>";
     }
 
-    private function genSpanText(array $appearanceData, string $text) : string
+    public function genSpanText(array $appearanceData, string $text) : string
     {
         return $this->genNonClosingElement("span", [ "Text" ], $appearanceData, [], [ "fs-6" ], $text);
     }
 
-    private function genPText(array $appearanceData, string $text) : string
+    public function genPText(array $appearanceData, string $text) : string
     {
         return $this->genNonClosingElement("p", [ "Text" ], $appearanceData, [], [ "fs-6" ], $text);
     }
 
-    private function genALink(array $appearanceData, string $text, string $href) : string
+    public function genALink(array $appearanceData, string $text, string $href) : string
     {
         return $this->genNonClosingElement("a", [ "Link" ], $appearanceData, [], [ "fs-6" ], $text, $href);
+    }
+
+    public function genAButtonInteresting(array $appearanceData, string $text, string $href) : string
+    {
+        return $this->genNonClosingElement("a", [ "Interesting" ], $appearanceData, [], [ "btn", "fs-6" ], $text, $href);
     }
 
     /**

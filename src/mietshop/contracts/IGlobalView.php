@@ -25,6 +25,14 @@ interface IGlobalView
      */
     public function genNonClosingElement(string $tag, array $colorElementsCaseSensitive, array $appearanceData, array $styles, array $classes, string $content, string $optionalHref = "") : string;
 
+    public function genSpanText(array $appearanceData, string $text) : string;
+
+    public function genPText(array $appearanceData, string $text) : string;
+
+    public function genALink(array $appearanceData, string $text, string $href) : string;
+
+    public function genAButtonInteresting(array $appearanceData, string $text, string $href) : string;
+
     /**
      * Generates a pre-defined Bootstrap feed / post in HTML,
      * which has an optional image you can display (150px by 150px) and an HTML description

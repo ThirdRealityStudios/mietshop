@@ -65,11 +65,15 @@ class HomeView implements IHomeView
             }
             else // No category was created for any article BUT at least one article is online (so give users the opportunity to go there and see)
             {
+                $pOurRentalObjects = $this->globalView->genNonClosingElement("p",[ "Text" ], $appearanceData, [], [ "fs-4", "mb-3" ], "Unser Verleihsortiment");
+                $pExploreHint = $this->globalView->genNonClosingElement("p",[ "Text" ], $appearanceData, [], [ "fs-6", "mb-4" ], "Klicken Sie auf die Schaltfläche, um unsere Mietartikel zu erkunden 😊");
+                $aButtonExploreObjects = $this->globalView->genAButtonInteresting($appearanceData, "Jetzt stöbern und anfragen", "/?view=search");
+
                 $ourRentalObjectsHTMLContent =
                 "
-                <p class=\"fs-4 mb-3\">Unser Verleihsortiment</p>
-                <p class=\"fs-6 mb-4\">Klicken Sie auf die Schaltfläche, um unsere Mietartikel zu erkunden 😊</p>
-                <a class=\"btn btn-primary mb-3\" href=\"/?view=search\">Jetzt stöbern und anfragen</a>
+                $pOurRentalObjects
+                $pExploreHint
+                $aButtonExploreObjects
                 ";
             }
         }

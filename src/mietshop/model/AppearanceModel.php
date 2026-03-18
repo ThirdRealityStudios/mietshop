@@ -6,11 +6,13 @@ use PDOException;
 use src\mietshop\contracts\IAppearanceModel;
 use src\mietshop\contracts\IUserInputModel;
 use src\mietshop\infrastructure\database\IDatabaseAdapter;
+use src\mietshop\utils\IColorUtility;
 
 class AppearanceModel implements IAppearanceModel
 {
     private IUserInputModel $userInputModel;
     private IDatabaseAdapter $databaseAdapter;
+    private IColorUtility $colorUtility;
 
     private function genTableCreateColumnSQLText(string $elementTypeName, string $elementName) : string
     {
@@ -118,10 +120,11 @@ class AppearanceModel implements IAppearanceModel
      * @param IDatabaseAdapter $databaseAdapter Database adapter. Make sure you have connected yet.
      * @throws PDOException
      */
-    public function __construct(IUserInputModel $userInputModel, IDatabaseAdapter $databaseAdapter)
+    public function __construct(IUserInputModel $userInputModel, IDatabaseAdapter $databaseAdapter, IColorUtility $colorUtility)
     {
         $this->databaseAdapter = $databaseAdapter;
         $this->userInputModel = $userInputModel;
+        $this->colorUtility = $colorUtility;
 
         // Map the IAppearanceModel::ACCEPTED_ELEMENTS to a suitable SQL database scheme text.
         $necessaryCreateTableColumns = $this->genTableCreateColumnsSQLText(IAppearanceModel::ACCEPTED_ELEMENTS);
@@ -360,7 +363,16 @@ class AppearanceModel implements IAppearanceModel
             {
                 if($isCustom)
                 {
-                    $styleCode = "background-color: $savedColor;";
+                    if($this->colorUtility->isDark($savedColor))
+                    {
+                        $buttonTitleColor = "#ffffff";
+                    }
+                    else
+                    {
+                        $buttonTitleColor = "#000000";
+                    }
+
+                    $styleCode = "background-color: $savedColor; color: $buttonTitleColor;";
                 }
                 else
                 {
