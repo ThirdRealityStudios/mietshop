@@ -453,6 +453,139 @@ class GlobalView implements IGlobalView
     }
 
     /**
+     * Generates the whole class string,
+     * containing all necessary classes,
+     * for the given element type (aka "color element", as defined in AppearanceModel by getApperanceData(...) )
+     *
+     * @param array $colorElementsCaseSensitive E.g. [ "Frame", "Window" ] or just [ "Text" ]
+     * @param array $appearanceData
+     * @param array $classes
+     * @return string
+     */
+    private function genClasses(array $colorElementsCaseSensitive, array $appearanceData, array $classes) : string
+    {
+        $allClasses = "";
+
+        for($i = 0; $i < sizeof($classes); $i++)
+        {
+            $class = $classes[$i];
+
+            if($i < (sizeof($classes) - 1))
+            {
+                $allClasses .= "$class ";
+            }
+            else
+            {
+                $allClasses .= $class; // Last custom class to attach to the string
+            }
+        }
+
+        foreach($colorElementsCaseSensitive as $colorElementCaseSensitive)
+        {
+            $savedBootstrapColorClass = $appearanceData["Color"][$colorElementCaseSensitive][0];
+
+            if(!empty($savedBootstrapColorClass))
+            {
+                if(!empty($allClasses))
+                {
+                    $allClasses .= " $savedBootstrapColorClass";
+                }
+                else
+                {
+                    $allClasses = $savedBootstrapColorClass;
+                }
+            }
+        }
+
+        return $allClasses;
+    }
+
+    /**
+     * @param array $colorElementsCaseSensitive E.g. [ "Frame", "Window" ] or just [ "Text" ]
+     * @param array $appearanceData
+     * @param array $styles Every single style (like "backgroud-color: red;") provided as elements in an array. Make sure every style is closed with a semicolon!
+     * @return string
+     */
+    private function genStyles(array $colorElementsCaseSensitive, array $appearanceData, array $styles) : string
+    {
+        $allStyles = "";
+
+        for($i = 0; $i < sizeof($styles); $i++)
+        {
+            $style = $styles[$i];
+
+            if($i < (sizeof($styles) - 1))
+            {
+                $allStyles .= "$style ";
+            }
+            else
+            {
+                $allStyles .= $style; // Last custom style to attach to the string
+            }
+        }
+
+        foreach($colorElementsCaseSensitive as $colorElementCaseSensitive)
+        {
+            $savedColorStyle = $appearanceData["Color"][$colorElementCaseSensitive][1];
+
+            if(!empty($savedColorStyle))
+            {
+                if(!empty($allStyles))
+                {
+                    $allStyles .= " $savedColorStyle";
+                }
+                else
+                {
+                    $allStyles = $savedColorStyle;
+                }
+            }
+        }
+
+        return $allStyles;
+    }
+
+    public function genNonClosingElement(string $tag, array $colorElementsCaseSensitive, array $appearanceData, array $styles, array $classes, string $content, string $optionalHref = "") : string
+    {
+        $allClasses = $this->genClasses($colorElementsCaseSensitive, $appearanceData, $classes);
+        $possibleClassTagProperty = "";
+        if(!empty($allClasses))
+        {
+            $possibleClassTagProperty = "class=\"$allClasses\"";
+        }
+
+        $allStyles = $this->genStyles($colorElementsCaseSensitive, $appearanceData, $styles);
+        $possibleStyleTagProperty = "";
+        if(!empty($allStyles))
+        {
+            $possibleStyleTagProperty = "style=\"$allStyles\"";
+        }
+
+        $optionalSecondWhitespace = (!empty($possibleStyleTagProperty) && (!empty($possibleClassTagProperty) || !empty($optionalHrefTagProperty))) ? " " : "";
+
+        $optionalHrefTagProperty = empty($optionalHref) ? "" : "href=\"$optionalHref\"";
+        $optionalThirdWhitespace = (!empty($possibleClassTagProperty) && $optionalHrefTagProperty) ? " " : "";
+
+        $optionalFirstWhitespace = (!empty($possibleStyleTagProperty) || !empty($possibleClassTagProperty) || !empty($optionalHrefTagProperty)) ? " " : "";
+
+        return "<$tag$optionalFirstWhitespace$possibleStyleTagProperty$optionalSecondWhitespace$possibleClassTagProperty$optionalThirdWhitespace$optionalHrefTagProperty>$content</$tag>";
+    }
+
+    private function genSpanText(array $appearanceData, string $text) : string
+    {
+        return $this->genNonClosingElement("span", [ "Text" ], $appearanceData, [], [ "fs-6" ], $text);
+    }
+
+    private function genPText(array $appearanceData, string $text) : string
+    {
+        return $this->genNonClosingElement("p", [ "Text" ], $appearanceData, [], [ "fs-6" ], $text);
+    }
+
+    private function genALink(array $appearanceData, string $text, string $href) : string
+    {
+        return $this->genNonClosingElement("a", [ "Link" ], $appearanceData, [], [ "fs-6" ], $text, $href);
+    }
+
+    /**
      * @param array $companyData Array as described in ICompanyModel by function getCompanyData()
      * @param array $appearanceData Array as described in IAppearanceModel by function getAppearanceData()
      * @return string
@@ -464,17 +597,12 @@ class GlobalView implements IGlobalView
 
         $textClass = $appearanceData["Color"]["Text"][0];
         $textAdditionalClass = empty($textClass) ? "" : " $textClass";
-        $textAdditionalClassProperty = empty($textClass) ? "" : " class=\"$textClass\"";
 
         $textPossibleStyleProperties = $appearanceData["Color"]["Text"][1];
         $textPossibleStyleProperties = empty($textPossibleStyleProperties) ? "" : " style=\"$textPossibleStyleProperties\"";
 
         $linkClass = $appearanceData["Color"]["Link"][0];
         $linkAdditionalClass = empty($linkClass) ? "" : " $linkClass";
-        $linkAdditionalClassProperty = empty($linkClass) ? "" : " class=\"$linkClass\"";
-
-        $linkPossibleStyleProperties = $appearanceData["Color"]["Link"][1];
-        $linkPossibleStyleProperties = empty($linkPossibleStyleProperties) ? "" : " style=\"$linkPossibleStyleProperties\"";
 
         ////////////////////////////////////////////////
         /// Here preparing window and frame colors
@@ -519,6 +647,16 @@ class GlobalView implements IGlobalView
             $phoneNormalSafe = htmlspecialchars($companyData["PhoneNormal"][0], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
             $phoneMobileSafe = htmlspecialchars($companyData["PhoneMobile"][0], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 
+            $spanStreet = $this->genSpanText($appearanceData, $streetHTMLSafe);
+            $spanZipPlace = $this->genSpanText($appearanceData, "{$zipCodeHTMLSafe}&nbsp;{$placeHTMLSafe}");
+            $spanEmail = $this->genSpanText($appearanceData, "Email:&nbsp;");
+            $aEmail = $this->genALink($appearanceData, $emailHTMLSafe, "mailto:{$emailHTMLSafe}");
+
+            $spanPhone = $this->genSpanText($appearanceData, "Telefon:&nbsp;");
+            $aPhone = $this->genALink($appearanceData, $phoneNormalSafe, "tel:{$phoneNormalSafe}");
+            $spanMobile = $this->genSpanText($appearanceData, "Mobil:&nbsp;");
+            $aMobile = $this->genALink($appearanceData, $phoneMobileSafe, "tel:{$phoneMobileSafe}");
+
             $contactCardText =
                 "
             <div class=\"container-fluid\">
@@ -529,27 +667,27 @@ class GlobalView implements IGlobalView
                 </div>
                 <div class=\"row\">
                     <div class=\"col-12\">
-                        <span$textPossibleStyleProperties$textAdditionalClassProperty>{$streetHTMLSafe}</span>
+                        $spanStreet
                     </div>
                 </div>
                 <div class=\"row mb-3\">
                     <div class=\"col-12\">
-                        <span$textPossibleStyleProperties$textAdditionalClassProperty>{$zipCodeHTMLSafe}&nbsp;{$placeHTMLSafe}</span>
+                        $spanZipPlace
                     </div>
                 </div>
                 <div class=\"row mb-3\">
                     <div class=\"col-12\">
-                        <span$textPossibleStyleProperties$textAdditionalClassProperty>E-Mail:&nbsp;</span><a$linkPossibleStyleProperties href=\"mailto:{$emailHTMLSafe}\"$linkAdditionalClassProperty title=\"E-Mail an uns senden\">$emailHTMLSafe</a>
+                        $spanEmail$aEmail
                     </div>
                 </div>
                 <div class=\"row\">
                     <div class=\"col-12\">
-                        <span$textPossibleStyleProperties$textAdditionalClassProperty>Telefon:&nbsp;</span><a$linkPossibleStyleProperties href=\"tel:{$phoneNormalSafe}\"$linkAdditionalClassProperty title=\"Uns anrufen\">$phoneNormalSafe</a>
+                        $spanPhone$aPhone
                     </div>
                 </div>
                 <div class=\"row mb-3 mb-3\">
                     <div class=\"col-12\">
-                        <span$textPossibleStyleProperties$textAdditionalClassProperty>Mobil:&nbsp;</span><a$linkPossibleStyleProperties href=\"tel:$phoneMobileSafe\"$linkAdditionalClassProperty title=\"Uns anrufen\">$phoneMobileSafe</a>
+                        $spanMobile$aMobile
                     </div>
                 </div>
             </div>
@@ -595,10 +733,14 @@ class GlobalView implements IGlobalView
          * For only one social media link it is not worth it. */
         if($socialMediaCount > 1)
         {
+
+            $pSocialMediaHint = $this->genPText($appearanceData, "Alternativ können Sie uns auch auf den gängigen sozialen Medien ansprechen und einen Termin vereinbaren.");
+            $pSocialMediaTitle = $this->genNonClosingElement("p", [ "Text" ], $appearanceData, [], [ "fs-4" ], "Social Media:");
+
             $optionalSocialMediaTitle =
             "
-            <p class=\"fs-6$linkAdditionalClass\">Alternativ können Sie uns auch auf den gängigen sozialen Medien ansprechen und einen Termin vereinbaren.</p>
-            <p class=\"fs-4$linkAdditionalClass\">Social Media:</p>
+            $pSocialMediaHint
+            $pSocialMediaTitle
             ";
         }
 
@@ -611,15 +753,14 @@ class GlobalView implements IGlobalView
             $mapsServiceEmbedded = $this->genFeed($appearanceData, null, "<iframe src=\"$mapLocationURLSafe\" allowfullscreen=\"\" loading=\"lazy\" class=\"rounded bg-white\" style=\"width: 100%;\" height=\"480\"></iframe>");
         }
 
-        $copyrightRow = $this->preGenDefaultRow("<p$textPossibleStyleProperties class=\"mb-0 text-center$textAdditionalClass\">Copyright&nbsp;©&nbsp;$companyNameHTMLSafe&nbsp;-&nbsp;Alle&nbsp;Rechte&nbsp;vorbehalten.</p>", true);
+        $copyrightElement = $this->genNonClosingElement("p", [ "Text" ], $appearanceData, [], [ "mb-0", "text-center" ], "Copyright&nbsp;©&nbsp;$companyNameHTMLSafe&nbsp;-&nbsp;Alle&nbsp;Rechte&nbsp;vorbehalten.");
+        $copyrightRow = $this->preGenDefaultRow($copyrightElement, true);
 
         $footerContent = "$contactFeed$socialMediaFeed$mapsServiceEmbedded$copyrightRow";
 
-        return "
-        <div$footerPossibleStyleProperties class=\"container-fluid mt-5 pb-5$footerAdditionalClasses\">
-            $footerContent
-        </div>
-        ";
+        $divFooter = $this->genNonClosingElement("div",[ "Frame", "Window" ], $appearanceData, [ "border-top-style: solid;", "border-top-width: 3px;" ], [ "container-fluid", "mt-5", "pb-5" ], $footerContent);
+
+        return $divFooter;
     }
 
     public function show(array $companyData, array $appearanceData, string $body): void

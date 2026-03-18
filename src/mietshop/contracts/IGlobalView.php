@@ -14,6 +14,18 @@ namespace src\mietshop\contracts;
 interface IGlobalView
 {
     /**
+     * @param string $tag Name of the non-closing element in HTML, e.g. "span" or "p".
+     * @param array $colorElementsCaseSensitive Here specify what appearance data should be regarded (see AppearanceModel and especially the function getAppearanceData() to understand the single data). E.g. if you want the user to format this element with the saved text color, then you would pass [ "Text" ] here. Or if you have a window with a frame, then you would usually pass [ "Window", "Frame" ] here.
+     * @param array $appearanceData Obtained array by function getAppearanceData() in AppearanceModel.
+     * @param array $styles An array of organized, pre-calculated stylesheets. E.g. [ "background-color: red;", "color: green;", "border-style: solid;" ] (Note the semicolon which is expected for every element!).
+     * @param array $classes An array like the one expected in parameter $styles. But instead now the CSS classes you provide. E.g. [ "text-danger", "fs-6", "bg-green" ] (Note: NO semicolon needed).
+     * @param string $content The usual tag or element content as usual. It could be plain text or HTML, depending on your application needs.
+     * @param string $optionalHref Optional: pass href content or values here if they are required, e.g. you want to create a link / "a tag", then you could pass e.g. simply "https://www.w3schools.com". For an email you would pass e.g. "mailto:mymail@whatever.com".
+     * @return string The prepared HTML element, including the content and the appearance you saved or you wanted (e.g. colors saved in the system).
+     */
+    public function genNonClosingElement(string $tag, array $colorElementsCaseSensitive, array $appearanceData, array $styles, array $classes, string $content, string $optionalHref = "") : string;
+
+    /**
      * Generates a pre-defined Bootstrap feed / post in HTML,
      * which has an optional image you can display (150px by 150px) and an HTML description
      * (any HTML of your choice theoretically but be careful what you want to embed as HTML code).
