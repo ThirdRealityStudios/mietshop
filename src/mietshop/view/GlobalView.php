@@ -314,6 +314,11 @@ class GlobalView implements IGlobalView
     /////////////////////////////////////////////////////////////////////////////////////////////////
     /// HTML Doc Basic Functions
 
+    private function genNavLink(array $appearanceData, string $title, string $href) : string
+    {
+        return $this->genNonClosingElement("a", [ "Link" ], $appearanceData, [], [ "nav-link", "darker-button" ], $title, $href);
+    }
+
     private function genBootstrapHeader(string $companyName, array $appearanceData) : string
     {
         ////////////////////////////////////////////////
@@ -354,6 +359,13 @@ class GlobalView implements IGlobalView
         $textPossibleStyleProperties = $appearanceData["Color"]["Text"][1];
         $textPossibleStyleProperties = empty($textPossibleStyleProperties) ? "" : " style=\"$textPossibleStyleProperties\"";
 
+        $aLandingPage = $this->genNavLink($appearanceData, "Startseite 🏠", "/");
+        $aExplore = $this->genNavLink($appearanceData, "Jetzt Mietobjekte entdecken 🔎", "/?view=search");
+        $aAccount = $this->genNavLink($appearanceData, "Konto 👤", "/?view=login");
+        $aTermsOfService = $this->genNavLink($appearanceData, "AGBs", "/?view=termsofservice");
+        $aPrivacyPolicy = $this->genNavLink($appearanceData, "Datenschutzerklärung", "/?view=privacypolicy");
+        $aImprint = $this->genNavLink($appearanceData, "Impressum", "/?view=imprint");
+
         return "
         <nav$navPossibleStyleProperties class=\"navbar$navAdditionalClasses sticky-top w-100 z-2\">
 	        <div class=\"container-fluid\">
@@ -369,22 +381,22 @@ class GlobalView implements IGlobalView
                         <div$sideMenuContentPossibleStyleProperties class=\"offcanvas-body$sideMenuContentAdditionalClasses\">
                             <ul class=\"navbar-nav justify-content-end flex-grow-1 pe-3\">
                                 <li class=\"nav-item\">
-                                    <a$textPossibleStyleProperties class=\"nav-link active$textAdditionalClass\" aria-current=\"page\" href=\"/\">Startseite 🏠</a>
+                                    $aLandingPage
                                 </li>
                                 <li class=\"nav-item\">
-                                    <a$textPossibleStyleProperties class=\"nav-link$textAdditionalClass\" href=\"/?view=search\">Jetzt Mietobjekte entdecken 🔎</a>
+                                    $aExplore
                                 </li>
                                 <li class=\"nav-item\">
-                                    <a$textPossibleStyleProperties class=\"nav-link$textAdditionalClass\" href=\"/?view=login\">Konto 👤</a>
+                                    $aAccount
                                 </li>
                                 <li class=\"nav-item\">
-                                    <a$textPossibleStyleProperties class=\"nav-link$textAdditionalClass\" href=\"/?view=termsofservice\">AGBs</a>
+                                    $aTermsOfService
                                 </li>
                                 <li class=\"nav-item\">
-                                    <a$textPossibleStyleProperties class=\"nav-link$textAdditionalClass\" href=\"/?view=privacypolicy\">Datenschutzerklärung</a>
+                                    $aPrivacyPolicy
                                 </li>
                                 <li class=\"nav-item\">
-                                    <a$textPossibleStyleProperties class=\"nav-link$textAdditionalClass\" href=\"/?view=imprint\">Impressum</a>
+                                    $aImprint
                                 </li>
                             </ul>
                         </div>
@@ -442,19 +454,19 @@ class GlobalView implements IGlobalView
 
     private function genDefaultHTMLDoc(array $appearanceData, string $bodyHTML, string $companyName) : string
     {
-        ////////////////////////////////////////////////
-        /// Here preparing window color for when footer does not cover the whole page down (a view bug if not done)
+        $bodyContent = $this->genNonClosingElement("div", [ "Background" ], $appearanceData, [], [], $bodyHTML);
+        $body = $this->genNonClosingElement("body", [ "Window" ], $appearanceData, [], [], $bodyContent);
 
-        $footerAdditionalClasses = "";
-        $footerPossibleStyleProperties = "";
+        $html =
+        "
+        <!DOCTYPE html>
+            <html lang=\"de\">
+            {$this->genHeadHTML($companyName)}
+            $body
+        </html>
+        ";
 
-        $windowColorClass = $appearanceData["Color"]["Window"][0];
-        $footerAdditionalClasses .= empty($windowColorClass) ? "" : " class=\"$windowColorClass\"";
-
-        $windowColorStyle = $appearanceData["Color"]["Window"][1];
-        $footerPossibleStyleProperties .= empty($windowColorStyle) ? "" : " style=\"$windowColorStyle\"";
-
-        return "<!DOCTYPE html><html lang=\"de\">{$this->genHeadHTML($companyName)}<body$footerPossibleStyleProperties$footerAdditionalClasses><div class=\"bg-body-secondary\">$bodyHTML</div></body></html>";
+        return $html;
     }
 
     /**
@@ -595,6 +607,11 @@ class GlobalView implements IGlobalView
         return $this->genNonClosingElement("a", [ "Interesting" ], $appearanceData, [], [ "btn", "fs-6" ], $text, $href);
     }
 
+    private function genASocialMediaImage(string $socialMediaName, string $href) : string
+    {
+        return $this->genNonClosingElement("a", [], [], [], [ "d-inline-block", "me-2", "mb-2", "darker-button" ], "<img src=\"/img/logo/socialmedia/$socialMediaName.png\" alt=\"$socialMediaName\" title=\"$socialMediaName öffnen\" height=\"50\">", $href);
+    }
+
     /**
      * @param array $companyData Array as described in ICompanyModel by function getCompanyData()
      * @param array $appearanceData Array as described in IAppearanceModel by function getAppearanceData()
@@ -691,25 +708,25 @@ class GlobalView implements IGlobalView
 
         if(!empty($kleinanzeigenURLSafe))
         {
-            $socialMedia .= "<a class=\"d-inline-block me-2 mb-2\" href=\"{$kleinanzeigenURLSafe}\"><img src=\"/img/logo/socialmedia/Kleinanzeigen.png\" alt=\"Kleinanzeigen\" title=\"Kleinanzeigen öffnen\" height=\"50\"></a>";
+            $socialMedia .= $this->genASocialMediaImage("Kleinanzeigen", $kleinanzeigenURLSafe);
             $socialMediaCount++;
         }
 
         if(!empty($instagramURLSafe))
         {
-            $socialMedia .= "<a class=\"d-inline-block me-2 mb-2\" href=\"$instagramURLSafe\"><img src=\"/img/logo/socialmedia/Instagram.png\" alt=\"Instagram\" title=\"Instagram öffnen\" height=\"50\"></a>";
+            $socialMedia .= $this->genASocialMediaImage("Instagram", $instagramURLSafe);
             $socialMediaCount++;
         }
 
         if(!empty($whatsappURLSafe))
         {
-            $socialMedia .= "<a class=\"d-inline-block me-2 mb-2\" href=\"$whatsappURLSafe\"><img src=\"/img/logo/socialmedia/Whatsapp.png\" alt=\"WhatsApp\" title=\"WhatsApp öffnen\" height=\"50\"></a>";
+            $socialMedia .= $this->genASocialMediaImage("WhatsApp", $whatsappURLSafe);
             $socialMediaCount++;
         }
 
         if(!empty($facebookURLSafe))
         {
-            $socialMedia .= "<a class=\"d-inline-block me-2 mb-2\" href=\"$facebookURLSafe\"><img src=\"/img/logo/socialmedia/Facebook.png\" alt=\"Facebook\" title=\"Facebook öffnen\" height=\"50\"></a>";
+            $socialMedia .= $this->genASocialMediaImage("Facebook", $facebookURLSafe);
             $socialMediaCount++;
         }
 
