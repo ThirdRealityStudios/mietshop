@@ -373,7 +373,7 @@ class AppearanceModel implements IAppearanceModel
                     }
 
                     $styleCode = "background-color: $savedColor; border-color: $savedColor; color: $buttonTitleColor;";
-                    $classCode = "darker-button"; // Little "hack" with custom CSS class: normally classes do not apply but in this case it is necessary, so the button gets darker when hovering.
+                    $classCode = "darker-interact"; // Little "hack" with custom CSS class: normally classes do not apply but in this case it is necessary, so the button gets darker when hovering.
                 }
                 else
                 {

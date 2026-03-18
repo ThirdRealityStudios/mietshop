@@ -316,7 +316,7 @@ class GlobalView implements IGlobalView
 
     private function genNavLink(array $appearanceData, string $title, string $href) : string
     {
-        return $this->genNonClosingElement("a", [ "Link" ], $appearanceData, [], [ "nav-link", "darker-button" ], $title, $href);
+        return $this->genNonClosingElement("a", [ "Link" ], $appearanceData, [], [ "nav-link", "darker-interact" ], $title, $href);
     }
 
     private function genBootstrapHeader(string $companyName, array $appearanceData) : string
@@ -366,44 +366,47 @@ class GlobalView implements IGlobalView
         $aPrivacyPolicy = $this->genNavLink($appearanceData, "Datenschutzerklärung", "/?view=privacypolicy");
         $aImprint = $this->genNavLink($appearanceData, "Impressum", "/?view=imprint");
 
-        return "
-        <nav$navPossibleStyleProperties class=\"navbar$navAdditionalClasses sticky-top w-100 z-2\">
-	        <div class=\"container-fluid\">
+        $navContent =
+        "
+        <div class=\"container-fluid\">
 		        <img src=\"/favicon.png\" alt=\"favicon.png\" width=\"70\" height=\"70\">
-                    <button class=\"navbar-toggler\" type=\"button\" data-bs-toggle=\"offcanvas\" data-bs-target=\"#offcanvasNavbar\" aria-controls=\"offcanvasNavbar\" aria-label=\"Toggle navigation\">
-                        <span class=\"navbar-toggler-icon\"></span>
-                    </button>
-                    <div class=\"offcanvas offcanvas-end\" tabindex=\"-1\" id=\"offcanvasNavbar\" aria-labelledby=\"offcanvasNavbarLabel\" role=\"dialog\">
-                        <div$sideMenuPossibleStyleProperties class=\"offcanvas-header $sideMenuAdditionalClasses\">
-                            <h5$textPossibleStyleProperties class=\"offcanvas-title$textAdditionalClass\" id=\"offcanvasNavbarLabel\">{$companyName}</h5>
-                            <button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"offcanvas\" aria-label=\"Close\"></button>
-                        </div>
-                        <div$sideMenuContentPossibleStyleProperties class=\"offcanvas-body$sideMenuContentAdditionalClasses\">
-                            <ul class=\"navbar-nav justify-content-end flex-grow-1 pe-3\">
-                                <li class=\"nav-item\">
-                                    $aLandingPage
-                                </li>
-                                <li class=\"nav-item\">
-                                    $aExplore
-                                </li>
-                                <li class=\"nav-item\">
-                                    $aAccount
-                                </li>
-                                <li class=\"nav-item\">
-                                    $aTermsOfService
-                                </li>
-                                <li class=\"nav-item\">
-                                    $aPrivacyPolicy
-                                </li>
-                                <li class=\"nav-item\">
-                                    $aImprint
-                                </li>
-                            </ul>
-                        </div>
+                <button class=\"navbar-toggler\" type=\"button\" data-bs-toggle=\"offcanvas\" data-bs-target=\"#offcanvasNavbar\" aria-controls=\"offcanvasNavbar\" aria-label=\"Toggle navigation\">
+                    <span class=\"navbar-toggler-icon\"></span>
+                </button>
+                <div class=\"offcanvas offcanvas-end\" tabindex=\"-1\" id=\"offcanvasNavbar\" aria-labelledby=\"offcanvasNavbarLabel\" role=\"dialog\">
+                    <div$sideMenuPossibleStyleProperties class=\"offcanvas-header $sideMenuAdditionalClasses\">
+                        <h5$textPossibleStyleProperties class=\"offcanvas-title$textAdditionalClass\" id=\"offcanvasNavbarLabel\">{$companyName}</h5>
+                        <button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"offcanvas\" aria-label=\"Close\"></button>
+                    </div>
+                    <div$sideMenuContentPossibleStyleProperties class=\"offcanvas-body$sideMenuContentAdditionalClasses\">
+                        <ul class=\"navbar-nav justify-content-end flex-grow-1 pe-3\">
+                            <li class=\"nav-item\">
+                                $aLandingPage
+                            </li>
+                            <li class=\"nav-item\">
+                                $aExplore
+                            </li>
+                            <li class=\"nav-item\">
+                                $aAccount
+                            </li>
+                            <li class=\"nav-item\">
+                                $aTermsOfService
+                            </li>
+                            <li class=\"nav-item\">
+                                $aPrivacyPolicy
+                            </li>
+                            <li class=\"nav-item\">
+                                $aImprint
+                            </li>
+                        </ul>
                     </div>
                 </div>
-            </nav>
+            </div>
         ";
+
+        $navBootstrap = $this->genNonClosingElement("nav", [ "Window", "Frame" ], $appearanceData, [ "border-bottom-style: solid; border-bottom-width: 3px;" ], [ "navbar", "sticky-top", "w-100", "z-2" ], $navContent);
+
+        return $navBootstrap;
     }
 
     private function genHeadHTML($companyName) : string
@@ -438,12 +441,12 @@ class GlobalView implements IGlobalView
                     animation: spin 1.4s linear infinite;
                 }
                 
-                .darker-button:hover
+                .darker-interact:hover
                 {
                     filter: brightness(90%);
                 }
 
-                .darker-button:active
+                .darker-interact:active
                 {
                     filter: brightness(80%);
                 }
@@ -599,7 +602,7 @@ class GlobalView implements IGlobalView
 
     public function genALink(array $appearanceData, string $text, string $href) : string
     {
-        return $this->genNonClosingElement("a", [ "Link" ], $appearanceData, [], [ "fs-6" ], $text, $href);
+        return $this->genNonClosingElement("a", [ "Link" ], $appearanceData, [], [ "fs-6", "darker-interact" ], $text, $href);
     }
 
     public function genAButtonInteresting(array $appearanceData, string $text, string $href) : string
@@ -609,7 +612,7 @@ class GlobalView implements IGlobalView
 
     private function genASocialMediaImage(string $socialMediaName, string $href) : string
     {
-        return $this->genNonClosingElement("a", [], [], [], [ "d-inline-block", "me-2", "mb-2", "darker-button" ], "<img src=\"/img/logo/socialmedia/$socialMediaName.png\" alt=\"$socialMediaName\" title=\"$socialMediaName öffnen\" height=\"50\">", $href);
+        return $this->genNonClosingElement("a", [], [], [], [ "d-inline-block", "me-2", "mb-2", "darker-interact" ], "<img src=\"/img/logo/socialmedia/$socialMediaName.png\" alt=\"$socialMediaName\" title=\"$socialMediaName öffnen\" height=\"50\">", $href);
     }
 
     /**
@@ -619,15 +622,6 @@ class GlobalView implements IGlobalView
      */
     private function genBootstrapFooter(array $companyData, array $appearanceData): string
     {
-        //////////////////////////////////////////////
-        /// Here preparing text and link colors
-
-        $textClass = $appearanceData["Color"]["Text"][0];
-        $textAdditionalClass = empty($textClass) ? "" : " $textClass";
-
-        $textPossibleStyleProperties = $appearanceData["Color"]["Text"][1];
-        $textPossibleStyleProperties = empty($textPossibleStyleProperties) ? "" : " style=\"$textPossibleStyleProperties\"";
-
         ///////////////////////////////////////////////////////////
         /// Here loading content data and making it output safe
 
