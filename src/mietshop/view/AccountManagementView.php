@@ -50,7 +50,7 @@ class AccountManagementView implements IAccountManagementView
             }
         }
 
-        return "<tr class=\"$bootstrapClass darker-hover text-break\"><td>$emailSafeHTML</td><td>$permissionRole</td></tr>";
+        return "<tr class=\"$bootstrapClass darker-button text-break\"><td>$emailSafeHTML</td><td>$permissionRole</td></tr>";
     }
 
     /**

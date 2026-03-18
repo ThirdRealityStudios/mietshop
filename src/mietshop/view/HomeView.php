@@ -20,28 +20,35 @@ class HomeView implements IHomeView
 
         $ourRentalObjectsHTMLContent = "";
 
+        $pOurRentalObjects = $this->globalView->genNonClosingElement("p",[ "Text" ], $appearanceData, [], [ "fs-4", "mb-3" ], "Unser Verleihsortiment");
+        $pNumerousObjectsHint = $this->globalView->genNonClosingElement("p",[ "Text" ], $appearanceData, [], [ "fs-6", "mb-3" ], "Zahlreiche Mietartikel aus folgenden Kategorien bieten wir an 😊");
+
         if(sizeof($categories) > 2)
         {
             $ourRentalObjectsHTMLContent =
             "
-            <p class=\"fs-4 mb-3\">Unser Verleihsortiment</p>
-                <p class=\"fs-6 mb-3\">Zahlreiche Mietartikel aus folgenden Kategorien bieten wir an 😊</p>
-                
+            $pOurRentalObjects
+            $pNumerousObjectsHint
             ";
 
             foreach($categories as $category)
             {
                 $safeCategoryName = htmlspecialchars($category);
 
-                $ourRentalObjectsHTMLContent .= "<p class=\"fs-6 mb-3\">• {$safeCategoryName}</p>";
+                $ourRentalObjectsHTMLContent .= $this->globalView->genNonClosingElement("p", [ "Text" ], $appearanceData, [], [ "mb-3" ], $safeCategoryName);
             }
 
-            $ourRentalObjectsHTMLContent .= "<a class=\"btn btn-primary mb-3\" href=\"/?view=search\">Jetzt stöbern und anfragen</a>";
+            $ourRentalObjectsHTMLContent .= $this->globalView->genNonClosingElement("a", [ "Interesting" ], $appearanceData, [], [ "btn", "mb-3" ], "Jetzt stöbern und anfragen", "/?view=search");
         }
         else
         {
             // TODO Fetch amount of articles in the system.
             $articleAmount = 3;
+
+            $spanRentalObjectsNotAvailableHint = $this->globalView->genNonClosingElement("span",[ "Text" ], $appearanceData, [], [ "fs-4" ], "Mietartikel im Aufbau&nbsp;");
+            $pSorry = $this->globalView->genPText($appearanceData, "Sorry, aber derzeit scheint der Inhaber noch keine Mietartikel oder Kategorien online gestellt zu haben.");
+            $pComeBackLater = $this->globalView->genPText($appearanceData, "Bitte schauen Sie später noch einmal vorbei.");
+            $pObjectForecast = $this->globalView->genPText($appearanceData, "Hier sollten bald zahlreiche Artikel erscheinen 😊");
 
             // Is there no article AND no category online? (then VERY likely website was freshly installed)
             if($articleAmount === 0)
@@ -50,22 +57,21 @@ class HomeView implements IHomeView
                 "
                 <div class=\"row\">
                     <div class=\"col-12\">
-                        <span class=\"fs-4\">Mietartikel im Aufbau&nbsp;</span>
+                        $spanRentalObjectsNotAvailableHint
                         <img style=\"vertical-align: text-top;\" class=\"d-inline-block gear-spin\" width=\"17\" height=\"17\" src=\"/img/symbol/gear-fill.svg\" alt=\"gear-fill.svg\">
                     </div>
                 </div>
                 <div class=\"row mt-3\">
                     <div class=\"col-12\">
-                        <p class=\"\">Sorry, aber derzeit scheint der Inhaber noch keine Mietartikel oder Kategorien online gestellt zu haben.</p>
-                        <p class=\"\">Bitte schauen Sie später noch einmal vorbei.</p>
-                        <p class=\"\">Hier sollten bald zahlreiche Artikel erscheinen 😊</p>
+                        $pSorry
+                        $pComeBackLater
+                        $pObjectForecast
                     </div>
                 </div>
                 ";
             }
             else // No category was created for any article BUT at least one article is online (so give users the opportunity to go there and see)
             {
-                $pOurRentalObjects = $this->globalView->genNonClosingElement("p",[ "Text" ], $appearanceData, [], [ "fs-4", "mb-3" ], "Unser Verleihsortiment");
                 $pExploreHint = $this->globalView->genNonClosingElement("p",[ "Text" ], $appearanceData, [], [ "fs-6", "mb-4" ], "Klicken Sie auf die Schaltfläche, um unsere Mietartikel zu erkunden 😊");
                 $aButtonExploreObjects = $this->globalView->genAButtonInteresting($appearanceData, "Jetzt stöbern und anfragen", "/?view=search");
 

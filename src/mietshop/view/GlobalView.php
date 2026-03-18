@@ -426,9 +426,14 @@ class GlobalView implements IGlobalView
                     animation: spin 1.4s linear infinite;
                 }
                 
-                .darker-hover:hover
+                .darker-button:hover
                 {
                     filter: brightness(90%);
+                }
+
+                .darker-button:active
+                {
+                    filter: brightness(80%);
                 }
 		    </style>
         </head>
@@ -606,32 +611,6 @@ class GlobalView implements IGlobalView
         $textPossibleStyleProperties = $appearanceData["Color"]["Text"][1];
         $textPossibleStyleProperties = empty($textPossibleStyleProperties) ? "" : " style=\"$textPossibleStyleProperties\"";
 
-        $linkClass = $appearanceData["Color"]["Link"][0];
-        $linkAdditionalClass = empty($linkClass) ? "" : " $linkClass";
-
-        ////////////////////////////////////////////////
-        /// Here preparing window and frame colors
-
-        $footerAdditionalClasses = "";
-        $footerPossibleStyleProperties = "";
-
-        $windowColorClass = $appearanceData["Color"]["Window"][0];
-        $footerAdditionalClasses .= empty($windowColorClass) ? "" : " $windowColorClass";
-
-        $windowColorStyle = $appearanceData["Color"]["Window"][1];
-        $footerPossibleStyleProperties .= empty($windowColorStyle) ? "" : "$windowColorStyle";
-
-        $frameColorClass = $appearanceData["Color"]["Frame"][0];
-        $footerAdditionalClasses .= empty($frameColorClass) ? "" : " $frameColorClass";
-
-        $frameColorStyle = $appearanceData["Color"]["Frame"][1];
-        $footerPossibleStyleProperties .= empty($frameColorStyle) ? "" : "$frameColorStyle";
-
-        // Finally prepare a possible stylesheet property for the tag
-        $footerPossibleStyleProperties = empty($footerPossibleStyleProperties) ? "" : " style=\"border-top-style: solid; border-top-width: 3px; $footerPossibleStyleProperties\"";
-        $footerOptionalBorderClasses = empty($frameColorClass) ? "" : " border-top border-3";
-        $footerAdditionalClasses = empty($footerAdditionalClasses) ? "" : " $footerAdditionalClasses$footerOptionalBorderClasses";
-
         ///////////////////////////////////////////////////////////
         /// Here loading content data and making it output safe
 
@@ -652,6 +631,8 @@ class GlobalView implements IGlobalView
             $phoneNormalSafe = htmlspecialchars($companyData["PhoneNormal"][0], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
             $phoneMobileSafe = htmlspecialchars($companyData["PhoneMobile"][0], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 
+            $pContactHint = $this->genNonClosingElement("p", [ "Text" ], $appearanceData, [], [ "fs-4" ], "Kontakt:");
+
             $spanStreet = $this->genSpanText($appearanceData, $streetHTMLSafe);
             $spanZipPlace = $this->genSpanText($appearanceData, "{$zipCodeHTMLSafe}&nbsp;{$placeHTMLSafe}");
             $spanEmail = $this->genSpanText($appearanceData, "Email:&nbsp;");
@@ -663,11 +644,11 @@ class GlobalView implements IGlobalView
             $aMobile = $this->genALink($appearanceData, $phoneMobileSafe, "tel:{$phoneMobileSafe}");
 
             $contactCardText =
-                "
+            "
             <div class=\"container-fluid\">
                 <div class=\"row mb-4\">
                     <div class=\"col-12\">
-                        <p$textPossibleStyleProperties class=\"fs-4$textAdditionalClass\">Kontakt:</p>
+                        $pContactHint
                     </div>
                 </div>
                 <div class=\"row\">
