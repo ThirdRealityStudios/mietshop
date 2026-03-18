@@ -316,7 +316,7 @@ class GlobalView implements IGlobalView
 
     private function genNavLink(array $appearanceData, string $title, string $href) : string
     {
-        return $this->genNonClosingElement("a", [ "Link" ], $appearanceData, [], [ "nav-link", "darker-interact" ], $title, $href);
+        return $this->genNonClosingElement("a", [ "Text" ], $appearanceData, [], [ "nav-link", "darker-interact" ], $title, $href);
     }
 
     private function genBootstrapHeader(string $companyName, array $appearanceData) : string
@@ -366,6 +366,42 @@ class GlobalView implements IGlobalView
         $aPrivacyPolicy = $this->genNavLink($appearanceData, "Datenschutzerklärung", "/?view=privacypolicy");
         $aImprint = $this->genNavLink($appearanceData, "Impressum", "/?view=imprint");
 
+        $sideMenuHeaderTitle = $this->genNonClosingElement("h5", [ "Text" ], $appearanceData, [], [ "offcanvas-title" ], $companyName, "", "offcanvasNavbarLabel");
+
+        $sideMenuHeaderContent =
+        "
+        $sideMenuHeaderTitle
+        <button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"offcanvas\" aria-label=\"Close\"></button>
+        ";
+
+        $sideMenuHeader = $this->genNonClosingElement("div", [ "Window" ], $appearanceData, [], [ "offcanvas-header" ], $sideMenuHeaderContent);
+
+        $sideMenuBodyContent =
+        "
+        <ul class=\"navbar-nav justify-content-end flex-grow-1 pe-3\">
+            <li class=\"nav-item\">
+                $aLandingPage
+            </li>
+            <li class=\"nav-item\">
+                $aExplore
+            </li>
+            <li class=\"nav-item\">
+                $aAccount
+            </li>
+            <li class=\"nav-item\">
+                $aTermsOfService
+            </li>
+            <li class=\"nav-item\">
+                $aPrivacyPolicy
+            </li>
+            <li class=\"nav-item\">
+                $aImprint
+            </li>
+        </ul>
+        ";
+
+        $sideMenuBody = $this->genNonClosingElement("div", [ "Window" ], $appearanceData, [], [ "offcanvas-body" ], $sideMenuBodyContent);
+
         $navContent =
         "
         <div class=\"container-fluid\">
@@ -374,32 +410,8 @@ class GlobalView implements IGlobalView
                     <span class=\"navbar-toggler-icon\"></span>
                 </button>
                 <div class=\"offcanvas offcanvas-end\" tabindex=\"-1\" id=\"offcanvasNavbar\" aria-labelledby=\"offcanvasNavbarLabel\" role=\"dialog\">
-                    <div$sideMenuPossibleStyleProperties class=\"offcanvas-header $sideMenuAdditionalClasses\">
-                        <h5$textPossibleStyleProperties class=\"offcanvas-title$textAdditionalClass\" id=\"offcanvasNavbarLabel\">{$companyName}</h5>
-                        <button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"offcanvas\" aria-label=\"Close\"></button>
-                    </div>
-                    <div$sideMenuContentPossibleStyleProperties class=\"offcanvas-body$sideMenuContentAdditionalClasses\">
-                        <ul class=\"navbar-nav justify-content-end flex-grow-1 pe-3\">
-                            <li class=\"nav-item\">
-                                $aLandingPage
-                            </li>
-                            <li class=\"nav-item\">
-                                $aExplore
-                            </li>
-                            <li class=\"nav-item\">
-                                $aAccount
-                            </li>
-                            <li class=\"nav-item\">
-                                $aTermsOfService
-                            </li>
-                            <li class=\"nav-item\">
-                                $aPrivacyPolicy
-                            </li>
-                            <li class=\"nav-item\">
-                                $aImprint
-                            </li>
-                        </ul>
-                    </div>
+                    $sideMenuHeader
+                    $sideMenuBody
                 </div>
             </div>
         ";
@@ -564,7 +576,7 @@ class GlobalView implements IGlobalView
         return $allStyles;
     }
 
-    public function genNonClosingElement(string $tag, array $colorElementsCaseSensitive, array $appearanceData, array $styles, array $classes, string $content, string $optionalHref = "") : string
+    public function genNonClosingElement(string $tag, array $colorElementsCaseSensitive, array $appearanceData, array $styles, array $classes, string $content, string $optionalHref = "", string $optionalId = "") : string
     {
         $allClasses = $this->genClasses($colorElementsCaseSensitive, $appearanceData, $classes);
         $possibleClassTagProperty = "";
@@ -585,9 +597,12 @@ class GlobalView implements IGlobalView
         $optionalHrefTagProperty = empty($optionalHref) ? "" : "href=\"$optionalHref\"";
         $optionalThirdWhitespace = (!empty($possibleClassTagProperty) && $optionalHrefTagProperty) ? " " : "";
 
+        $optionalIdProperty = empty($optionalId) ? "" : "id=\"$optionalId\"";
+        $optionalFourthWhitespace = ((!empty($possibleStyleTagProperty) || !empty($possibleClassTagProperty) || !empty($optionalHrefTagProperty)) && !empty($optionalIdProperty)) ? " " : "";
+
         $optionalFirstWhitespace = (!empty($possibleStyleTagProperty) || !empty($possibleClassTagProperty) || !empty($optionalHrefTagProperty)) ? " " : "";
 
-        return "<$tag$optionalFirstWhitespace$possibleStyleTagProperty$optionalSecondWhitespace$possibleClassTagProperty$optionalThirdWhitespace$optionalHrefTagProperty>$content</$tag>";
+        return "<$tag$optionalFirstWhitespace$possibleStyleTagProperty$optionalSecondWhitespace$possibleClassTagProperty$optionalThirdWhitespace$optionalHrefTagProperty$optionalFourthWhitespace$optionalIdProperty>$content</$tag>";
     }
 
     public function genSpanText(array $appearanceData, string $text) : string

@@ -21,9 +21,10 @@ interface IGlobalView
      * @param array $classes An array like the one expected in parameter $styles. But instead now the CSS classes you provide. E.g. [ "text-danger", "fs-6", "bg-green" ] (Note: NO semicolon needed).
      * @param string $content The usual tag or element content as usual. It could be plain text or HTML, depending on your application needs.
      * @param string $optionalHref Optional: pass href content or values here if they are required, e.g. you want to create a link / "a tag", then you could pass e.g. simply "https://www.w3schools.com". For an email you would pass e.g. "mailto:mymail@whatever.com".
+     * @param string $optionalId Optional: specify ID if you want of the element.
      * @return string The prepared HTML element, including the content and the appearance you saved or you wanted (e.g. colors saved in the system).
      */
-    public function genNonClosingElement(string $tag, array $colorElementsCaseSensitive, array $appearanceData, array $styles, array $classes, string $content, string $optionalHref = "") : string;
+    public function genNonClosingElement(string $tag, array $colorElementsCaseSensitive, array $appearanceData, array $styles, array $classes, string $content, string $optionalHref = "", string $optionalId = "") : string;
 
     public function genSpanText(array $appearanceData, string $text) : string;
 
