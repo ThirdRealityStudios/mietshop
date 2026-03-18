@@ -462,7 +462,7 @@ class GlobalView implements IGlobalView
 
     private function genASocialMediaImage(string $socialMediaName, string $href) : string
     {
-        return $this->genNonClosingElement("a", [], [], [], [ "d-inline-block", "me-2", "mb-2", "darker-interact" ], "<img src=\"/img/logo/socialmedia/$socialMediaName.png\" alt=\"$socialMediaName\" title=\"$socialMediaName öffnen\" height=\"50\">", $href);
+        return $this->genNonClosingElement("a", [], [], [], [ "d-inline-block", "me-3", "mb-3", "darker-interact" ], "<img src=\"/img/logo/socialmedia/$socialMediaName.png\" alt=\"$socialMediaName\" title=\"$socialMediaName öffnen\" height=\"50\">", $href);
     }
 
     private function genContactDataRows(array $companyData, array $appearanceData) : string
