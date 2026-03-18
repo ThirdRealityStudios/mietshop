@@ -1,4 +1,8 @@
 Header add "Cache-Control" "no-cache"
+AuthType Basic
+AuthName "Geschützter Bereich"
+AuthUserFile /home/www/public/.htpasswd
+Require valid-user
 # RewriteEngine On
 # RewriteCond %{HTTPS} off
 # First rewrite to HTTPS:

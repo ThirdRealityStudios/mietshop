@@ -34,13 +34,14 @@ class GlobalView implements IGlobalView
     private function preGenRow(string $rowContentHTML, bool $applyTopMargin, int $leftCol, int $leftColXL, int $leftColXXL, int $middleCol, int $middleColXL, int $middleColXXL, int $rightCol, int $rightColXL, int $rightColXXL) : string
     {
         $appliedTopMarginCode = ($applyTopMargin) ? ' mt-5' : '';
+        $appliedClass = empty($appliedClass) ? '' : " $appliedClass";
 
         // Use of Bootstrap classes for columns here explained:
         // first "col-..." is applied,
         // after that XL viewport (col-xl-...) is fulfilled,
         // and after that the specifications for XXL viewport are used.
 
-        $bootstrapRowString = '<div class="row'.$appliedTopMarginCode.'">';
+        $bootstrapRowString = "<div class=\"row$appliedTopMarginCode$appliedClass\">";
 
         if($leftCol > 0 && $leftColXL > 0 && $leftColXXL > 0)
             $bootstrapRowString .= '<div class="col-'.$leftCol.' col-xl-'.$leftColXL.' col-xxl-'.$leftColXXL.'"></div>';
@@ -57,81 +58,70 @@ class GlobalView implements IGlobalView
     }
 
     /**
-     * Is the same function as preGenRow(..)
-     * but you do NOT need to specify the Bootstrap column parameters anymore.
-     * Instead,
-     * the default parameters are used,
-     * defined in "config.php"
-     * (FEED_COL_WIDTH, FEED_COL_XL_WIDTH, FEED_COL_XXL_WIDTH, FEED_COL_SIDE, FEED_COL_XL_SIDE and FEED_COL_XXL_SIDE).
+     * Generates a default row,
+     * usually suitable for most responsive webpages.
      *
-     * @param string $rowContentHTML Simply the HTML code for your Bootstrap row.
-     * @param bool $applyTopMargin When 'true', a top-margin of 5 Bootstrap units is applied for the generated row. Otherwise not if 'false'.
+     * @param string $contentHTML Simply the HTML code for your Bootstrap row.
+     * @param array $colorElementsCaseSensitive
+     * @param array $appearanceData
+     * @param array $styles
+     * @param array $classes Additional classes you can attach.
      * @return string Row HTML as described.
      */
-    private function preGenDefaultRow(string $rowContentHTML, bool $applyTopMargin) : string
+    private function preGenDefaultRow(string $contentHTML, array $colorElementsCaseSensitive, array $appearanceData, array $styles, array $classes) : string
     {
-        return $this -> preGenRow($rowContentHTML, $applyTopMargin, 1, 3, 4, 10, 6, 4, 1, 3, 4);
+        $columnLeft = $this->genNonClosingElement("div", [], [], [], [ "col-1", "col-xl-3", "col-xxl-4" ], "");
+        $columnCenter = $this->genNonClosingElement("div", [], [], [], [ "col-10", "col-xl-6", "col-xxl-4" ], $contentHTML);
+        $columnRight = $this->genNonClosingElement("div", [], [], [], [ "col-1", "col-xl-3", "col-xxl-4" ], "");
+
+        $rowContent = $columnLeft.$columnCenter.$columnRight;
+
+        $classes[] = "row";
+
+        $row = $this->genNonClosingElement("div", $colorElementsCaseSensitive, $appearanceData, $styles, $classes, $rowContent);
+
+        return $row;
     }
 
     public function genFeed(array $appearanceData, ?string $pictureURL, string $descriptionHTML) : string
     {
-        ////////////////////////////////////////////////
-        /// Here preparing window and frame colors
-
-        $feedAdditionalClasses = "";
-        $feedPossibleStyleProperties = "";
-
-        $windowColorClass = $appearanceData["Color"]["Window"][0];
-        $windowAdditionalClasses = empty($windowColorClass) ? "" : " $windowColorClass";
-        $feedAdditionalClasses .= $windowAdditionalClasses;
-
-        $windowColorStyle = $appearanceData["Color"]["Window"][1];
-        $feedPossibleStyleProperties .= empty($windowColorStyle) ? "" : "$windowColorStyle";
-
-        $frameColorClass = $appearanceData["Color"]["Frame"][0];
-        $feedAdditionalClasses .= empty($frameColorClass) ? "" : " $frameColorClass";
-
-        $frameColorStyle = $appearanceData["Color"]["Frame"][1];
-        $feedPossibleStyleProperties .= empty($frameColorStyle) ? "" : "$frameColorStyle";
-
-        // Finally prepare a possible stylesheet property for the tag
-        $feedPossibleStyleProperties = empty($feedPossibleStyleProperties) ? "" : " style=\"border-style: solid; border-width: 1px; $feedPossibleStyleProperties\"";
-        $feedPossibleStylePropertiesWithoutImage = empty($windowColorStyle) ? "" : " style=\"$windowColorStyle\"";
-        $feedOptionalBorderClasses = empty($frameColorClass) ? "" : " border-1";
-        $feedAdditionalClasses = empty($feedAdditionalClasses) ? "" : " $feedAdditionalClasses$feedOptionalBorderClasses";
-        $feedAdditionalClassesWithoutImage = " border-0 $windowAdditionalClasses";
-
         if(is_string($pictureURL))
         {
-            $html =
+            $outerDivContent =
             "
-            <div$feedPossibleStyleProperties class=\"card container$feedAdditionalClasses\">
-                <div class=\"row pt-3 pb-3\">
-                    <div class=\"col-6 col-sm-4 col-md-3 col-lg-3 col-xl-3 col-xxl-4 align-self-center\">
-                        <div class=\"border border-primary rounded bg-light\" style=\"display: flex; justify-content: center; align-items: center; text-align: center; min-width: 120px; width: 120px; min-height: 120px; max-width: 120px; height: 120px;\">
-                            <img class=\"img-fluid\" style=\"max-width: 118px; max-height: 118px;\" src=\"$pictureURL\" alt=\"$pictureURL\">
-                        </div>
+            <div class=\"row pt-3 pb-3\">
+                <div class=\"col-6 col-sm-4 col-md-3 col-lg-3 col-xl-3 col-xxl-4 align-self-center\">
+                    <div class=\"border border-primary rounded bg-light\" style=\"display: flex; justify-content: center; align-items: center; text-align: center; min-width: 120px; width: 120px; min-height: 120px; max-width: 120px; height: 120px;\">
+                        <img class=\"img-fluid\" style=\"max-width: 118px; max-height: 118px;\" src=\"$pictureURL\" alt=\"$pictureURL\">
                     </div>
-                    <div class=\"col-6 col-sm-8 col-md-9 col-lg-9 col-xl-9 col-xxl-8 align-self-center\">
-                        <div>$descriptionHTML</div>
-                    </div>
+                </div>
+                <div class=\"col-6 col-sm-8 col-md-9 col-lg-9 col-xl-9 col-xxl-8 align-self-center\">
+                    <div>$descriptionHTML</div>
                 </div>
             </div>
             ";
+
+            $outerDiv = $this->genNonClosingElement("div", [ "Window", "Frame" ], $appearanceData, [], [ "card", "container" ], $outerDivContent);
+
+            $html = $outerDiv;
         }
         else
         {
-            $html =
+            $outerDivContent =
             "
-            <div$feedPossibleStylePropertiesWithoutImage class=\"card container$feedAdditionalClassesWithoutImage\">
-                <div class=\"col-md\">
-                    <div class=\"card-body\">$descriptionHTML</div>
-                </div>
+            <div class=\"col-md\">
+                <div class=\"card-body\">$descriptionHTML</div>
             </div>
             ";
+
+            $outerDiv = $this->genNonClosingElement("div", [ "Window" ], $appearanceData, [], [ "card", "container", "border-0" ], $outerDivContent);
+
+            $html = $outerDiv;
         }
 
-        return $this -> preGenDefaultRow($html, true);
+        // preGenDefaultRow(string $contentHTML, array $colorElementsCaseSensitive, array $appearanceData, array $styles, array $classes)
+
+        return $this -> preGenDefaultRow($html, [ "Window", "Frame" ], [], [], [ "mt-5" ]);
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -319,171 +309,6 @@ class GlobalView implements IGlobalView
         return $this->genNonClosingElement("a", [ "Text" ], $appearanceData, [], [ "nav-link", "darker-interact" ], $title, $href);
     }
 
-    private function genBootstrapHeader(string $companyName, array $appearanceData) : string
-    {
-        ////////////////////////////////////////////////
-        /// Here preparing window and frame colors
-
-        $navAdditionalClasses = "";
-        $navPossibleStyleProperties = "";
-
-        $windowColorClass = $appearanceData["Color"]["Window"][0];
-        $navAdditionalClasses .= empty($windowColorClass) ? "" : " $windowColorClass";
-
-        $windowColorStyle = $appearanceData["Color"]["Window"][1];
-        $navPossibleStyleProperties .= empty($windowColorStyle) ? "" : "$windowColorStyle";
-
-        $frameColorClass = $appearanceData["Color"]["Frame"][0];
-        $navAdditionalClasses .= empty($frameColorClass) ? "" : " $frameColorClass";
-
-        $frameColorStyle = $appearanceData["Color"]["Frame"][1];
-        $navPossibleStyleProperties .= empty($frameColorStyle) ? "" : "$frameColorStyle";
-
-        // Finally prepare a possible stylesheet property for the tag
-        $navPossibleStyleProperties = empty($navPossibleStyleProperties) ? "" : " style=\"border-bottom-style: solid; border-bottom-width: 3px; $navPossibleStyleProperties\"";
-        $navOptionalBorderClasses = empty($frameColorClass) ? "" : " border-bottom border-3";
-        $navAdditionalClasses = empty($navAdditionalClasses) ? "" : " $navAdditionalClasses$navOptionalBorderClasses";
-
-        $sideMenuPossibleStyleProperties = $navPossibleStyleProperties; // for readability
-        $sideMenuAdditionalClasses = $navAdditionalClasses;
-
-        $sideMenuContentPossibleStyleProperties = empty($windowColorStyle) ? "" : " style=\"$windowColorStyle\"";
-        $sideMenuContentAdditionalClasses = empty($windowColorClass) ? "" : " $windowColorClass";
-
-        //////////////////////////////////////////////
-        /// Now preparing text colors
-
-        $textAdditionalClass = $appearanceData["Color"]["Text"][0];
-        $textAdditionalClass = empty($textAdditionalClass) ? "" : " $textAdditionalClass";
-
-        $textPossibleStyleProperties = $appearanceData["Color"]["Text"][1];
-        $textPossibleStyleProperties = empty($textPossibleStyleProperties) ? "" : " style=\"$textPossibleStyleProperties\"";
-
-        $aLandingPage = $this->genNavLink($appearanceData, "Startseite 🏠", "/");
-        $aExplore = $this->genNavLink($appearanceData, "Jetzt Mietobjekte entdecken 🔎", "/?view=search");
-        $aAccount = $this->genNavLink($appearanceData, "Konto 👤", "/?view=login");
-        $aTermsOfService = $this->genNavLink($appearanceData, "AGBs", "/?view=termsofservice");
-        $aPrivacyPolicy = $this->genNavLink($appearanceData, "Datenschutzerklärung", "/?view=privacypolicy");
-        $aImprint = $this->genNavLink($appearanceData, "Impressum", "/?view=imprint");
-
-        $sideMenuHeaderTitle = $this->genNonClosingElement("h5", [ "Text" ], $appearanceData, [], [ "offcanvas-title" ], $companyName, "", "offcanvasNavbarLabel");
-
-        $sideMenuHeaderContent =
-        "
-        $sideMenuHeaderTitle
-        <button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"offcanvas\" aria-label=\"Close\"></button>
-        ";
-
-        $sideMenuHeader = $this->genNonClosingElement("div", [ "Window" ], $appearanceData, [], [ "offcanvas-header" ], $sideMenuHeaderContent);
-
-        $sideMenuBodyContent =
-        "
-        <ul class=\"navbar-nav justify-content-end flex-grow-1 pe-3\">
-            <li class=\"nav-item\">
-                $aLandingPage
-            </li>
-            <li class=\"nav-item\">
-                $aExplore
-            </li>
-            <li class=\"nav-item\">
-                $aAccount
-            </li>
-            <li class=\"nav-item\">
-                $aTermsOfService
-            </li>
-            <li class=\"nav-item\">
-                $aPrivacyPolicy
-            </li>
-            <li class=\"nav-item\">
-                $aImprint
-            </li>
-        </ul>
-        ";
-
-        $sideMenuBody = $this->genNonClosingElement("div", [ "Window" ], $appearanceData, [], [ "offcanvas-body" ], $sideMenuBodyContent);
-
-        $navContent =
-        "
-        <div class=\"container-fluid\">
-		        <img src=\"/favicon.png\" alt=\"favicon.png\" width=\"70\" height=\"70\">
-                <button class=\"navbar-toggler\" type=\"button\" data-bs-toggle=\"offcanvas\" data-bs-target=\"#offcanvasNavbar\" aria-controls=\"offcanvasNavbar\" aria-label=\"Toggle navigation\">
-                    <span class=\"navbar-toggler-icon\"></span>
-                </button>
-                <div class=\"offcanvas offcanvas-end\" tabindex=\"-1\" id=\"offcanvasNavbar\" aria-labelledby=\"offcanvasNavbarLabel\" role=\"dialog\">
-                    $sideMenuHeader
-                    $sideMenuBody
-                </div>
-            </div>
-        ";
-
-        $navBootstrap = $this->genNonClosingElement("nav", [ "Window", "Frame" ], $appearanceData, [ "border-bottom-style: solid; border-bottom-width: 3px;" ], [ "navbar", "sticky-top", "w-100", "z-2" ], $navContent);
-
-        return $navBootstrap;
-    }
-
-    private function genHeadHTML($companyName) : string
-    {
-        return "
-        <head>
-            <link rel=\"icon\" type=\"image/png\" href=\"/favicon.png\"/>
-            <link rel=\"apple-touch-icon\" href=\"/apple-touch-icon.png\"/>
-            <meta charset=\"utf-8\">
-            <meta name=\"description\" content=\"{$companyName}\">
-            <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">
-            <title>{$companyName}</title>
-            <script src=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js\" integrity=\"sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz\" crossorigin=\"anonymous\"></script>
-            <script src=\"https://code.jquery.com/jquery-3.2.1.slim.min.js\" integrity=\"sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN\" crossorigin=\"anonymous\"></script>
-            <link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css\" rel=\"stylesheet\" integrity=\"sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH\" crossorigin=\"anonymous\">
-            <style>
-                @keyframes spin
-                {
-                    from
-                    {
-                        transform: rotate(0deg);
-                    }
-                    to
-                    {
-                        transform: rotate(360deg);
-                    }
-                }
-                
-                .gear-spin
-                {
-                    display: inline-block;
-                    animation: spin 1.4s linear infinite;
-                }
-                
-                .darker-interact:hover
-                {
-                    filter: brightness(90%);
-                }
-
-                .darker-interact:active
-                {
-                    filter: brightness(80%);
-                }
-		    </style>
-        </head>
-        ";
-    }
-
-    private function genDefaultHTMLDoc(array $appearanceData, string $bodyHTML, string $companyName) : string
-    {
-        $bodyContent = $this->genNonClosingElement("div", [ "Background" ], $appearanceData, [], [], $bodyHTML);
-        $body = $this->genNonClosingElement("body", [ "Window" ], $appearanceData, [], [], $bodyContent);
-
-        $html =
-        "
-        <!DOCTYPE html>
-            <html lang=\"de\">
-            {$this->genHeadHTML($companyName)}
-            $body
-        </html>
-        ";
-
-        return $html;
-    }
-
     /**
      * Generates the whole class string,
      * containing all necessary classes,
@@ -510,6 +335,11 @@ class GlobalView implements IGlobalView
             {
                 $allClasses .= $class; // Last custom class to attach to the string
             }
+        }
+
+        if(empty($appearanceData))
+        {
+            return $allClasses;
         }
 
         foreach($colorElementsCaseSensitive as $colorElementCaseSensitive)
@@ -554,6 +384,11 @@ class GlobalView implements IGlobalView
             {
                 $allStyles .= $style; // Last custom style to attach to the string
             }
+        }
+
+        if(empty($appearanceData))
+        {
+            return $allStyles;
         }
 
         foreach($colorElementsCaseSensitive as $colorElementCaseSensitive)
@@ -630,6 +465,300 @@ class GlobalView implements IGlobalView
         return $this->genNonClosingElement("a", [], [], [], [ "d-inline-block", "me-2", "mb-2", "darker-interact" ], "<img src=\"/img/logo/socialmedia/$socialMediaName.png\" alt=\"$socialMediaName\" title=\"$socialMediaName öffnen\" height=\"50\">", $href);
     }
 
+    private function genContactDataRows(array $companyData, array $appearanceData) : string
+    {
+        if(empty($companyData))
+        {
+            return "";
+        }
+
+        $streetHTMLSafe = htmlspecialchars($companyData["Street"][0], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $zipCodeHTMLSafe = htmlspecialchars($companyData["ZipCode"][0], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $placeHTMLSafe = htmlspecialchars($companyData["Place"][0], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $emailHTMLSafe = htmlspecialchars($companyData["Email"][0], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $phoneNormalSafe = htmlspecialchars($companyData["PhoneNormal"][0], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $phoneMobileSafe = htmlspecialchars($companyData["PhoneMobile"][0], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+
+        $pContactHint = $this->genNonClosingElement("p", [ "Text" ], $appearanceData, [], [ "fs-4" ], "Kontakt:");
+
+        $spanStreet = $this->genSpanText($appearanceData, $streetHTMLSafe);
+        $spanZipPlace = $this->genSpanText($appearanceData, "{$zipCodeHTMLSafe}&nbsp;{$placeHTMLSafe}");
+        $spanEmail = $this->genSpanText($appearanceData, "Email:&nbsp;");
+        $aEmail = $this->genALink($appearanceData, $emailHTMLSafe, "mailto:{$emailHTMLSafe}");
+
+        $spanPhone = $this->genSpanText($appearanceData, "Telefon:&nbsp;");
+        $aPhone = $this->genALink($appearanceData, $phoneNormalSafe, "tel:{$phoneNormalSafe}");
+        $spanMobile = $this->genSpanText($appearanceData, "Mobil:&nbsp;");
+        $aMobile = $this->genALink($appearanceData, $phoneMobileSafe, "tel:{$phoneMobileSafe}");
+
+        $contactRows =
+        "
+        <div class=\"row mb-4\">
+            <div class=\"col-12\">
+                $pContactHint
+            </div>
+        </div>
+        <div class=\"row\">
+            <div class=\"col-12\">
+                $spanStreet
+            </div>
+        </div>
+        <div class=\"row mb-3\">
+            <div class=\"col-12\">
+                $spanZipPlace
+            </div>
+        </div>
+        <div class=\"row mb-3\">
+            <div class=\"col-12\">
+                $spanEmail$aEmail
+            </div>
+        </div>
+        <div class=\"row\">
+            <div class=\"col-12\">
+                $spanPhone$aPhone
+            </div>
+        </div>
+        <div class=\"row mb-3 mb-3\">
+            <div class=\"col-12\">
+                $spanMobile$aMobile
+            </div>
+        </div>
+        ";
+
+        return $contactRows;
+    }
+
+    private function genSocialMediaRow(array $companyData, array $appearanceData) : string
+    {
+        $facebookURLSafe = htmlspecialchars($companyData["FacebookURL"][0] ?? "", ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $instagramURLSafe = htmlspecialchars($companyData["InstagramURL"][0] ?? "", ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $whatsappURLSafe = htmlspecialchars($companyData["WhatsAppURL"][0] ?? "", ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $kleinanzeigenURLSafe = htmlspecialchars($companyData["KleinanzeigenURL"][0] ?? "", ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+
+        $socialMediaButtons = "";
+        $socialMediaButtonCount = 0;
+
+        if(!empty($facebookURLSafe))
+        {
+            $socialMediaButtons .= $this->genASocialMediaImage("Facebook", $facebookURLSafe);
+            $socialMediaButtonCount++;
+        }
+
+        if(!empty($instagramURLSafe))
+        {
+            $socialMediaButtons .= $this->genASocialMediaImage("Instagram", $instagramURLSafe);
+            $socialMediaButtonCount++;
+        }
+
+        if(!empty($whatsappURLSafe))
+        {
+            $socialMediaButtons .= $this->genASocialMediaImage("WhatsApp", $whatsappURLSafe);
+            $socialMediaButtonCount++;
+        }
+
+        if(!empty($kleinanzeigenURLSafe))
+        {
+            $socialMediaButtons .= $this->genASocialMediaImage("Kleinanzeigen", $kleinanzeigenURLSafe);
+            $socialMediaButtonCount++;
+        }
+
+        $socialMediaRow =
+        "
+        <div class=\"row mb-5\">
+            <span>
+                $socialMediaButtons
+            </span>
+        </div>
+        ";
+
+        /** It only makes sense to show a title when there are enough social media links.
+         * For only one social media link it is not worth it. */
+        if($socialMediaButtonCount > 1)
+        {
+            $pSocialMediaHint = $this->genPText($appearanceData, "Alternativ können Sie uns auch auf den gängigen sozialen Medien ansprechen und einen Termin vereinbaren.");
+            $pSocialMediaTitle = $this->genNonClosingElement("p", [ "Text" ], $appearanceData, [], [ "fs-4" ], "Social Media:");
+
+            $optionalSocialMediaTitleRow =
+            "
+            <div class=\"row mb-5\">
+                $pSocialMediaHint
+            </div>
+            <div class=\"row mb-3\">
+                $pSocialMediaTitle
+            </div>
+            ";
+        }
+        else
+        {
+            $optionalSocialMediaTitleRow = "";
+        }
+
+        return $optionalSocialMediaTitleRow.$socialMediaRow;
+    }
+
+    private function genCopyrightRow(array $companyData, array $appearanceData) : string
+    {
+        $companyNameHTMLSafe = htmlspecialchars($companyData["CompanyName"][0] ?? "", ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $copyrightElement = $this->genNonClosingElement("p", [ "Text" ], $appearanceData, [], [ "mb-5", "mt-5", "text-center" ], "Copyright&nbsp;©&nbsp;$companyNameHTMLSafe&nbsp;-&nbsp;Alle&nbsp;Rechte&nbsp;vorbehalten.");
+        $copyrightRow =
+        "
+        <div class=\"row mt-5\">
+            $copyrightElement
+        </div>
+        ";
+
+        return $copyrightRow;
+    }
+
+    private function genMapsRow(array $companyData) : string
+    {
+        $mapLocationURLSafe = htmlspecialchars($companyData["MapLocationURL"][0] ?? "", ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+
+        if(empty($mapLocationURLSafe))
+        {
+            return "";
+        }
+
+        $mapsServiceEmbedded =
+        "
+        <div class=\"row mb-3\">
+            <iframe src=\"$mapLocationURLSafe\" allowfullscreen=\"\" loading=\"lazy\" class=\"rounded bg-white\" style=\"width: 100%;\" height=\"480\"></iframe>
+        </div>
+        ";
+
+        return $mapsServiceEmbedded;
+    }
+
+    private function genDefaultHTMLDoc(array $appearanceData, string $bodyHTML, string $companyName) : string
+    {
+        $head = $this->genHeadHTML($companyName);
+
+        $bodyContent = $this->genNonClosingElement("div", [ "Background" ], $appearanceData, [], [], $bodyHTML);
+        $body = $this->genNonClosingElement("body", [ "Window" ], $appearanceData, [], [], $bodyContent);
+
+        $html =
+        "
+        <!DOCTYPE html>
+        <html lang=\"de\">
+            $head
+            $body
+        </html>
+        ";
+
+        return $html;
+    }
+
+    private function genHeadHTML($companyName) : string
+    {
+        return "
+        <head>
+            <link rel=\"icon\" type=\"image/png\" href=\"/favicon.png\"/>
+            <link rel=\"apple-touch-icon\" href=\"/apple-touch-icon.png\"/>
+            <meta charset=\"utf-8\">
+            <meta name=\"description\" content=\"{$companyName}\">
+            <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">
+            <meta name=\"robots\" content=\"noindex, nofollow\">
+            <title>{$companyName}</title>
+            <script src=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js\" integrity=\"sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz\" crossorigin=\"anonymous\"></script>
+            <script src=\"https://code.jquery.com/jquery-3.2.1.slim.min.js\" integrity=\"sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN\" crossorigin=\"anonymous\"></script>
+            <link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css\" rel=\"stylesheet\" integrity=\"sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH\" crossorigin=\"anonymous\">
+            <style>
+                @keyframes spin
+                {
+                    from
+                    {
+                        transform: rotate(0deg);
+                    }
+                    to
+                    {
+                        transform: rotate(360deg);
+                    }
+                }
+                
+                .gear-spin
+                {
+                    display: inline-block;
+                    animation: spin 1.4s linear infinite;
+                }
+                
+                .darker-interact:hover
+                {
+                    filter: brightness(90%);
+                }
+
+                .darker-interact:active
+                {
+                    filter: brightness(80%);
+                }
+		    </style>
+        </head>
+        ";
+    }
+
+    private function genBootstrapHeader(string $companyName, array $appearanceData) : string
+    {
+        $aLandingPage = $this->genNavLink($appearanceData, "Startseite 🏠", "/");
+        $aExplore = $this->genNavLink($appearanceData, "Jetzt Mietobjekte entdecken 🔎", "/?view=search");
+        $aAccount = $this->genNavLink($appearanceData, "Konto 👤", "/?view=login");
+        $aTermsOfService = $this->genNavLink($appearanceData, "AGBs", "/?view=termsofservice");
+        $aPrivacyPolicy = $this->genNavLink($appearanceData, "Datenschutzerklärung", "/?view=privacypolicy");
+        $aImprint = $this->genNavLink($appearanceData, "Impressum", "/?view=imprint");
+
+        $sideMenuHeaderTitle = $this->genNonClosingElement("h5", [ "Text" ], $appearanceData, [], [ "offcanvas-title" ], $companyName, "", "offcanvasNavbarLabel");
+
+        $sideMenuHeaderContent =
+            "
+        $sideMenuHeaderTitle
+        <button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"offcanvas\" aria-label=\"Close\"></button>
+        ";
+
+        $sideMenuHeader = $this->genNonClosingElement("div", [ "Window" ], $appearanceData, [], [ "offcanvas-header" ], $sideMenuHeaderContent);
+
+        $sideMenuBodyContent =
+            "
+        <ul class=\"navbar-nav justify-content-end flex-grow-1 pe-3\">
+            <li class=\"nav-item\">
+                $aLandingPage
+            </li>
+            <li class=\"nav-item\">
+                $aExplore
+            </li>
+            <li class=\"nav-item\">
+                $aAccount
+            </li>
+            <li class=\"nav-item\">
+                $aTermsOfService
+            </li>
+            <li class=\"nav-item\">
+                $aPrivacyPolicy
+            </li>
+            <li class=\"nav-item\">
+                $aImprint
+            </li>
+        </ul>
+        ";
+
+        $sideMenuBody = $this->genNonClosingElement("div", [ "Window" ], $appearanceData, [], [ "offcanvas-body" ], $sideMenuBodyContent);
+
+        $navContent =
+            "
+        <div class=\"container-fluid\">
+		        <img src=\"/favicon.png\" alt=\"favicon.png\" width=\"70\" height=\"70\">
+                <button class=\"navbar-toggler\" type=\"button\" data-bs-toggle=\"offcanvas\" data-bs-target=\"#offcanvasNavbar\" aria-controls=\"offcanvasNavbar\" aria-label=\"Toggle navigation\">
+                    <span class=\"navbar-toggler-icon\"></span>
+                </button>
+                <div class=\"offcanvas offcanvas-end\" tabindex=\"-1\" id=\"offcanvasNavbar\" aria-labelledby=\"offcanvasNavbarLabel\" role=\"dialog\">
+                    $sideMenuHeader
+                    $sideMenuBody
+                </div>
+            </div>
+        ";
+
+        $navBootstrap = $this->genNonClosingElement("nav", [ "Window", "Frame" ], $appearanceData, [ "border-bottom-style: solid; border-bottom-width: 3px;" ], [ "navbar", "sticky-top", "w-100", "z-2" ], $navContent);
+
+        return $navBootstrap;
+    }
+
     /**
      * @param array $companyData Array as described in ICompanyModel by function getCompanyData()
      * @param array $appearanceData Array as described in IAppearanceModel by function getAppearanceData()
@@ -637,142 +766,27 @@ class GlobalView implements IGlobalView
      */
     private function genBootstrapFooter(array $companyData, array $appearanceData): string
     {
-        ///////////////////////////////////////////////////////////
-        /// Here loading content data and making it output safe
+        $contactDataRows = $this->genContactDataRows($companyData, $appearanceData);
+        $socialMediaRows = $this->genSocialMediaRow($companyData, $appearanceData);
+        $mapsRow = $this->genMapsRow($companyData);
+        $copyrightRow = $this->genCopyrightRow($companyData, $appearanceData);
 
-        $companyNameHTMLSafe = htmlspecialchars($companyData["CompanyName"][0] ?? "", ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $footerContent =
+        "
+        <div class=\"container-fluid pt-2\">
+            $contactDataRows
+            $socialMediaRows
+            $mapsRow
+            $copyrightRow
+        </div>
+        ";
 
-        $mapLocationURLSafe = htmlspecialchars($companyData["MapLocationURL"][0] ?? "", ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-        $facebookURLSafe = htmlspecialchars($companyData["FacebookURL"][0] ?? "", ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-        $instagramURLSafe = htmlspecialchars($companyData["InstagramURL"][0] ?? "", ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-        $whatsappURLSafe = htmlspecialchars($companyData["WhatsAppURL"][0] ?? "", ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-        $kleinanzeigenURLSafe = htmlspecialchars($companyData["KleinanzeigenURL"][0] ?? "", ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $footerContentResponsive = $this->preGenDefaultRow($footerContent, [], [], [], []);
 
-        if(!empty($companyData))
-        {
-            $streetHTMLSafe = htmlspecialchars($companyData["Street"][0], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-            $zipCodeHTMLSafe = htmlspecialchars($companyData["ZipCode"][0], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-            $placeHTMLSafe = htmlspecialchars($companyData["Place"][0], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-            $emailHTMLSafe = htmlspecialchars($companyData["Email"][0], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-            $phoneNormalSafe = htmlspecialchars($companyData["PhoneNormal"][0], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-            $phoneMobileSafe = htmlspecialchars($companyData["PhoneMobile"][0], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $footer = $this->genNonClosingElement("div", [ "Window", "Frame" ], $appearanceData, [ "border-top-style: solid; border-top-width: 3px;" ], [ "container-fluid", "mt-5 pt-5" ], $footerContentResponsive);
 
-            $pContactHint = $this->genNonClosingElement("p", [ "Text" ], $appearanceData, [], [ "fs-4" ], "Kontakt:");
-
-            $spanStreet = $this->genSpanText($appearanceData, $streetHTMLSafe);
-            $spanZipPlace = $this->genSpanText($appearanceData, "{$zipCodeHTMLSafe}&nbsp;{$placeHTMLSafe}");
-            $spanEmail = $this->genSpanText($appearanceData, "Email:&nbsp;");
-            $aEmail = $this->genALink($appearanceData, $emailHTMLSafe, "mailto:{$emailHTMLSafe}");
-
-            $spanPhone = $this->genSpanText($appearanceData, "Telefon:&nbsp;");
-            $aPhone = $this->genALink($appearanceData, $phoneNormalSafe, "tel:{$phoneNormalSafe}");
-            $spanMobile = $this->genSpanText($appearanceData, "Mobil:&nbsp;");
-            $aMobile = $this->genALink($appearanceData, $phoneMobileSafe, "tel:{$phoneMobileSafe}");
-
-            $contactCardText =
-            "
-            <div class=\"container-fluid\">
-                <div class=\"row mb-4\">
-                    <div class=\"col-12\">
-                        $pContactHint
-                    </div>
-                </div>
-                <div class=\"row\">
-                    <div class=\"col-12\">
-                        $spanStreet
-                    </div>
-                </div>
-                <div class=\"row mb-3\">
-                    <div class=\"col-12\">
-                        $spanZipPlace
-                    </div>
-                </div>
-                <div class=\"row mb-3\">
-                    <div class=\"col-12\">
-                        $spanEmail$aEmail
-                    </div>
-                </div>
-                <div class=\"row\">
-                    <div class=\"col-12\">
-                        $spanPhone$aPhone
-                    </div>
-                </div>
-                <div class=\"row mb-3 mb-3\">
-                    <div class=\"col-12\">
-                        $spanMobile$aMobile
-                    </div>
-                </div>
-            </div>
-            ";
-
-            $contactFeed = $this->genFeed($appearanceData, null, $contactCardText);
-        }
-        else
-        {
-            $contactFeed = "";
-        }
-
-        $socialMedia = "";
-        $socialMediaCount = 0;
-
-        if(!empty($kleinanzeigenURLSafe))
-        {
-            $socialMedia .= $this->genASocialMediaImage("Kleinanzeigen", $kleinanzeigenURLSafe);
-            $socialMediaCount++;
-        }
-
-        if(!empty($instagramURLSafe))
-        {
-            $socialMedia .= $this->genASocialMediaImage("Instagram", $instagramURLSafe);
-            $socialMediaCount++;
-        }
-
-        if(!empty($whatsappURLSafe))
-        {
-            $socialMedia .= $this->genASocialMediaImage("WhatsApp", $whatsappURLSafe);
-            $socialMediaCount++;
-        }
-
-        if(!empty($facebookURLSafe))
-        {
-            $socialMedia .= $this->genASocialMediaImage("Facebook", $facebookURLSafe);
-            $socialMediaCount++;
-        }
-
-        $optionalSocialMediaTitle = "";
-
-        /** It only makes sense to show a title when there are enough social media links.
-         * For only one social media link it is not worth it. */
-        if($socialMediaCount > 1)
-        {
-
-            $pSocialMediaHint = $this->genPText($appearanceData, "Alternativ können Sie uns auch auf den gängigen sozialen Medien ansprechen und einen Termin vereinbaren.");
-            $pSocialMediaTitle = $this->genNonClosingElement("p", [ "Text" ], $appearanceData, [], [ "fs-4" ], "Social Media:");
-
-            $optionalSocialMediaTitle =
-            "
-            $pSocialMediaHint
-            $pSocialMediaTitle
-            ";
-        }
-
-        $socialMediaFeed = $this->genFeed($appearanceData, null, $optionalSocialMediaTitle.$socialMedia);
-
-        $mapsServiceEmbedded = "";
-
-        if(!empty($mapLocationURLSafe))
-        {
-            $mapsServiceEmbedded = $this->genFeed($appearanceData, null, "<iframe src=\"$mapLocationURLSafe\" allowfullscreen=\"\" loading=\"lazy\" class=\"rounded bg-white\" style=\"width: 100%;\" height=\"480\"></iframe>");
-        }
-
-        $copyrightElement = $this->genNonClosingElement("p", [ "Text" ], $appearanceData, [], [ "mb-0", "text-center" ], "Copyright&nbsp;©&nbsp;$companyNameHTMLSafe&nbsp;-&nbsp;Alle&nbsp;Rechte&nbsp;vorbehalten.");
-        $copyrightRow = $this->preGenDefaultRow($copyrightElement, true);
-
-        $footerContent = "$contactFeed$socialMediaFeed$mapsServiceEmbedded$copyrightRow";
-
-        $divFooter = $this->genNonClosingElement("div",[ "Frame", "Window" ], $appearanceData, [ "border-top-style: solid;", "border-top-width: 3px;" ], [ "container-fluid", "mt-5", "pb-5" ], $footerContent);
-
-        return $divFooter;
+        return $footer;
+        
     }
 
     public function show(array $companyData, array $appearanceData, string $body): void
