@@ -473,6 +473,7 @@ class GlobalView implements IGlobalView
         return $this->genNonSelfClosingElement("a", [], [], [], [ "d-inline-block", "me-3", "mb-3", "darker-interact" ], "<img src=\"/img/logo/socialmedia/$socialMediaName.png\" alt=\"$socialMediaName\" title=\"$socialMediaName öffnen\" height=\"50\">", $href);
     }
 
+    // TODO Replace $svgLocalPath through $svgXML (which was loaded or required - implement that on the other hand in the utils folder or something "AssetLoader"...)
     public function genTextSVG(string $svgLocalPath, string $color) : string
     {
         // TODO View should not load something from the harddisk. Or move this function into a utility class (maybe with all other functions because it is slowly getting out of hands)
