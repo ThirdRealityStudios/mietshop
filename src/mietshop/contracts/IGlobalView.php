@@ -34,6 +34,8 @@ interface IGlobalView
 
     public function genAButtonInteresting(array $appearanceData, string $text, string $href) : string;
 
+    public function genAButtonUninteresting(array $appearanceData, string $text, string $href) : string;
+
     /**
      * Generates a pre-defined Bootstrap feed / post in HTML,
      * which has an optional image you can display (150px by 150px) and an HTML description

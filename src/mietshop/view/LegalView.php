@@ -28,16 +28,6 @@ class LegalView implements ILegalView
         $this->textFormatView = $textFormatView;
     }
 
-    private function giveErrorMessageIfNotString(array $companyData, $stringPregReplaceResult)
-    {
-        if(!is_string($stringPregReplaceResult))
-        {
-            $this->errorView->show($companyData, "Unbekannter Fehler", "Die interne EDV scheint derzeit einen Verarbeitungsfehler zu haben. Bitte schauen Sie später nochmal vorbei, bis der Fehler behoben worden ist.");
-
-            exit(0);
-        }
-    }
-
     public function show(array $companyData, array $appearanceData, bool $showEditButton, bool $isPrivacyPolicy, string $actionValue = "", int $messageValue = 0) : void
     {
         $legalTextKey = $isPrivacyPolicy ? "PrivacyPolicy" : "TermsOfService";
@@ -52,27 +42,32 @@ class LegalView implements ILegalView
 
         $legalTextHTMLSafeFormatted = $this->textFormatView->formatAll($legalTextHTMLSafe);
 
-        $optionalEditButton = $showEditButton ? "<div class=\"row mb-4\"><div class=\"col-12\"><a class=\"btn btn-secondary w-100\" href=\"/?view=$legalTextView&action=update\">Bearbeiten</a></div></div>" : "";
+        $optionalEditButton = $this->globalView->genNonClosingElement("a", [ "Uninteresting" ], $appearanceData, [], [ "btn", "w-100" ], "Bearbeiten", "/?view=$legalTextView&action=update");
+        $optionalEditButtonRow = $showEditButton ? "<div class=\"row mb-4\"><div class=\"col-12\">$optionalEditButton</div></div>" : "";
 
         if(empty($actionValue))
         {
+            $legalTextTitle = $this->globalView->genNonClosingElement("span", [ "Text" ], $appearanceData, [], [ "fs-3", "fw-bold", "lh-1" ], $legalTextTitleLong);
+            $legalTextDescription = $this->globalView->genNonClosingElement("span", [ "Text" ], $appearanceData, [ "white-space: pre-line;" ], [ "fs-6" ], $legalTextHTMLSafeFormatted);
+            $aLandingPageButton = $this->globalView->genAButtonInteresting($appearanceData, "Zur Startseite", "/");
+
             $legalTextContentHTML =
             "
             <div class=\"container-fluid p-0\">
                 <div class=\"row mb-4\">
                     <div class=\"col-12 text-center\">
-                        <span class=\"fs-3 fw-bold lh-1\">$legalTextTitleLong</span>
+                        $legalTextTitle
                     </div>
                 </div>
-                $optionalEditButton
+                $optionalEditButtonRow
                 <div class=\"row mb-3\">
                     <div class=\"col-12\">
-                        <p style=\"white-space: pre-line;\" class=\"fs-6\">$legalTextHTMLSafeFormatted</p>
+                        $legalTextDescription
                     </div>
                 </div>
                 <div class=\"row\">
                     <div class=\"col-12\">
-                        <a class=\"btn btn-primary\" href=\"/\">Zur Startseite</a>
+                        $aLandingPageButton
                     </div>
                 </div>
             </div>

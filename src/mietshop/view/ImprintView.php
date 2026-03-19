@@ -30,66 +30,92 @@ class ImprintView implements IImprintView
 
         if(empty($actionValue))
         {
-            $optionalEditButton = $showEditButton ? "<div class=\"row mb-3\"><div class=\"col-12\"><a class=\"btn btn-secondary\" href=\"/?view=imprint&action=update\">Impressum bearbeiten</a></div></div>" : "";
-            $optionalP19UStGText = ($p19ustgApplies === 1) ? "<div class=\"row mb-3\"><div class=\"col-12\"><span class=\"fs-6\">Per §19 Abs. 1 UStG wird die Umsatzsteuer nicht ausgewiesen.</span></div></div>" : "";
-            $optionalP36VSBGText = ($p36vsbgApplies === 1) ? "<div class=\"row mb-3\"><div class=\"col-12\"><span class=\"fs-6\">Hinweis zur Streitbeilegung gemäß § 36 VSBG:</span></div></div><div class=\"row mb-3\"><div class=\"col-12\"><span class=\"fs-6\">Wir nehmen nicht an einem Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teil und sind hierzu auch nicht verpflichtet.</span></div></div>" : "";
+            $optionalEditImprintText = $this->globalView->genNonClosingElement("a", [ "Uninteresting" ], $appearanceData, [], [ "btn", "w-100" ], "Impressum bearbeiten", "/?view=imprint&action=update");
+            $optionalEditButton = $showEditButton ? "<div class=\"row mb-4\"><div class=\"col-12\">$optionalEditImprintText</div></div>" : "";
+
+            $optionalP19UStGText = $this->globalView->genSpanText($appearanceData, "Per §19 Abs. 1 UStG wird die Umsatzsteuer nicht ausgewiesen.");
+            $optionalP19UStGTextRow = ($p19ustgApplies === 1) ? "<div class=\"row mb-3\"><div class=\"col-12\">$optionalP19UStGText</div></div>" : "";
+
+            $optionalP36VSBGTextHint = $this->globalView->genSpanText($appearanceData, "Hinweis zur Streitbeilegung gemäß § 36 VSBG:");
+            $optionalP36VSBGTextBriefly = $this->globalView->genSpanText($appearanceData, "Wir nehmen nicht an einem Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teil und sind hierzu auch nicht verpflichtet.");
+            $optionalP36VSBGTextRow = ($p36vsbgApplies === 1) ? "<div class=\"row mb-3\"><div class=\"col-12\">$optionalP36VSBGTextHint</div></div><div class=\"row mb-3\"><div class=\"col-12\">$optionalP36VSBGTextBriefly</div></div>" : "";
+
+            $imprintTitle = $this->globalView->genNonClosingElement("p", [ "Text" ], $appearanceData, [], [ "fw-bold", "fs-3" ], "Impressum");
+            $imprintCompanyName = $this->globalView->genSpanText($appearanceData, $companyNameHTMLSafe);
+            $imprintStreet = $this->globalView->genSpanText($appearanceData, $streetHTMLSafe);
+            $imprintZipCode = $this->globalView->genSpanText($appearanceData, $zipCodeHTMLSafe);
+            $imprintPlace = $this->globalView->genSpanText($appearanceData, $placeHTMLSafe);
+
+            $imprintEmailTitle = $this->globalView->genSpanText($appearanceData, "Email:&nbsp;");
+            $imprintEmail = $this->globalView->genALink($appearanceData, $emailHTMLSafe, "mailto:$emailHTMLSafe");
+
+            $imprintTelTitle = $this->globalView->genSpanText($appearanceData, "Telefon:&nbsp;");
+            $imprintTel = $this->globalView->genALink($appearanceData, $phoneMobileHTMLSafe, "mailto:$phoneMobileHTMLSafe");
+
+            $imprintOwnerTitle = $this->globalView->genSpanText($appearanceData, "Geschäftsführer:&nbsp;");
+            $imprintOwner = $this->globalView->genSpanText($appearanceData, $ownerHTMLSafe);
+
+            $imprintTermsOfServiceTitle = $this->globalView->genSpanText($appearanceData, "Allgemeine Geschäftsbedingungen:");
+            $imprintTermsOfService = $this->globalView->genALink($appearanceData, "/?view=termsofservice", "/?view=termsofservice");
+
+            $imprintLandingPageButton = $this->globalView->genAButtonInteresting($appearanceData, "Zur Startseite", "/");
 
             $imprintContentHTML =
             "
             <div class=\"container-fluid p-0\">
-                <div class=\"row mb-2 mt-2\">
+                <div class=\"row lh-1\">
                     <div class=\"col-12\">
-                        <p class=\"fs-3 fw-bold\">Impressum</p>
+                        $imprintTitle
                     </div>
                 </div>
+                $optionalEditButton
                 <div class=\"row mb-3\">
                     <div class=\"col-12\">
-                        <span class=\"fs-6\">{$companyNameHTMLSafe}</span>
+                        $imprintCompanyName
                     </div>
                 </div>
                 <div class=\"row\">
                     <div class=\"col-12\">
-                        <span class=\"fs-6\">{$streetHTMLSafe}</span>
+                        $imprintStreet
                     </div>
                 </div>
                 <div class=\"row mb-3\">
                     <div class=\"col-12\">
-                        <span class=\"fs-6 d-inline-block\">{$zipCodeHTMLSafe}&nbsp;</span><span class=\"fs-6 d-inline-block\">{$placeHTMLSafe}</span>
+                        $imprintZipCode&nbsp;$imprintPlace
                     </div>
                 </div>
                 <div class=\"row mb-3\">
                     <div class=\"col-12\">
-                        <span class=\"fs-6 d-inline-block\">E-Mail:&nbsp;</span><a class=\"d-inline-block\" href=\"mailto:{$emailHTMLSafe}\">{$emailHTMLSafe}</a>
+                        $imprintEmailTitle$imprintEmail
                     </div>
                 </div>
                 <div class=\"row mb-3\">
                     <div class=\"col-12\">
-                        <span class=\"fs-6 d-inline-block\">Telefon:&nbsp;</span><a class=\"fs-6 d-inline-block\" href=\"tel:{$phoneMobileHTMLSafe}\">{$phoneMobileHTMLSafe}</a>
+                        $imprintTelTitle$imprintTel
                     </div>
                 </div>
                 <div class=\"row mb-3\">
                     <div class=\"col-12\">
-                        <span class=\"fs-6 d-inline-block\">Geschäftsführer:&nbsp;</span><span class=\"fs-6 d-inline-block\">{$ownerHTMLSafe}</span>
+                        $imprintOwnerTitle$imprintOwner
                     </div>
                 </div>
                 <div class=\"row\">
                     <div class=\"col-12\">
-                        <span class=\"\">Allgemeine Geschäftsbedingungen:</span>
+                        $imprintTermsOfServiceTitle
                     </div>
                 </div>
                 <div class=\"row mb-4\">
                     <div class=\"col-12\">
-                        <a href=\"/?view=termsofservice\">/termsofservice</a>
+                        $imprintTermsOfService
                     </div>
                 </div>
-                $optionalP36VSBGText
-                $optionalP19UStGText
-                <div class=\"row mb-3\">
+                $optionalP36VSBGTextRow
+                $optionalP19UStGTextRow
+                <div class=\"row\">
                     <div class=\"col-12\">
-                        <a class=\"btn btn-primary\" href=\"/\">Zur Startseite</a>
+                        $imprintLandingPageButton
                     </div>
                 </div>
-                $optionalEditButton
             </div>
             ";
         }
