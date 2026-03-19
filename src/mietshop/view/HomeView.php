@@ -20,7 +20,7 @@ class HomeView implements IHomeView
 
         $ourRentalObjectsHTMLContent = "";
 
-        $pOurRentalObjects = $this->globalView->genNonClosingElement("p",[ "Text" ], $appearanceData, [], [ "fs-4", "mb-3" ], "Unser Verleihsortiment");
+        $pOurRentalObjects = $this->globalView->genNonClosingElement("p",[ "Text" ], $appearanceData, [], [ "fs-4", "mb-3", "lh-1" ], "Unser Verleihsortiment");
         $pNumerousObjectsHint = $this->globalView->genNonClosingElement("p",[ "Text" ], $appearanceData, [], [ "fs-6", "mb-3" ], "Zahlreiche Mietartikel aus folgenden Kategorien bieten wir an 😊");
 
         if(sizeof($categories) > 2)
@@ -38,7 +38,7 @@ class HomeView implements IHomeView
                 $ourRentalObjectsHTMLContent .= $this->globalView->genNonClosingElement("p", [ "Text" ], $appearanceData, [], [ "mb-3" ], $safeCategoryName);
             }
 
-            $ourRentalObjectsHTMLContent .= $this->globalView->genNonClosingElement("a", [ "Interesting" ], $appearanceData, [], [ "btn", "mb-3" ], "Jetzt stöbern und anfragen", "/?view=search");
+            $ourRentalObjectsHTMLContent .= $this->globalView->genNonClosingElement("a", [ "Interesting" ], $appearanceData, [], [ "btn" ], "Jetzt stöbern und anfragen", "/?view=search");
         }
         else
         {
@@ -84,7 +84,7 @@ class HomeView implements IHomeView
             }
         }
 
-        $body .= "<div class=\"container-fluid\">{$this->globalView->genFeed($appearanceData, null, $ourRentalObjectsHTMLContent)}</div>";
+        $body .= $this->globalView->genFeed($appearanceData, null, $ourRentalObjectsHTMLContent);
 
         $this->globalView->show($companyData, $appearanceData, $body);
     }

@@ -179,7 +179,7 @@ class LegalView implements ILegalView
             $legalTextContentHTML = "Ungültige Anfrage";
         }
 
-        $feedHTML = "<div class=\"container-fluid\">".$this->globalView->genFeed($appearanceData, null, $legalTextContentHTML)."</div>";
+        $feedHTML = $this->globalView->genFeed($appearanceData, null, $legalTextContentHTML);
 
         $this->globalView->show($companyData, $appearanceData, $feedHTML);
     }

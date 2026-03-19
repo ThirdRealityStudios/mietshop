@@ -87,41 +87,33 @@ class GlobalView implements IGlobalView
     {
         if(is_string($pictureURL))
         {
-            $outerDivContent =
+            $rowContent =
             "
-            <div class=\"row pt-3 pb-3\">
-                <div class=\"col-6 col-sm-4 col-md-3 col-lg-3 col-xl-3 col-xxl-4 align-self-center\">
-                    <div class=\"border border-primary rounded bg-light\" style=\"display: flex; justify-content: center; align-items: center; text-align: center; min-width: 120px; width: 120px; min-height: 120px; max-width: 120px; height: 120px;\">
-                        <img class=\"img-fluid\" style=\"max-width: 118px; max-height: 118px;\" src=\"$pictureURL\" alt=\"$pictureURL\">
-                    </div>
-                </div>
-                <div class=\"col-6 col-sm-8 col-md-9 col-lg-9 col-xl-9 col-xxl-8 align-self-center\">
-                    <div>$descriptionHTML</div>
+            <div class=\"col-6 col-sm-4 col-md-3 col-lg-3 col-xl-3 col-xxl-4 align-self-center\">
+                <div class=\"border border-primary rounded bg-light\" style=\"display: flex; justify-content: center; align-items: center; text-align: center; min-width: 120px; width: 120px; min-height: 120px; max-width: 120px; height: 120px;\">
+                    <img class=\"img-fluid\" style=\"max-width: 118px; max-height: 118px;\" src=\"$pictureURL\" alt=\"$pictureURL\">
                 </div>
             </div>
+            <div class=\"col-6 col-sm-8 col-md-9 col-lg-9 col-xl-9 col-xxl-8 align-self-center\">
+                <div>$descriptionHTML</div>
+            </div>
             ";
-
-            $outerDiv = $this->genNonClosingElement("div", [ "Window", "Frame" ], $appearanceData, [], [ "card", "container" ], $outerDivContent);
-
-            $html = $outerDiv;
         }
         else
         {
-            $outerDivContent =
+            $rowContent =
             "
-            <div class=\"col-md\">
-                <div class=\"card-body\">$descriptionHTML</div>
+            <div class=\"col-12 p-0\">
+                $descriptionHTML
             </div>
             ";
-
-            $outerDiv = $this->genNonClosingElement("div", [ "Window" ], $appearanceData, [], [ "card", "container", "border-0" ], $outerDivContent);
-
-            $html = $outerDiv;
         }
 
-        // preGenDefaultRow(string $contentHTML, array $colorElementsCaseSensitive, array $appearanceData, array $styles, array $classes)
+        $rowHTML = $this->genNonClosingElement("div", [], [], [], [ "row", "p-3" ], $rowContent);
 
-        return $this -> preGenDefaultRow($html, [ "Window", "Frame" ], [], [], [ "mt-5" ]);
+        $containerHTML = $this->genNonClosingElement("div", [ "Window", "Frame" ], $appearanceData, [], [ "container-fluid", "ms-0", "mt-0", "me-0", "mb-5", "rounded-3" ], $rowHTML);
+
+        return $this->preGenDefaultRow($containerHTML, [], [], [], []);
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -715,7 +707,7 @@ class GlobalView implements IGlobalView
         $sideMenuHeader = $this->genNonClosingElement("div", [ "Window" ], $appearanceData, [], [ "offcanvas-header" ], $sideMenuHeaderContent);
 
         $sideMenuBodyContent =
-            "
+        "
         <ul class=\"navbar-nav justify-content-end flex-grow-1 pe-3\">
             <li class=\"nav-item\">
                 $aLandingPage
@@ -741,7 +733,7 @@ class GlobalView implements IGlobalView
         $sideMenuBody = $this->genNonClosingElement("div", [ "Window" ], $appearanceData, [], [ "offcanvas-body" ], $sideMenuBodyContent);
 
         $navContent =
-            "
+        "
         <div class=\"container-fluid\">
 		        <img src=\"/favicon.png\" alt=\"favicon.png\" width=\"70\" height=\"70\">
                 <button class=\"navbar-toggler\" type=\"button\" data-bs-toggle=\"offcanvas\" data-bs-target=\"#offcanvasNavbar\" aria-controls=\"offcanvasNavbar\" aria-label=\"Toggle navigation\">
@@ -754,7 +746,7 @@ class GlobalView implements IGlobalView
             </div>
         ";
 
-        $navBootstrap = $this->genNonClosingElement("nav", [ "Window", "Frame" ], $appearanceData, [ "border-bottom-style: solid; border-bottom-width: 3px;" ], [ "navbar", "sticky-top", "w-100", "z-2" ], $navContent);
+        $navBootstrap = $this->genNonClosingElement("nav", [ "Window", "Frame" ], $appearanceData, [ "border-bottom-style: solid;", "border-bottom-width: 3px;" ], [ "navbar", "sticky-top", "w-100", "z-2", "mb-5" ], $navContent);
 
         return $navBootstrap;
     }
@@ -783,7 +775,7 @@ class GlobalView implements IGlobalView
 
         $footerContentResponsive = $this->preGenDefaultRow($footerContent, [], [], [], []);
 
-        $footer = $this->genNonClosingElement("div", [ "Window", "Frame" ], $appearanceData, [ "border-top-style: solid; border-top-width: 3px;" ], [ "container-fluid", "mt-5 pt-5" ], $footerContentResponsive);
+        $footer = $this->genNonClosingElement("div", [ "Window", "Frame" ], $appearanceData, [ "border-top-style: solid; border-top-width: 3px;" ], [ "container-fluid", "pt-5" ], $footerContentResponsive);
 
         return $footer;
         
@@ -795,7 +787,14 @@ class GlobalView implements IGlobalView
 
         $companyNameHTMLSafe = htmlspecialchars($companyData["CompanyName"][0] ?? "Internal Loading Error", ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 
-        $bodyHTML = $this->genBootstrapHeader($companyNameHTMLSafe, $appearanceData).$body.$this->genBootstrapFooter($companyData, $appearanceData);
+        $bodyContainer =
+        "
+        <div class=\"container-fluid\">
+            $body
+        </div>
+        ";
+
+        $bodyHTML = $this->genBootstrapHeader($companyNameHTMLSafe, $appearanceData).$bodyContainer.$this->genBootstrapFooter($companyData, $appearanceData);
 
         echo $this->genDefaultHTMLDoc($appearanceData, $bodyHTML, $companyNameHTMLSafe);
     }

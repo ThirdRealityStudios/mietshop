@@ -33,26 +33,28 @@ class LoginView implements ILoginView
         "
         <div class=\"container-fluid\">
             <div class=\"row mb-5\">
-                <div class=\"col-12 text-center fs-1\">
+                <div class=\"col-12 text-center fs-1 lh-1\">
                     <span class=\"fw-bold\">Anmelden</span>&nbsp;<div class=\"d-inline-block\" style=\"background-image: url('/img/symbol/box-arrow-in-right.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\">&nbsp;&nbsp;&nbsp;&nbsp;</div>
                 </div>
             </div>
-            <form class=\"form\" action=\"/?view=login\" method=\"post\">
-                <div class=\"mb-3\">
-                    <label for=\"Email\" class=\"form-label$inputLabelsInvalidClass\">E-Mail: </label>
-                    <input class=\"form-control$inputFieldsInvalidClass\" type=\"email\" placeholder=\"E-Mail-Adresse eingeben ...\" id=\"Email\" name=\"Email\" required>
-                </div>
-                <div class=\"mb-3\">
-                    <label for=\"Password\" class=\"form-label$inputLabelsInvalidClass\">Passwort:</label>
-                    <input class=\"form-control$inputFieldsInvalidClass\" type=\"password\" id=\"Password\" name=\"Password\" placeholder=\"Passwort eingeben ...\" required>
-                </div>
-                <div class=\"row text-left mb-3\">
-                    <div class=\"col-12\">
-                        <span class=\"fs-6 text-danger fw-bold\">{$safeOptionalErrorMessage}</span>
+            <form class=\"row form\" action=\"/?view=login\" method=\"post\">
+                <div class=\"container-fluid\">
+                    <div class=\"row mb-3\">
+                        <label for=\"Email\" class=\"form-label p-0$inputLabelsInvalidClass\">E-Mail: </label>
+                        <input class=\"form-control$inputFieldsInvalidClass\" type=\"email\" placeholder=\"E-Mail-Adresse eingeben ...\" id=\"Email\" name=\"Email\" required>
                     </div>
-                </div>
-                <div class=\"mb-3\">
-                    <input class=\"btn btn-primary\" type=\"submit\" value=\"Anmelden\">
+                    <div class=\"row mb-3\">
+                        <label for=\"Password\" class=\"form-label p-0$inputLabelsInvalidClass\">Passwort:</label>
+                        <input class=\"form-control$inputFieldsInvalidClass\" type=\"password\" id=\"Password\" name=\"Password\" placeholder=\"Passwort eingeben ...\" required>
+                    </div>
+                    <div class=\"row mb-3 text-left\">
+                        <div class=\"col-12\">
+                            <span class=\"fs-6 text-danger fw-bold\">{$safeOptionalErrorMessage}</span>
+                        </div>
+                    </div>
+                    <div class=\"row\">
+                        <input class=\"btn btn-primary\" type=\"submit\" value=\"Anmelden\">
+                    </div>
                 </div>
             </form>
         </div>    
@@ -60,8 +62,6 @@ class LoginView implements ILoginView
 
         $feedHTML = $this->globalView->genFeed($appearanceData, null, $feedContent);
 
-        $body = "<div class=\"container-fluid\">$feedHTML</div>";
-
-        $this->globalView->show($companyData, $appearanceData, $body);
+        $this->globalView->show($companyData, $appearanceData, $feedHTML);
     }
 }

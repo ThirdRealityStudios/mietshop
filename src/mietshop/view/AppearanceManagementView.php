@@ -21,14 +21,7 @@ class AppearanceManagementView implements IAppearanceManagementView
     {
         $feedHTML = $this->globalView->genFeed($appearanceData, null, $feedContentHTML);
 
-        $body =
-        "
-        <div class=\"container-fluid\">
-            $feedHTML
-        </div>
-        ";
-
-        $this->globalView->show($companyData, $appearanceData, $body);
+        $this->globalView->show($companyData, $appearanceData, $feedHTML);
     }
 
     private function genButton(string $urlTargetValue, string $urlElementValue, string $title) : string

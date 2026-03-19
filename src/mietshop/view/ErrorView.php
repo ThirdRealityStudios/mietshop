@@ -19,6 +19,7 @@ class ErrorView implements IErrorView
         $errorFeedTitleSafe = htmlspecialchars($errorFeedTitle, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
         $errorFeedContentSafe = htmlspecialchars($errorFeedContent, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
 
+
         $feedDescriptionHTML =
         "
         <div class=\"container-fluid\">
@@ -35,7 +36,7 @@ class ErrorView implements IErrorView
         </div>
         ";
 
-        $body = "<div class=\"container-fluid\">".$this->globalView->genFeed($appearanceData, null, $feedDescriptionHTML)."</div>";
+        $body = $this->globalView->genFeed($appearanceData, null, $feedDescriptionHTML);
 
         $this->globalView->show($companyData, $appearanceData, $body);
     }
