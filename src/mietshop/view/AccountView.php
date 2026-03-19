@@ -25,6 +25,8 @@ class AccountView implements IAccountView
         </div>
         ";
 
+        // $menuButtonHTML = $this->globalView->genAButtonInteresting($appearanceData, $title, "/?view=$view&action=$action");
+
         return $menuButtonHTML;
     }
 
@@ -44,10 +46,12 @@ class AccountView implements IAccountView
 
         $accountEmailSafe = htmlspecialchars($accountEmailLimited, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
 
+        $logoffButton = $this->globalView->genNonClosingElement("a", [ "Interesting" ], $appearanceData, [], [ "btn", "w-100" ], "Abmelden 🔐", "/?view=account&action=logout");
+
         if($isSupervisor)
         {
-            $optionalManageAccountsButton = $this->genAccountMenuButton("accounts", "all", "Konten verwalten 👥");
-            $optionalManageAppearanceButton = $this->genAccountMenuButton("appearance", "all", "Darstellung verwalten 🖼️");
+            $optionalManageAccountsButton = $this->globalView->genNonClosingElement("a", [ "Interesting" ], $appearanceData, [], [ "btn", "w-100" ], "Konten verwalten 👥", "/?view=accounts&action=all");
+            $optionalManageAppearanceButton = $this->globalView->genNonClosingElement("a", [ "Interesting" ], $appearanceData, [], [ "btn", "w-100" ], "Darstellung verwalten 🖼️", "/?view=appearance&action=all");
         }
         else
         {
@@ -57,10 +61,10 @@ class AccountView implements IAccountView
 
         $feedContent =
         "
-            <div class=\"container-fluid\">
-                <div class=\"row mt-3 mb-5\">
-                    <div class=\"col-2\" style=\"background-image: url('/img/symbol/person-square.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\"></div>
-                    <div class=\"col-10\">
+            <div class=\"container-fluid p-0\">
+                <div class=\"row mb-5 ms-0 mt-0 me-0\">
+                    <div class=\"col-2 p-0\" style=\"background-image: url('/img/symbol/person-square.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\"></div>
+                    <div class=\"col-10 p-0\">
                         <div class=\"container-fluid\">
                             <div class=\"row\">
                                 <div class=\"col-12 text-left\">
@@ -75,15 +79,19 @@ class AccountView implements IAccountView
                         </div>
                     </div>
                 </div>
-                <div class=\"row mt-4\">
-                    <div class=\"col-12\">
-                        <a class=\"btn btn-primary w-100\" href=\"/?view=account&action=logout\">Abmelden 🔐</a>
-                    </div>
-                </div>
-                $optionalManageAccountsButton
-                $optionalManageAppearanceButton
                 <div class=\"row mt-3\">
                     <div class=\"col-12\">
+                        $logoffButton
+                    </div>
+                </div>
+                <div class=\"row mt-3\">
+                    <div class=\"col-12\">
+                        $optionalManageAccountsButton
+                    </div>
+                </div>
+                <div class=\"row mt-3\">
+                    <div class=\"col-12\">
+                        $optionalManageAppearanceButton
                     </div>
                 </div>
             </div>

@@ -52,16 +52,16 @@ class LegalView implements ILegalView
 
         $legalTextHTMLSafeFormatted = $this->textFormatView->formatAll($legalTextHTMLSafe);
 
-        $optionalEditButton = $showEditButton ? "<div class=\"row mb-4\"><div class=\"col-12\"><a class=\"btn btn-secondary\" href=\"/?view=$legalTextView&action=update\">Bearbeiten</a></div></div>" : "";
+        $optionalEditButton = $showEditButton ? "<div class=\"row mb-4\"><div class=\"col-12\"><a class=\"btn btn-secondary w-100\" href=\"/?view=$legalTextView&action=update\">Bearbeiten</a></div></div>" : "";
 
         if(empty($actionValue))
         {
             $legalTextContentHTML =
             "
             <div class=\"container-fluid p-0\">
-                <div class=\"row mb-3 mt-2\">
-                    <div class=\"col-12\">
-                        <span class=\"fs-3 fw-bold\">$legalTextTitleLong</span>
+                <div class=\"row mb-4\">
+                    <div class=\"col-12 text-center\">
+                        <span class=\"fs-3 fw-bold lh-1\">$legalTextTitleLong</span>
                     </div>
                 </div>
                 $optionalEditButton
@@ -70,7 +70,7 @@ class LegalView implements ILegalView
                         <p style=\"white-space: pre-line;\" class=\"fs-6\">$legalTextHTMLSafeFormatted</p>
                     </div>
                 </div>
-                <div class=\"row mb-3\">
+                <div class=\"row\">
                     <div class=\"col-12\">
                         <a class=\"btn btn-primary\" href=\"/\">Zur Startseite</a>
                     </div>

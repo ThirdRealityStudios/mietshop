@@ -24,7 +24,7 @@ class ErrorView implements IErrorView
 
         $feedDescriptionHTML =
         "
-        <div class=\"container-fluid\">
+        <div class=\"container-fluid p-0\">
             <div class=\"row ms-0 mt-0 me-0 mb-3\">
                 <div class=\"col-12\">
                     $pErrorTitle
