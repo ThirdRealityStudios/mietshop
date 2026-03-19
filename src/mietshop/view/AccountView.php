@@ -46,12 +46,12 @@ class AccountView implements IAccountView
 
         $accountEmailSafe = htmlspecialchars($accountEmailLimited, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
 
-        $logoffButton = $this->globalView->genNonClosingElement("a", [ "Interesting" ], $appearanceData, [], [ "btn", "w-100" ], "Abmelden 🔐", "/?view=account&action=logout");
+        $logoffButton = $this->globalView->genNonSelfClosingElement("a", [ "Interesting" ], $appearanceData, [], [ "btn", "w-100" ], "Abmelden 🔐", "/?view=account&action=logout");
 
         if($isSupervisor)
         {
-            $optionalManageAccountsButton = $this->globalView->genNonClosingElement("a", [ "Interesting" ], $appearanceData, [], [ "btn", "w-100" ], "Konten verwalten 👥", "/?view=accounts&action=all");
-            $optionalManageAppearanceButton = $this->globalView->genNonClosingElement("a", [ "Interesting" ], $appearanceData, [], [ "btn", "w-100" ], "Darstellung verwalten 🖼️", "/?view=appearance&action=all");
+            $optionalManageAccountsButton = $this->globalView->genNonSelfClosingElement("a", [ "Interesting" ], $appearanceData, [], [ "btn", "w-100" ], "Konten verwalten 👥", "/?view=accounts&action=all");
+            $optionalManageAppearanceButton = $this->globalView->genNonSelfClosingElement("a", [ "Interesting" ], $appearanceData, [], [ "btn", "w-100" ], "Darstellung verwalten 🖼️", "/?view=appearance&action=all");
         }
         else
         {

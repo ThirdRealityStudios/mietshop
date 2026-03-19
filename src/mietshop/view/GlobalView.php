@@ -70,15 +70,15 @@ class GlobalView implements IGlobalView
      */
     private function preGenDefaultRow(string $contentHTML, array $colorElementsCaseSensitive, array $appearanceData, array $styles, array $classes) : string
     {
-        $columnLeft = $this->genNonClosingElement("div", [], [], [], [ "col-1", "col-xl-3", "col-xxl-4" ], "");
-        $columnCenter = $this->genNonClosingElement("div", [], [], [], [ "col-10", "col-xl-6", "col-xxl-4" ], $contentHTML);
-        $columnRight = $this->genNonClosingElement("div", [], [], [], [ "col-1", "col-xl-3", "col-xxl-4" ], "");
+        $columnLeft = $this->genNonSelfClosingElement("div", [], [], [], [ "col-1", "col-xl-3", "col-xxl-4" ], "");
+        $columnCenter = $this->genNonSelfClosingElement("div", [], [], [], [ "col-10", "col-xl-6", "col-xxl-4" ], $contentHTML);
+        $columnRight = $this->genNonSelfClosingElement("div", [], [], [], [ "col-1", "col-xl-3", "col-xxl-4" ], "");
 
         $rowContent = $columnLeft.$columnCenter.$columnRight;
 
         $classes[] = "row";
 
-        $row = $this->genNonClosingElement("div", $colorElementsCaseSensitive, $appearanceData, $styles, $classes, $rowContent);
+        $row = $this->genNonSelfClosingElement("div", $colorElementsCaseSensitive, $appearanceData, $styles, $classes, $rowContent);
 
         return $row;
     }
@@ -109,9 +109,9 @@ class GlobalView implements IGlobalView
             ";
         }
 
-        $rowHTML = $this->genNonClosingElement("div", [], [], [], [ "row", "p-3" ], $rowContent);
+        $rowHTML = $this->genNonSelfClosingElement("div", [], [], [], [ "row", "p-3" ], $rowContent);
 
-        $containerHTML = $this->genNonClosingElement("div", [ "Window", "Frame" ], $appearanceData, [], [ "container-fluid", "ms-0", "mt-0", "me-0", "mb-5", "rounded-3" ], $rowHTML);
+        $containerHTML = $this->genNonSelfClosingElement("div", [ "Window", "Frame" ], $appearanceData, [], [ "container-fluid", "ms-0", "mt-0", "me-0", "mb-5", "rounded-3" ], $rowHTML);
 
         return $this->preGenDefaultRow($containerHTML, [], [], [], []);
     }
@@ -298,7 +298,7 @@ class GlobalView implements IGlobalView
 
     private function genNavLink(array $appearanceData, string $title, string $href) : string
     {
-        return $this->genNonClosingElement("a", [ "Text" ], $appearanceData, [], [ "nav-link", "darker-interact" ], $title, $href);
+        return $this->genNonSelfClosingElement("a", [ "Text" ], $appearanceData, [], [ "nav-link", "darker-interact" ], $title, $href);
     }
 
     /**
@@ -403,7 +403,7 @@ class GlobalView implements IGlobalView
         return $allStyles;
     }
 
-    public function genNonClosingElement(string $tag, array $colorElementsCaseSensitive, array $appearanceData, array $styles, array $classes, string $content, string $optionalHref = "", string $optionalId = "") : string
+    public function genSelfClosingElement(string $tag, array $colorElementsCaseSensitive, array $appearanceData, array $styles, array $classes, string $optionalHref = "", string $optionalMoreTagInformation = "") : string
     {
         $allClasses = $this->genClasses($colorElementsCaseSensitive, $appearanceData, $classes);
         $possibleClassTagProperty = "";
@@ -424,43 +424,56 @@ class GlobalView implements IGlobalView
         $optionalHrefTagProperty = empty($optionalHref) ? "" : "href=\"$optionalHref\"";
         $optionalThirdWhitespace = (!empty($possibleClassTagProperty) && $optionalHrefTagProperty) ? " " : "";
 
-        $optionalIdProperty = empty($optionalId) ? "" : "id=\"$optionalId\"";
-        $optionalFourthWhitespace = ((!empty($possibleStyleTagProperty) || !empty($possibleClassTagProperty) || !empty($optionalHrefTagProperty)) && !empty($optionalIdProperty)) ? " " : "";
+        $optionalFourthWhitespace = ((!empty($possibleStyleTagProperty) || !empty($possibleClassTagProperty) || !empty($optionalHrefTagProperty)) && !empty($optionalMoreTagInformation)) ? " " : "";
 
         $optionalFirstWhitespace = (!empty($possibleStyleTagProperty) || !empty($possibleClassTagProperty) || !empty($optionalHrefTagProperty)) ? " " : "";
 
-        return "<$tag$optionalFirstWhitespace$possibleStyleTagProperty$optionalSecondWhitespace$possibleClassTagProperty$optionalThirdWhitespace$optionalHrefTagProperty$optionalFourthWhitespace$optionalIdProperty>$content</$tag>";
+        return "<$tag$optionalFirstWhitespace$possibleStyleTagProperty$optionalSecondWhitespace$possibleClassTagProperty$optionalThirdWhitespace$optionalHrefTagProperty$optionalFourthWhitespace$optionalMoreTagInformation>";
+    }
+
+    public function genNonSelfClosingElement(string $tag, array $colorElementsCaseSensitive, array $appearanceData, array $styles, array $classes, string $content, string $optionalHref = "", string $optionalMoreTagInformation = "") : string
+    {
+        $preGeneratedElement = $this->genSelfClosingElement($tag, $colorElementsCaseSensitive, $appearanceData, $styles, $classes, $optionalHref, $optionalMoreTagInformation);
+
+        return "$preGeneratedElement$content</$tag>";
     }
 
     public function genSpanText(array $appearanceData, string $text) : string
     {
-        return $this->genNonClosingElement("span", [ "Text" ], $appearanceData, [], [ "fs-6" ], $text);
+        return $this->genNonSelfClosingElement("span", [ "Text" ], $appearanceData, [], [ "fs-6" ], $text);
     }
 
     public function genPText(array $appearanceData, string $text) : string
     {
-        return $this->genNonClosingElement("p", [ "Text" ], $appearanceData, [], [ "fs-6" ], $text);
+        return $this->genNonSelfClosingElement("p", [ "Text" ], $appearanceData, [], [ "fs-6" ], $text);
     }
 
     public function genALink(array $appearanceData, string $text, string $href) : string
     {
-        return $this->genNonClosingElement("a", [ "Link" ], $appearanceData, [], [ "fs-6", "darker-interact" ], $text, $href);
+        return $this->genNonSelfClosingElement("a", [ "Link" ], $appearanceData, [], [ "fs-6", "darker-interact" ], $text, $href);
     }
 
     public function genAButtonInteresting(array $appearanceData, string $text, string $href) : string
     {
-        return $this->genNonClosingElement("a", [ "Interesting" ], $appearanceData, [], [ "btn", "fs-6" ], $text, $href);
+        return $this->genNonSelfClosingElement("a", [ "Interesting" ], $appearanceData, [], [ "btn", "fs-6" ], $text, $href);
     }
 
     public function genAButtonUninteresting(array $appearanceData, string $text, string $href) : string
     {
-        return $this->genNonClosingElement("a", [ "Uninteresting" ], $appearanceData, [], [ "btn", "fs-6" ], $text, $href);
+        return $this->genNonSelfClosingElement("a", [ "Uninteresting" ], $appearanceData, [], [ "btn", "fs-6" ], $text, $href);
+    }
+
+    public function genLabelText(array $appearanceData, string $text, string $for) : string
+    {
+        return $this->genNonSelfClosingElement("label", [ "Text" ], $appearanceData, [], [ "form-label", "p-0" ], $text, "", "for=\"$for\"");
     }
 
     private function genASocialMediaImage(string $socialMediaName, string $href) : string
     {
-        return $this->genNonClosingElement("a", [], [], [], [ "d-inline-block", "me-3", "mb-3", "darker-interact" ], "<img src=\"/img/logo/socialmedia/$socialMediaName.png\" alt=\"$socialMediaName\" title=\"$socialMediaName öffnen\" height=\"50\">", $href);
+        return $this->genNonSelfClosingElement("a", [], [], [], [ "d-inline-block", "me-3", "mb-3", "darker-interact" ], "<img src=\"/img/logo/socialmedia/$socialMediaName.png\" alt=\"$socialMediaName\" title=\"$socialMediaName öffnen\" height=\"50\">", $href);
     }
+
+
 
     private function genContactDataRows(array $companyData, array $appearanceData) : string
     {
@@ -476,7 +489,7 @@ class GlobalView implements IGlobalView
         $phoneNormalSafe = htmlspecialchars($companyData["PhoneNormal"][0], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         $phoneMobileSafe = htmlspecialchars($companyData["PhoneMobile"][0], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 
-        $pContactHint = $this->genNonClosingElement("p", [ "Text" ], $appearanceData, [], [ "fs-4" ], "Kontakt:");
+        $pContactHint = $this->genNonSelfClosingElement("p", [ "Text" ], $appearanceData, [], [ "fs-4" ], "Kontakt:");
 
         $spanStreet = $this->genSpanText($appearanceData, $streetHTMLSafe);
         $spanZipPlace = $this->genSpanText($appearanceData, "{$zipCodeHTMLSafe}&nbsp;{$placeHTMLSafe}");
@@ -573,7 +586,7 @@ class GlobalView implements IGlobalView
         if($socialMediaButtonCount > 1)
         {
             $pSocialMediaHint = $this->genPText($appearanceData, "Alternativ können Sie uns auch auf den gängigen sozialen Medien ansprechen und einen Termin vereinbaren.");
-            $pSocialMediaTitle = $this->genNonClosingElement("p", [ "Text" ], $appearanceData, [], [ "fs-4" ], "Social Media:");
+            $pSocialMediaTitle = $this->genNonSelfClosingElement("p", [ "Text" ], $appearanceData, [], [ "fs-4" ], "Social Media:");
 
             $optionalSocialMediaTitleRow =
             "
@@ -596,7 +609,7 @@ class GlobalView implements IGlobalView
     private function genCopyrightRow(array $companyData, array $appearanceData) : string
     {
         $companyNameHTMLSafe = htmlspecialchars($companyData["CompanyName"][0] ?? "", ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-        $copyrightElement = $this->genNonClosingElement("p", [ "Text" ], $appearanceData, [], [ "mb-5", "mt-5", "text-center" ], "Copyright&nbsp;©&nbsp;$companyNameHTMLSafe&nbsp;-&nbsp;Alle&nbsp;Rechte&nbsp;vorbehalten.");
+        $copyrightElement = $this->genNonSelfClosingElement("p", [ "Text" ], $appearanceData, [], [ "mb-5", "mt-5", "text-center" ], "Copyright&nbsp;©&nbsp;$companyNameHTMLSafe&nbsp;-&nbsp;Alle&nbsp;Rechte&nbsp;vorbehalten.");
         $copyrightRow =
         "
         <div class=\"row mt-5\">
@@ -630,8 +643,8 @@ class GlobalView implements IGlobalView
     {
         $head = $this->genHeadHTML($companyName);
 
-        $bodyContent = $this->genNonClosingElement("div", [ "Background" ], $appearanceData, [], [], $bodyHTML);
-        $body = $this->genNonClosingElement("body", [ "Window" ], $appearanceData, [], [], $bodyContent);
+        $bodyContent = $this->genNonSelfClosingElement("div", [ "Background" ], $appearanceData, [], [], $bodyHTML);
+        $body = $this->genNonSelfClosingElement("body", [ "Window" ], $appearanceData, [], [], $bodyContent);
 
         $html =
         "
@@ -701,7 +714,7 @@ class GlobalView implements IGlobalView
         $aPrivacyPolicy = $this->genNavLink($appearanceData, "Datenschutzerklärung", "/?view=privacypolicy");
         $aImprint = $this->genNavLink($appearanceData, "Impressum", "/?view=imprint");
 
-        $sideMenuHeaderTitle = $this->genNonClosingElement("h5", [ "Text" ], $appearanceData, [], [ "offcanvas-title" ], $companyName, "", "offcanvasNavbarLabel");
+        $sideMenuHeaderTitle = $this->genNonSelfClosingElement("h5", [ "Text" ], $appearanceData, [], [ "offcanvas-title" ], $companyName, "", "id=\"offcanvasNavbarLabel\"");
 
         $sideMenuHeaderContent =
             "
@@ -709,7 +722,7 @@ class GlobalView implements IGlobalView
         <button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"offcanvas\" aria-label=\"Close\"></button>
         ";
 
-        $sideMenuHeader = $this->genNonClosingElement("div", [ "Window" ], $appearanceData, [], [ "offcanvas-header" ], $sideMenuHeaderContent);
+        $sideMenuHeader = $this->genNonSelfClosingElement("div", [ "Window" ], $appearanceData, [], [ "offcanvas-header" ], $sideMenuHeaderContent);
 
         $sideMenuBodyContent =
         "
@@ -735,7 +748,7 @@ class GlobalView implements IGlobalView
         </ul>
         ";
 
-        $sideMenuBody = $this->genNonClosingElement("div", [ "Window" ], $appearanceData, [], [ "offcanvas-body" ], $sideMenuBodyContent);
+        $sideMenuBody = $this->genNonSelfClosingElement("div", [ "Window" ], $appearanceData, [], [ "offcanvas-body" ], $sideMenuBodyContent);
 
         $navContent =
         "
@@ -751,7 +764,7 @@ class GlobalView implements IGlobalView
             </div>
         ";
 
-        $navBootstrap = $this->genNonClosingElement("nav", [ "Window", "Frame" ], $appearanceData, [ "border-bottom-style: solid;", "border-bottom-width: 3px;" ], [ "navbar", "sticky-top", "w-100", "z-2", "mb-5" ], $navContent);
+        $navBootstrap = $this->genNonSelfClosingElement("nav", [ "Window", "Frame" ], $appearanceData, [ "border-bottom-style: solid;", "border-bottom-width: 3px;" ], [ "navbar", "sticky-top", "w-100", "z-2", "mb-5" ], $navContent);
 
         return $navBootstrap;
     }
@@ -780,7 +793,7 @@ class GlobalView implements IGlobalView
 
         $footerContentResponsive = $this->preGenDefaultRow($footerContent, [], [], [], []);
 
-        $footer = $this->genNonClosingElement("div", [ "Window", "Frame" ], $appearanceData, [ "border-top-style: solid; border-top-width: 3px;" ], [ "container-fluid", "pt-5" ], $footerContentResponsive);
+        $footer = $this->genNonSelfClosingElement("div", [ "Window", "Frame" ], $appearanceData, [ "border-top-style: solid; border-top-width: 3px;" ], [ "container-fluid", "pt-5" ], $footerContentResponsive);
 
         return $footer;
         

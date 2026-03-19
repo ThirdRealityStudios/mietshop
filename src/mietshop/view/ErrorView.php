@@ -19,8 +19,8 @@ class ErrorView implements IErrorView
         $errorFeedTitleSafe = htmlspecialchars($errorFeedTitle, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
         $errorFeedContentSafe = htmlspecialchars($errorFeedContent, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
 
-        $pErrorTitle = $this->globalView->genNonClosingElement("p", [ "Text" ], $appearanceData, [], [ "text-center", "fs-2", "fw-bold", "lh-1" ], $errorFeedTitleSafe);
-        $pErrorDescription = $this->globalView->genNonClosingElement("p", [ "Text" ], $appearanceData, [], [ "text-left", "fs-6", "m-0" ], $errorFeedContentSafe);
+        $pErrorTitle = $this->globalView->genNonSelfClosingElement("p", [ "Text" ], $appearanceData, [], [ "text-center", "fs-2", "fw-bold", "lh-1" ], $errorFeedTitleSafe);
+        $pErrorDescription = $this->globalView->genNonSelfClosingElement("p", [ "Text" ], $appearanceData, [], [ "text-left", "fs-6", "m-0" ], $errorFeedContentSafe);
 
         $feedDescriptionHTML =
         "

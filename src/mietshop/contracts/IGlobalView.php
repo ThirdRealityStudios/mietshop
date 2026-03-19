@@ -13,6 +13,8 @@ namespace src\mietshop\contracts;
  */
 interface IGlobalView
 {
+    public function genSelfClosingElement(string $tag, array $colorElementsCaseSensitive, array $appearanceData, array $styles, array $classes, string $optionalHref = "", string $optionalMoreTagInformation = "") : string;
+
     /**
      * @param string $tag Name of the non-closing element in HTML, e.g. "span" or "p".
      * @param array $colorElementsCaseSensitive Here specify what appearance data should be regarded (see AppearanceModel and especially the function getAppearanceData() to understand the single data). E.g. if you want the user to format this element with the saved text color, then you would pass [ "Text" ] here. Or if you have a window with a frame, then you would usually pass [ "Window", "Frame" ] here.
@@ -21,10 +23,10 @@ interface IGlobalView
      * @param array $classes An array like the one expected in parameter $styles. But instead now the CSS classes you provide. E.g. [ "text-danger", "fs-6", "bg-green" ] (Note: NO semicolon needed).
      * @param string $content The usual tag or element content as usual. It could be plain text or HTML, depending on your application needs.
      * @param string $optionalHref Optional: pass href content or values here if they are required, e.g. you want to create a link / "a tag", then you could pass e.g. simply "https://www.w3schools.com". For an email you would pass e.g. "mailto:mymail@whatever.com".
-     * @param string $optionalId Optional: specify ID if you want of the element.
+     * @param string $optionalMoreTagInformation Optional: specify more tag information which should be placed there, e.g. the ID or name property. You would pass it like "id=\"myID\"" or "name=\"myName\""
      * @return string The prepared HTML element, including the content and the appearance you saved or you wanted (e.g. colors saved in the system).
      */
-    public function genNonClosingElement(string $tag, array $colorElementsCaseSensitive, array $appearanceData, array $styles, array $classes, string $content, string $optionalHref = "", string $optionalId = "") : string;
+    public function genNonSelfClosingElement(string $tag, array $colorElementsCaseSensitive, array $appearanceData, array $styles, array $classes, string $content, string $optionalHref = "", string $optionalMoreTagInformation = "") : string;
 
     public function genSpanText(array $appearanceData, string $text) : string;
 
@@ -35,6 +37,8 @@ interface IGlobalView
     public function genAButtonInteresting(array $appearanceData, string $text, string $href) : string;
 
     public function genAButtonUninteresting(array $appearanceData, string $text, string $href) : string;
+
+    public function genLabelText(array $appearanceData, string $text, string $for) : string;
 
     /**
      * Generates a pre-defined Bootstrap feed / post in HTML,

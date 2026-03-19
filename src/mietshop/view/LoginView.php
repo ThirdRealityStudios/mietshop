@@ -29,6 +29,10 @@ class LoginView implements ILoginView
             $inputFieldsInvalidClass = "";
         }
 
+        $labelEmail = $this->globalView->genLabelText($appearanceData, "Email:&nbsp;", "Email");
+        $labelPassword = $this->globalView->genLabelText($appearanceData, "Passwort:&nbsp;", "Password");
+        // $aLoginButton = $this->globalView->genNonClosingElement("input", [ "Interesting" ], $appearanceData, [], [ "btn" ], );
+
         $feedContent =
         "
         <div class=\"container-fluid\">
@@ -40,11 +44,11 @@ class LoginView implements ILoginView
             <form class=\"row form\" action=\"/?view=login\" method=\"post\">
                 <div class=\"container-fluid\">
                     <div class=\"row mb-3\">
-                        <label for=\"Email\" class=\"form-label p-0$inputLabelsInvalidClass\">E-Mail: </label>
+                        $labelEmail
                         <input class=\"form-control$inputFieldsInvalidClass\" type=\"email\" placeholder=\"E-Mail-Adresse eingeben ...\" id=\"Email\" name=\"Email\" required>
                     </div>
                     <div class=\"row mb-3\">
-                        <label for=\"Password\" class=\"form-label p-0$inputLabelsInvalidClass\">Passwort:</label>
+                        $labelPassword
                         <input class=\"form-control$inputFieldsInvalidClass\" type=\"password\" id=\"Password\" name=\"Password\" placeholder=\"Passwort eingeben ...\" required>
                     </div>
                     <div class=\"row mb-3 text-left\">

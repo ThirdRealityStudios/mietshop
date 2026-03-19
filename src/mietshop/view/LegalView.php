@@ -42,13 +42,13 @@ class LegalView implements ILegalView
 
         $legalTextHTMLSafeFormatted = $this->textFormatView->formatAll($legalTextHTMLSafe);
 
-        $optionalEditButton = $this->globalView->genNonClosingElement("a", [ "Uninteresting" ], $appearanceData, [], [ "btn", "w-100" ], "Bearbeiten", "/?view=$legalTextView&action=update");
+        $optionalEditButton = $this->globalView->genNonSelfClosingElement("a", [ "Uninteresting" ], $appearanceData, [], [ "btn", "w-100" ], "Bearbeiten", "/?view=$legalTextView&action=update");
         $optionalEditButtonRow = $showEditButton ? "<div class=\"row mb-4\"><div class=\"col-12\">$optionalEditButton</div></div>" : "";
 
         if(empty($actionValue))
         {
-            $legalTextTitle = $this->globalView->genNonClosingElement("span", [ "Text" ], $appearanceData, [], [ "fs-3", "fw-bold", "lh-1" ], $legalTextTitleLong);
-            $legalTextDescription = $this->globalView->genNonClosingElement("span", [ "Text" ], $appearanceData, [ "white-space: pre-line;" ], [ "fs-6" ], $legalTextHTMLSafeFormatted);
+            $legalTextTitle = $this->globalView->genNonSelfClosingElement("span", [ "Text" ], $appearanceData, [], [ "fs-3", "fw-bold", "lh-1" ], $legalTextTitleLong);
+            $legalTextDescription = $this->globalView->genNonSelfClosingElement("span", [ "Text" ], $appearanceData, [ "white-space: pre-line;" ], [ "fs-6" ], $legalTextHTMLSafeFormatted);
             $aLandingPageButton = $this->globalView->genAButtonInteresting($appearanceData, "Zur Startseite", "/");
 
             $legalTextContentHTML =

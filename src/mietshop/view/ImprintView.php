@@ -30,7 +30,7 @@ class ImprintView implements IImprintView
 
         if(empty($actionValue))
         {
-            $optionalEditImprintText = $this->globalView->genNonClosingElement("a", [ "Uninteresting" ], $appearanceData, [], [ "btn", "w-100" ], "Impressum bearbeiten", "/?view=imprint&action=update");
+            $optionalEditImprintText = $this->globalView->genNonSelfClosingElement("a", [ "Uninteresting" ], $appearanceData, [], [ "btn", "w-100" ], "Impressum bearbeiten", "/?view=imprint&action=update");
             $optionalEditButton = $showEditButton ? "<div class=\"row mb-4\"><div class=\"col-12\">$optionalEditImprintText</div></div>" : "";
 
             $optionalP19UStGText = $this->globalView->genSpanText($appearanceData, "Per §19 Abs. 1 UStG wird die Umsatzsteuer nicht ausgewiesen.");
@@ -40,7 +40,7 @@ class ImprintView implements IImprintView
             $optionalP36VSBGTextBriefly = $this->globalView->genSpanText($appearanceData, "Wir nehmen nicht an einem Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teil und sind hierzu auch nicht verpflichtet.");
             $optionalP36VSBGTextRow = ($p36vsbgApplies === 1) ? "<div class=\"row mb-3\"><div class=\"col-12\">$optionalP36VSBGTextHint</div></div><div class=\"row mb-3\"><div class=\"col-12\">$optionalP36VSBGTextBriefly</div></div>" : "";
 
-            $imprintTitle = $this->globalView->genNonClosingElement("p", [ "Text" ], $appearanceData, [], [ "fw-bold", "fs-3" ], "Impressum");
+            $imprintTitle = $this->globalView->genNonSelfClosingElement("p", [ "Text" ], $appearanceData, [], [ "fw-bold", "fs-3" ], "Impressum");
             $imprintCompanyName = $this->globalView->genSpanText($appearanceData, $companyNameHTMLSafe);
             $imprintStreet = $this->globalView->genSpanText($appearanceData, $streetHTMLSafe);
             $imprintZipCode = $this->globalView->genSpanText($appearanceData, $zipCodeHTMLSafe);

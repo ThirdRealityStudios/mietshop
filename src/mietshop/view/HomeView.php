@@ -20,8 +20,8 @@ class HomeView implements IHomeView
 
         $ourRentalObjectsHTMLContent = "";
 
-        $pOurRentalObjects = $this->globalView->genNonClosingElement("p",[ "Text" ], $appearanceData, [], [ "fs-4", "mb-3", "lh-1" ], "Unser Verleihsortiment");
-        $pNumerousObjectsHint = $this->globalView->genNonClosingElement("p",[ "Text" ], $appearanceData, [], [ "fs-6", "mb-3" ], "Zahlreiche Mietartikel aus folgenden Kategorien bieten wir an 😊");
+        $pOurRentalObjects = $this->globalView->genNonSelfClosingElement("p",[ "Text" ], $appearanceData, [], [ "fs-4", "mb-3", "lh-1" ], "Unser Verleihsortiment");
+        $pNumerousObjectsHint = $this->globalView->genNonSelfClosingElement("p",[ "Text" ], $appearanceData, [], [ "fs-6", "mb-3" ], "Zahlreiche Mietartikel aus folgenden Kategorien bieten wir an 😊");
 
         if(sizeof($categories) > 2)
         {
@@ -35,17 +35,17 @@ class HomeView implements IHomeView
             {
                 $safeCategoryName = htmlspecialchars($category);
 
-                $ourRentalObjectsHTMLContent .= $this->globalView->genNonClosingElement("p", [ "Text" ], $appearanceData, [], [ "mb-3" ], $safeCategoryName);
+                $ourRentalObjectsHTMLContent .= $this->globalView->genNonSelfClosingElement("p", [ "Text" ], $appearanceData, [], [ "mb-3" ], $safeCategoryName);
             }
 
-            $ourRentalObjectsHTMLContent .= $this->globalView->genNonClosingElement("a", [ "Interesting" ], $appearanceData, [], [ "btn" ], "Jetzt stöbern und anfragen", "/?view=search");
+            $ourRentalObjectsHTMLContent .= $this->globalView->genNonSelfClosingElement("a", [ "Interesting" ], $appearanceData, [], [ "btn" ], "Jetzt stöbern und anfragen", "/?view=search");
         }
         else
         {
             // TODO Fetch amount of articles in the system.
             $articleAmount = 3;
 
-            $spanRentalObjectsNotAvailableHint = $this->globalView->genNonClosingElement("span",[ "Text" ], $appearanceData, [], [ "fs-4" ], "Mietartikel im Aufbau&nbsp;");
+            $spanRentalObjectsNotAvailableHint = $this->globalView->genNonSelfClosingElement("span",[ "Text" ], $appearanceData, [], [ "fs-4" ], "Mietartikel im Aufbau&nbsp;");
             $pSorry = $this->globalView->genPText($appearanceData, "Sorry, aber derzeit scheint der Inhaber noch keine Mietartikel oder Kategorien online gestellt zu haben.");
             $pComeBackLater = $this->globalView->genPText($appearanceData, "Bitte schauen Sie später noch einmal vorbei.");
             $pObjectForecast = $this->globalView->genPText($appearanceData, "Hier sollten bald zahlreiche Artikel erscheinen 😊");
@@ -72,7 +72,7 @@ class HomeView implements IHomeView
             }
             else // No category was created for any article BUT at least one article is online (so give users the opportunity to go there and see)
             {
-                $pExploreHint = $this->globalView->genNonClosingElement("p",[ "Text" ], $appearanceData, [], [ "fs-6", "mb-4" ], "Klicken Sie auf die Schaltfläche, um unsere Mietartikel zu erkunden 😊");
+                $pExploreHint = $this->globalView->genNonSelfClosingElement("p",[ "Text" ], $appearanceData, [], [ "fs-6", "mb-4" ], "Klicken Sie auf die Schaltfläche, um unsere Mietartikel zu erkunden 😊");
                 $aButtonExploreObjects = $this->globalView->genAButtonInteresting($appearanceData, "Jetzt stöbern und anfragen", "/?view=search");
 
                 $ourRentalObjectsHTMLContent =
