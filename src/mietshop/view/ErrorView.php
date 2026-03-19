@@ -19,18 +19,20 @@ class ErrorView implements IErrorView
         $errorFeedTitleSafe = htmlspecialchars($errorFeedTitle, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
         $errorFeedContentSafe = htmlspecialchars($errorFeedContent, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
 
+        $pErrorTitle = $this->globalView->genNonClosingElement("p", [ "Text" ], $appearanceData, [], [ "text-center", "fs-2", "fw-bold", "lh-1" ], $errorFeedTitleSafe);
+        $pErrorDescription = $this->globalView->genNonClosingElement("p", [ "Text" ], $appearanceData, [], [ "text-left", "fs-6", "m-0" ], $errorFeedContentSafe);
 
         $feedDescriptionHTML =
         "
         <div class=\"container-fluid\">
-            <div class=\"row mb-3\">
+            <div class=\"row ms-0 mt-0 me-0 mb-3\">
                 <div class=\"col-12\">
-                    <p class=\"text-center fs-2 fw-bold text-danger\">$errorFeedTitleSafe</p>
+                    $pErrorTitle
                 </div>
             </div>
             <div class=\"row\">
                 <div class=\"col-12\">
-                    <p class=\"text-left fs-6\">$errorFeedContentSafe</p>
+                    $pErrorDescription
                 </div>
             </div>
         </div>
