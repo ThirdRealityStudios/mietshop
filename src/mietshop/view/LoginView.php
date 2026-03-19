@@ -29,16 +29,18 @@ class LoginView implements ILoginView
             $inputFieldsInvalidClass = "";
         }
 
+        $spanLoginTitle = $this->globalView->genNonSelfClosingElement("span", [ "Text" ], $appearanceData, [], [ "fw-bold" ], "Anmelden");
+        $textLoginSymbol = $this->globalView->genTextSVG("/img/symbol/box-arrow-in-right.svg", "white");
         $labelEmail = $this->globalView->genLabelText($appearanceData, "Email:&nbsp;", "Email");
         $labelPassword = $this->globalView->genLabelText($appearanceData, "Passwort:&nbsp;", "Password");
-        // $aLoginButton = $this->globalView->genNonClosingElement("input", [ "Interesting" ], $appearanceData, [], [ "btn" ], );
+        $aLoginButton = $this->globalView->genSelfClosingElement("input", [ "Interesting" ], $appearanceData, [], [ "btn" ], "", "type=\"submit\" value=\"Anmelden\"");
 
         $feedContent =
         "
         <div class=\"container-fluid\">
             <div class=\"row mb-5\">
                 <div class=\"col-12 text-center fs-1 lh-1\">
-                    <span class=\"fw-bold\">Anmelden</span>&nbsp;<div class=\"d-inline-block\" style=\"background-image: url('/img/symbol/box-arrow-in-right.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\">&nbsp;&nbsp;&nbsp;&nbsp;</div>
+                    $spanLoginTitle&nbsp;$textLoginSymbol
                 </div>
             </div>
             <form class=\"row form\" action=\"/?view=login\" method=\"post\">
@@ -57,7 +59,7 @@ class LoginView implements ILoginView
                         </div>
                     </div>
                     <div class=\"row\">
-                        <input class=\"btn btn-primary\" type=\"submit\" value=\"Anmelden\">
+                        $aLoginButton
                     </div>
                 </div>
             </form>

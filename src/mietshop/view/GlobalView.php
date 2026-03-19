@@ -473,7 +473,44 @@ class GlobalView implements IGlobalView
         return $this->genNonSelfClosingElement("a", [], [], [], [ "d-inline-block", "me-3", "mb-3", "darker-interact" ], "<img src=\"/img/logo/socialmedia/$socialMediaName.png\" alt=\"$socialMediaName\" title=\"$socialMediaName öffnen\" height=\"50\">", $href);
     }
 
+    public function genTextSVG(string $svgLocalPath, string $color) : string
+    {
+        $svgFileContent = file_get_contents($_SERVER['DOCUMENT_ROOT'].$svgLocalPath);
 
+        if(is_bool($svgFileContent))
+        {
+            return "";
+        }
+
+        // Replace color.
+        $svgFileContent = str_replace("currentColor", $color, $svgFileContent);
+
+        if(is_array($svgFileContent))
+        {
+            return "";
+        }
+
+        $style = "style=\"width: auto; height: 0.9em;\"";
+
+        // Modify class correctly if it exists yet as a property.
+        if(str_contains($svgFileContent, "class=\""))
+        {
+            $svgFileContent = str_replace("class=\"", "$style class=\"d-inline-block align-bottom ", $svgFileContent);
+        }
+        else
+        {
+            $svgFileContent = str_replace("<svg ", "<svg $style class=\"d-inline-block align-bottom\" ", $svgFileContent);
+        }
+
+        if(is_array($svgFileContent))
+        {
+            return "";
+        }
+        else
+        {
+            return $svgFileContent;
+        }
+    }
 
     private function genContactDataRows(array $companyData, array $appearanceData) : string
     {

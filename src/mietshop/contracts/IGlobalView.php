@@ -41,6 +41,20 @@ interface IGlobalView
     public function genLabelText(array $appearanceData, string $text, string $for) : string;
 
     /**
+     * Loads a SVG file from the server disk and modifies its color,
+     * using CSS.
+     * Before being used,
+     * it is mandatory that the given SVG file uses the attribute fill=currentColor.
+     * Otherwise,
+     * it can't be replaced!
+     *
+     * @param string $svgLocalPath Path beginning with slash, e.g. "/img/symbol/my_img.svg".
+     * @param string $color E.g. "white" or "#ff0000".
+     * @return string If SVG could be loaded successfully and modified, then it would be returned here as a string. Otherwise empty string (something went wrong).
+     */
+    public function genTextSVG(string $svgLocalPath, string $color) : string;
+
+    /**
      * Generates a pre-defined Bootstrap feed / post in HTML,
      * which has an optional image you can display (150px by 150px) and an HTML description
      * (any HTML of your choice theoretically but be careful what you want to embed as HTML code).
