@@ -475,6 +475,7 @@ class GlobalView implements IGlobalView
 
     public function genTextSVG(string $svgLocalPath, string $color) : string
     {
+        // TODO View should not load something from the harddisk. Or move this function into a utility class (maybe with all other functions because it is slowly getting out of hands)
         $svgFileContent = file_get_contents($_SERVER['DOCUMENT_ROOT'].$svgLocalPath);
 
         if(is_bool($svgFileContent))
