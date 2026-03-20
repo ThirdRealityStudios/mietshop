@@ -31,6 +31,8 @@ interface IHtmlFactory
 
     public function genLabelText(array $appearanceData, string $text, string $for) : string;
 
+    public function genHr(array $appearanceData) : string;
+
     /**
      * Loads a SVG file from the server disk and modifies its color,
      * using CSS.

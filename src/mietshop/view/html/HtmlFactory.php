@@ -175,6 +175,11 @@ class HtmlFactory implements IHtmlFactory
         return $this->genNonSelfClosingElement("label", [ "Text" ], $appearanceData, [], [ "form-label", "p-0" ], $text, "", "for=\"$for\"");
     }
 
+    public function genHr(array $appearanceData) : string
+    {
+        return $this->genSelfClosingElement("hr", [ "Frame" ], $appearanceData, [ "border-style: solid;" ], [ "w-100", "border-1" ]);
+    }
+
     // TODO Replace $svgLocalPath through $svgXML (which was loaded or required - implement that on the other hand in the utils folder or something "AssetLoader"...)
     public function genTextSVG(string $svgLocalPath, string $color = "", array $classes = []) : string
     {

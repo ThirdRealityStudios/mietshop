@@ -142,7 +142,7 @@ class AppearanceManagementView implements IAppearanceManagementView
         $this->showPageFeed($companyData, $appearanceData, $feedContentHTML);
     }
 
-    private function genCustomColorForm(string $element, string $hexCodeColor) : string
+    private function genCustomColorForm(array $appearanceData, string $element, string $hexCodeColor) : string
     {
         $hexCodeHint = "";
 
@@ -151,12 +151,22 @@ class AppearanceManagementView implements IAppearanceManagementView
             $hexCodeHint = " ( derzeit $hexCodeColor )";
         }
 
+        $spanEdit = $this->htmlFactory->genNonSelfClosingElement("span", [ "Text" ], $appearanceData, [], [ "fs-2", "fw-bold", "lh-1" ], "Bearbeiten");
+
+        $labelChooseColor = $this->htmlFactory->genLabelText($appearanceData, "Farbe auswählen$hexCodeHint:", "colorPicker");
+        $labelEnterHexCode = $this->htmlFactory->genLabelText($appearanceData, "Farbcode / RGB Hex Code eingeben:", "colorHex");
+
+        $inputSubmitButton = $this->htmlFactory->genSelfClosingElement("input", [ "Interesting" ], $appearanceData, [], [ "btn", "w-100" ], "", "value=\"Speichern\" type=\"submit\"");
+        $aCancelButton = $this->htmlFactory->genAButtonUninteresting($appearanceData, "Abbrechen", "/?view=appearance&action=update&target=Color&element=$element&custom=no", [ "w-100" ]);
+
+        $hr = $this->htmlFactory->genHr($appearanceData);
+
         return
         "
-        <div class=\"container-fluid\">
+        <div class=\"container-fluid p-0\">
             <div class=\"row mb-4\">
-                <div class=\"col-12 p-0\">
-                    <p class=\"fs-2 fw-bold\">Bearbeiten</p>
+                <div class=\"col-12 text-center\">
+                    $spanEdit
                 </div>
             </div>
             <form class=\"row form\" action=\"/\" method=\"post\">
@@ -166,37 +176,37 @@ class AppearanceManagementView implements IAppearanceManagementView
                 <input type=\"hidden\" name=\"element\" value=\"$element\">
                 <input type=\"hidden\" name=\"custom\" value=\"yes\">
                 <div class=\"col-12\">
-                    <div class=\"container-fluid p-0\">
-                        <div class=\"row mb-3\">
+                    <div class=\"container-fluid\">
+                        <div class=\"row mb-2\">
                             <div class=\"col-12 p-0 w-100\">
-                                <label class=\"form-label fw-bold w-100 fs-6\" for=\"colorPicker\">Farbe auswählen$hexCodeHint:</label>
+                                $labelChooseColor
                                 <input class=\"w-100 form-control form-control-color p-0\" name=\"colorPicked\" type=\"color\" id=\"colorPicker\" value=\"$hexCodeColor\">
                             </div>
                         </div>
-                        <div class=\"row mb-3\">
+                        <div class=\"row mb-2\">
                             <div class=\"col-12 p-0\">
-                                <hr class=\"w-100 border border-1 border-primary\">
+                                $hr
                             </div>
                         </div>
-                        <div class=\"row mb-3\">
+                        <div class=\"row mb-2\">
                             <div class=\"col-12 p-0 w-100\">
-                                <label class=\"form-label fw-bold w-100 fs-6\" for=\"colorHex\">Farbcode eingeben [ RGB(A) Hex Code ]:</label>
+                                $labelEnterHexCode
                                 <input class=\"w-100 form-control\" placeholder=\"z.B. #11223344 oder #112233\" name=\"colorHexCode\" type=\"text\" id=\"colorHex\" value=\"\">
                             </div>
                         </div>
-                        <div class=\"row mb-3\">
+                        <div class=\"row mb-2\">
                             <div class=\"col-12 p-0\">
-                                <hr class=\"w-100 border border-1 border-primary\">
+                                $hr
                             </div>
                         </div>
-                        <div class=\"row mb-3\">
+                        <div class=\"row mb-4\">
                             <div class=\"col-12 p-0\">
-                                <input type=\"submit\" class=\"w-100 btn btn-primary\" value=\"Speichern\">
+                                $inputSubmitButton
                             </div>
                         </div>
-                        <div class=\"row mb-3\">
+                        <div class=\"row\">
                             <div class=\"col-12 p-0\">
-                                <a class=\"w-100 btn btn-secondary\" href=\"/?view=appearance&action=update&target=Color&element=$element&custom=no\">Abbrechen</a>
+                                $aCancelButton
                             </div>
                         </div> 
                     </div>
@@ -208,21 +218,29 @@ class AppearanceManagementView implements IAppearanceManagementView
 
     public function showCustomColorForm(array $companyData, array $appearanceData, string $element, string $hexCodeColor) : void
     {
-        $feedContentHTML = $this->genCustomColorForm($element, $hexCodeColor);
+        $feedContentHTML = $this->genCustomColorForm($appearanceData, $element, $hexCodeColor);
 
         $this->showPageFeed($companyData, $appearanceData, $feedContentHTML);
     }
 
-    private function genDefaultColorForm(string $element, array $validColors, string $selectedBootstrapColor) : string
+    private function genDefaultColorForm(array $appearanceData, string $element, array $validColors, string $selectedBootstrapColor) : string
     {
         $colorRadioButtonsHTML = $this->genFormColorRadioButtons($validColors, $selectedBootstrapColor);
+
+        $hr = $this->htmlFactory->genHr($appearanceData);
+
+        $spanEditTitle = $this->htmlFactory->genNonSelfClosingElement("span", [ "Text" ], $appearanceData, [], [ "fs-2", "fw-bold", "lh-1" ], "Bearbeiten");
+
+        $aButtonCustomColor = $this->htmlFactory->genAButtonInteresting($appearanceData, "Benutzerdefinierte Farbe festlegen", "/?view=appearance&action=update&target=Color&element=$element&custom=yes", [ "w-100" ]);
+
+        $aButtonCancel = $this->htmlFactory->genAButtonUninteresting($appearanceData, "Abbrechen", "/?view=appearance&action=update&target=Color", [ "w-100" ]);
 
         return
         "
         <div class=\"container-fluid\">
             <div class=\"row mb-4\">
-                <div class=\"col-12 p-0\">
-                    <p class=\"fs-2 fw-bold\">Bearbeiten</p>
+                <div class=\"col-12 p-0 text-center\">
+                    $spanEditTitle
                 </div>
             </div>
             <form class=\"row form\" action=\"/\" method=\"post\">
@@ -234,29 +252,29 @@ class AppearanceManagementView implements IAppearanceManagementView
                 <div class=\"col-12\">
                     <div class=\"container-fluid p-0\">
                         $colorRadioButtonsHTML
-                        <div class=\"row mb-3\">
+                        <div class=\"row mb-2\">
                             <div class=\"col-12 p-0\">
-                                <hr class=\"w-100 border border-1 border-primary\">
+                                $hr
                             </div>
                         </div>
-                        <div class=\"row mb-3\">
+                        <div class=\"row mb-2\">
                             <div class=\"col-12 p-0\">
-                                <a class=\"w-100 btn btn-primary\" href=\"/?view=appearance&action=update&target=Color&element=$element&custom=yes\">Benutzerdefinierte Farbe festlegen</a>
+                                $aButtonCustomColor
                             </div>
                         </div>
-                        <div class=\"row mb-3\">
+                        <div class=\"row mb-2\">
                             <div class=\"col-12 p-0\">
-                                <hr class=\"w-100 border border-1 border-primary\">
+                                $hr
                             </div>
                         </div>
-                        <div class=\"row mb-3\">
+                        <div class=\"row mb-4\">
                             <div class=\"col-12 p-0\">
                                 <input type=\"submit\" class=\"w-100 btn btn-primary\" value=\"Speichern\">
                             </div>
                         </div>
-                        <div class=\"row mb-3\">
+                        <div class=\"row\">
                             <div class=\"col-12 p-0\">
-                                <a class=\"w-100 btn btn-secondary\" href=\"/?view=appearance&action=update&target=Color\">Abbrechen</a>
+                                $aButtonCancel
                             </div>
                         </div> 
                     </div>
@@ -268,7 +286,7 @@ class AppearanceManagementView implements IAppearanceManagementView
 
     public function showDefaultColorForm(array $companyData, array $appearanceData, string $element, array $validColors, string $selectedBootstrapColor) : void
     {
-        $feedContentHTML = $this->genDefaultColorForm($element, $validColors, $selectedBootstrapColor);
+        $feedContentHTML = $this->genDefaultColorForm($appearanceData, $element, $validColors, $selectedBootstrapColor);
 
         $this->showPageFeed($companyData, $appearanceData, $feedContentHTML);
     }
