@@ -161,45 +161,38 @@ class AccountManagementView implements IAccountManagementView
                     if($messageValue === -1)
                     {
                         $emailAccountFieldBS = " is-invalid";
-                        $emailAccountLabelBS = " text-danger";
                         $emailAccountLabelText = "Bitte geben Sie eine gültige E-Mail-Adresse ein!";
                     }
                     else if($messageValue === -4)
                     {
                         $emailAccountFieldBS = " is-invalid";
-                        $emailAccountLabelBS = " text-danger";
                         $emailAccountLabelText = "Bitte geben Sie einen gültigen, nicht existierenden Account ein!";
                     }
                     else
                     {
                         $emailAccountFieldBS = "";
-                        $emailAccountLabelBS = "";
                         $emailAccountLabelText = "Die E-Mail-Adresse hat außer der Benutzerkennung keine weitere Funktion.";
                     }
 
                     if($messageValue === -2)
                     {
                         $passwordNewAccountFieldBS = " is-invalid";
-                        $passwordNewAccountLabelBS = " text-danger";
                         $passwordNewAccountLabelText = "Das Passwort darf nicht leer sein!";
                     }
                     else
                     {
                         $passwordNewAccountFieldBS = "";
-                        $passwordNewAccountLabelBS = "";
                         $passwordNewAccountLabelText = "Beliebige Zeichen für Passwort erlaubt - darf nur nicht leer sein.";
                     }
 
                     if($messageValue === -3)
                     {
                         $passwordSupervisorFieldBS = " is-invalid";
-                        $passwordSupervisorLabelBS = " text-danger";
                         $passwordSupervisorLabelText = "Bitte autorisieren Sie die Aktion mit Ihrem gültigen Kennwort";
                     }
                     else
                     {
                         $passwordSupervisorFieldBS = "";
-                        $passwordSupervisorLabelBS = "";
                         $passwordSupervisorLabelText = "&nbsp;";
                     }
 
