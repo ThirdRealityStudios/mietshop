@@ -6,16 +6,19 @@ use src\mietshop\contracts\IAppearanceManagementView;
 use src\mietshop\contracts\IErrorView;
 use src\mietshop\contracts\IGlobalView;
 use src\mietshop\view\html\IComponentFactory;
+use src\mietshop\view\html\IHtmlFactory;
 
 class AppearanceManagementView implements IAppearanceManagementView
 {
+    private IHtmlFactory $htmlFactory;
     private IComponentFactory $componentFactory;
 
     private IGlobalView $globalView;
     private IErrorView $errorView;
 
-    public function __construct(IComponentFactory $componentFactory, IGlobalView $globalView, IErrorView $errorView)
+    public function __construct(IHtmlFactory $htmlFactory, IComponentFactory $componentFactory, IGlobalView $globalView, IErrorView $errorView)
     {
+        $this->htmlFactory = $htmlFactory;
         $this->componentFactory = $componentFactory;
 
         $this->globalView = $globalView;
@@ -83,7 +86,7 @@ class AppearanceManagementView implements IAppearanceManagementView
         "
         <div class=\"container-fluid p-0\">
             <div class=\"row mt-3 mb-5\">
-                <div class=\"col-2\" style=\"background-image: url('/img/symbol/paint-bucket-danger.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\"></div>
+                <div class=\"col-2\" style=\"background-image: url('/img/symbol/paint-bucket.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\"></div>
                 <div class=\"col-10\">
                     <span class=\"fs-2 fw-bold text-danger\">Farbe ändern fehlgeschlagen</span>
                 </div>
@@ -120,7 +123,7 @@ class AppearanceManagementView implements IAppearanceManagementView
             "
         <div class=\"container-fluid p-0\">
             <div class=\"row mt-3 mb-5\">
-                <div class=\"col-2\" style=\"background-image: url('/img/symbol/paint-bucket-success.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\"></div>
+                <div class=\"col-2\" style=\"background-image: url('/img/symbol/paint-bucket.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\"></div>
                 <div class=\"col-10\">
                     <span class=\"fs-2 fw-bold text-success\">Farbe ändern erfolgreich</span>
                 </div>
@@ -322,29 +325,34 @@ class AppearanceManagementView implements IAppearanceManagementView
         $this->showPageFeed($companyData, $appearanceData, $feedContentHTML);
     }
 
-    private function genOptions() : string
+    private function genOptions(array $appearanceData) : string
     {
+        $spanManageAppearanceTitle = $this->htmlFactory->genNonSelfClosingElement("span", [ "Text" ], $appearanceData, [], [ "fs-2", "fw-bold", "lh-1" ], "Darstellung verwalten");
+        $aButtonChangeColor = $this->htmlFactory->genAButtonInteresting($appearanceData, "Farben ändern 🎨️", "/?view=appearance&action=update&target=Color", [ "w-100" ]);
+        $aButtonChangeImage = $this->htmlFactory->genAButtonInteresting($appearanceData, "Grafiken ändern 📸", "/?view=appearance&action=update&target=Image", [ "w-100" ]);
+        $aButtonReturn = $this->htmlFactory->genAButtonUninteresting($appearanceData, "Zurück", "/?view=account", [ "w-100" ]);
+
         $feedContentHTML =
         "
-        <div class=\"container-fluid\">
-            <div class=\"row mt-3 mb-5\">
+        <div class=\"container-fluid p-0\">
+            <div class=\"row mb-5\">
                 <div class=\"col-12\">
-                    <span class=\"fs-2 fw-bold\">Darstellung verwalten</span>
+                    $spanManageAppearanceTitle
                 </div>
             </div>
             <div class=\"row mb-3\">
                 <div class=\"col-12\">
-                    <a class=\"btn btn-primary w-100\" href=\"/?view=appearance&action=update&target=Color\">Farben ändern 🎨️</a>
+                    $aButtonChangeColor
                 </div>
             </div>
             <div class=\"row mb-5\">
                 <div class=\"col-12\">
-                    <a class=\"btn btn-primary w-100\" href=\"/?view=appearance&action=update&target=Image\">Grafiken ändern 📸</a>
+                    $aButtonChangeImage
                 </div>
             </div>
-            <div class=\"row mb-3\">
+            <div class=\"row\">
                 <div class=\"col-12\">
-                    <a class=\"btn btn-secondary w-100\" href=\"/?view=account\">Zurück</a>
+                    $aButtonReturn
                 </div>
             </div>
         </div>
@@ -355,7 +363,7 @@ class AppearanceManagementView implements IAppearanceManagementView
 
     public function showOptions(array $companyData, array $appearanceData) : void
     {
-        $feedContentHTML = $this->genOptions();
+        $feedContentHTML = $this->genOptions($appearanceData);
 
         $this->showPageFeed($companyData, $appearanceData, $feedContentHTML);
     }

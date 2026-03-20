@@ -71,7 +71,38 @@ class AccountPresenter implements IAccountPresenter
 
                             $isSupervisor = $this->accountModel->isSupervisor($sessionValues["Email"]);
 
-                            $this->accountView->show($companyData, $appearanceData, $accountEmail, $isSupervisor, $permissionRoleName);
+                            // Also determine a suitable very short welcome message, depending on the current time (e.g. "Good Morning, Sir!")
+                            $currentHour = date("H");
+
+                            $welcomeMessage = "";
+
+                            if(is_numeric($currentHour))
+                            {
+                                $currentHour = (int) $currentHour;
+
+                                if($currentHour > 23 && $currentHour <= 4)
+                                {
+                                    $welcomeMessage = "Willkommen zurück!";
+                                }
+                                else if($currentHour > 4 && $currentHour < 12)
+                                {
+                                    $welcomeMessage = "Guten Morgen!";
+                                }
+                                else if($currentHour >= 12 && $currentHour < 13)
+                                {
+                                    $welcomeMessage = "Guten Mittag!";
+                                }
+                                else if($currentHour >= 13 && $currentHour < 18)
+                                {
+                                    $welcomeMessage = "Hallo!";
+                                }
+                                else if($currentHour >= 18 && $currentHour <= 23)
+                                {
+                                    $welcomeMessage = "Guten Abend!";
+                                }
+                            }
+
+                            $this->accountView->show($companyData, $appearanceData, $accountEmail, $isSupervisor, $permissionRoleName, $welcomeMessage);
                         }
                         else
                         {

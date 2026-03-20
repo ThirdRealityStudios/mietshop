@@ -20,7 +20,7 @@ class AccountView implements IAccountView
         $this->globalView = $globalView;
     }
 
-    public function show(array $companyData, array $appearanceData, string $email, bool $isSupervisor, string $permissionRoleName) : void
+    public function show(array $companyData, array $appearanceData, string $email, bool $isSupervisor, string $permissionRoleName, string $welcomeMessage) : void
     {
         $cutFromLength = 30;
 
@@ -49,26 +49,40 @@ class AccountView implements IAccountView
             $optionalManageAppearanceButton = "";
         }
 
-        $feedContent =
+        $personSquare = $this->htmlFactory->genTextSVG("/img/symbol/person-square.svg", "", [ "align-bottom" ]);
+
+        $accountEmail = $this->htmlFactory->genNonSelfClosingElement("span", [], [], [], [ "fs-6", "fw-bold" ], $accountEmailSafe);
+        $accountRole = $this->htmlFactory->genNonSelfClosingElement("span", [], [], [], [], "Sie sind: $permissionRoleName");
+
+        $accountSummaryContent =
         "
-            <div class=\"container-fluid p-0\">
-                <div class=\"row mb-5 ms-0 mt-0 me-0\">
-                    <div class=\"col-2 p-0\" style=\"background-image: url('/img/symbol/person-square.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\"></div>
-                    <div class=\"col-10 p-0\">
-                        <div class=\"container-fluid\">
-                            <div class=\"row\">
-                                <div class=\"col-12 text-left\">
-                                    <span class=\"fs-6 fw-bold\">{$accountEmailSafe}</span>
-                                </div>
-                            </div>
-                            <div class=\"row\">
-                                <div class=\"col-12 text-left\">
-                                    <span>Sie sind: {$permissionRoleName}</span>
-                                </div>
-                            </div>
+        <div class=\"col-12 lh-1\">
+            <span class=\"align-middle d-inline-block fs-3 fw-bold pe-5 mb-4\">
+                $personSquare<span class=\"ms-4\">$welcomeMessage</span>
+            </span>
+            <span class=\"align-middle d-inline-block me-5 mb-3\">
+                <div class=\"container-fluid p-0 m-0\">
+                    <div class=\"row mb-2\">
+                        <div class=\"col-12\">
+                            $accountEmail
+                        </div>
+                    </div>
+                    <div class=\"row\">
+                        <div class=\"col-12\">
+                            $accountRole
                         </div>
                     </div>
                 </div>
+            </span>
+        </div>
+        ";
+
+        $accountSummary = $this->htmlFactory->genNonSelfClosingElement("div", [ "Text" ], $appearanceData, [], [ "row", "mb-4" ], $accountSummaryContent);
+
+        $feedContent =
+        "
+            <div class=\"container-fluid p-0\">
+                $accountSummary
                 <div class=\"row mt-3\">
                     <div class=\"col-12\">
                         $logoffButton

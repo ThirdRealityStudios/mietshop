@@ -25,9 +25,9 @@ interface IHtmlFactory
 
     public function genALink(array $appearanceData, string $text, string $href) : string;
 
-    public function genAButtonInteresting(array $appearanceData, string $text, string $href) : string;
+    public function genAButtonInteresting(array $appearanceData, string $text, string $href, array $classes = []) : string;
 
-    public function genAButtonUninteresting(array $appearanceData, string $text, string $href) : string;
+    public function genAButtonUninteresting(array $appearanceData, string $text, string $href, array $classes = []) : string;
 
     public function genLabelText(array $appearanceData, string $text, string $for) : string;
 
@@ -40,8 +40,9 @@ interface IHtmlFactory
      * it can't be replaced!
      *
      * @param string $svgLocalPath Path beginning with slash, e.g. "/img/symbol/my_img.svg".
-     * @param string $color E.g. "white" or "#ff0000".
+     * @param string $color Optional: e.g. "white" or "#ff0000". If not given, then the svg will remain with the value "currentColor".
+     * @param array $classes Optional: if you want to specify additional classes, e.g. pass here [ "align-middle", "white" ]
      * @return string If SVG could be loaded successfully and modified, then it would be returned here as a string. Otherwise empty string (something went wrong).
      */
-    public function genTextSVG(string $svgLocalPath, string $color) : string;
+    public function genTextSVG(string $svgLocalPath, string $color = "", array $classes = []) : string;
 }

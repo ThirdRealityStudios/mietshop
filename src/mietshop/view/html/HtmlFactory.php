@@ -156,14 +156,18 @@ class HtmlFactory implements IHtmlFactory
         return $this->genNonSelfClosingElement("a", [ "Link" ], $appearanceData, [], [ "fs-6", "darker-interact" ], $text, $href);
     }
 
-    public function genAButtonInteresting(array $appearanceData, string $text, string $href) : string
+    public function genAButtonInteresting(array $appearanceData, string $text, string $href, array $classes = []) : string
     {
-        return $this->genNonSelfClosingElement("a", [ "Interesting" ], $appearanceData, [], [ "btn", "fs-6" ], $text, $href);
+        array_push($classes, "btn", "fs-6");
+
+        return $this->genNonSelfClosingElement("a", [ "Interesting" ], $appearanceData, [], $classes, $text, $href);
     }
 
-    public function genAButtonUninteresting(array $appearanceData, string $text, string $href) : string
+    public function genAButtonUninteresting(array $appearanceData, string $text, string $href, array $classes = []) : string
     {
-        return $this->genNonSelfClosingElement("a", [ "Uninteresting" ], $appearanceData, [], [ "btn", "fs-6" ], $text, $href);
+        array_push($classes, "btn", "fs-6");
+
+        return $this->genNonSelfClosingElement("a", [ "Uninteresting" ], $appearanceData, [], $classes, $text, $href);
     }
 
     public function genLabelText(array $appearanceData, string $text, string $for) : string
@@ -172,7 +176,7 @@ class HtmlFactory implements IHtmlFactory
     }
 
     // TODO Replace $svgLocalPath through $svgXML (which was loaded or required - implement that on the other hand in the utils folder or something "AssetLoader"...)
-    public function genTextSVG(string $svgLocalPath, string $color) : string
+    public function genTextSVG(string $svgLocalPath, string $color = "", array $classes = []) : string
     {
         // TODO View should not load something from the harddisk. Or move this function into a utility class (maybe with all other functions because it is slowly getting out of hands)
         $svgFileContent = file_get_contents($_SERVER['DOCUMENT_ROOT'].$svgLocalPath);
@@ -182,24 +186,34 @@ class HtmlFactory implements IHtmlFactory
             return "";
         }
 
-        // Replace color.
-        $svgFileContent = str_replace("currentColor", $color, $svgFileContent);
-
-        if(is_array($svgFileContent))
+        if(!empty($color))
         {
-            return "";
+            // Replace color.
+            $svgFileContent = str_replace("currentColor", $color, $svgFileContent);
+
+            if(is_array($svgFileContent))
+            {
+                return "";
+            }
         }
 
-        $style = "style=\"width: auto; height: 0.9em;\"";
+        $style = "style=\"width: auto; height: 1em;\"";
+
+        $classesPrepared = "d-inline-block p-0 m-0 ";
+
+        foreach($classes as $class)
+        {
+            $classesPrepared = "$class $classesPrepared";
+        }
 
         // Modify class correctly if it exists yet as a property.
         if(str_contains($svgFileContent, "class=\""))
         {
-            $svgFileContent = str_replace("class=\"", "$style class=\"d-inline-block align-bottom ", $svgFileContent);
+            $svgFileContent = str_replace("class=\"", "$style class=\"$classesPrepared ", $svgFileContent);
         }
         else
         {
-            $svgFileContent = str_replace("<svg ", "<svg $style class=\"d-inline-block align-bottom\" ", $svgFileContent);
+            $svgFileContent = str_replace("<svg ", "<svg $style class=\"$classes\" ", $svgFileContent);
         }
 
         if(is_array($svgFileContent))

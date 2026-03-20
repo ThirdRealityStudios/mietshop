@@ -324,7 +324,7 @@ class ImprintView implements IImprintView
                 "
                 <div class=\"container-fluid p-0\">
                     <div class=\"row mt-3 mb-5\">
-                        <div class=\"col-2\" style=\"background-image: url('/img/symbol/trash-fill-success.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\"></div>
+                        <div class=\"col-2\" style=\"background-image: url('/img/symbol/trash-fill.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\"></div>
                         <div class=\"col-10\">
                            <span class=\"fs-2 fw-bold text-success\">Impressum erfolgreich aktualisiert!</span>
                         </div>

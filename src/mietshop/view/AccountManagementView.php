@@ -97,6 +97,38 @@ class AccountManagementView implements IAccountManagementView
         return $this->htmlFactory->genNonSelfClosingElement("a", [ "Interesting" ], $appearanceData, [], [ "btn", "w-100" ], $title, $href);
     }
 
+    private function genActionResultMessage(array $appearanceData, string $svgPath, string $action, string $title, string $description = "") : string
+    {
+        $svgForText = $this->htmlFactory->genTextSVG($svgPath);
+        $spanTitle = $this->htmlFactory->genNonSelfClosingElement("span", [ "Text" ], $appearanceData, [], [ "fw-bold", "inline-block", "lh-1" ], "$title&nbsp;$svgForText");
+        $spanDescription = $this->htmlFactory->genNonSelfClosingElement("span", [ "Text" ], $appearanceData, [], [ "w-100" ], $description);
+
+        $aRepeatActionButton = $this->htmlFactory->genNonSelfClosingElement("a", [ "Interesting" ], $appearanceData, [], [ "btn", "w-100" ], "Zur Übersicht", "/?view=accounts&action=all");
+        $aReturnButton = $this->htmlFactory->genNonSelfClosingElement("a", [ "Uninteresting" ], $appearanceData, [], [ "btn", "w-100" ], "Aktion wiederholen", "/?view=accounts&action=$action");
+
+        $descriptionHTML = (!empty($description)) ? "<div class=\"row mb-5\"><div class=\"col-12\">$spanDescription</div></div>" : "";
+
+        return
+        "
+        <div class=\"container-fluid p-0\">
+            <div class=\"row mb-5 fs-2\">
+                $spanTitle
+            </div>
+            $descriptionHTML
+            <div class=\"row mb-3\">
+                <div class=\"col-12\">
+                    $aReturnButton
+                </div>
+            </div>
+            <div class=\"row\">
+                <div class=\"col-12\">
+                    $aRepeatActionButton
+                </div>
+            </div>
+        </div>
+        ";
+    }
+
     public function show(array $companyData, array $appearanceData, array $accountResults, array $permissionRoles, string $action, int $messageValue = 0, int $pageIndex = 0, int $pagesAmount = 0): void
     {
         if(empty($companyData))
@@ -107,7 +139,7 @@ class AccountManagementView implements IAccountManagementView
         {
             if(strcmp($action, "all") === 0)
             {
-                $spanManageAccount = $this->htmlFactory->genNonSelfClosingElement("span", [ "Text" ], $appearanceData, [], [ "fs-2", "fw-bold" ], "Konten verwalten");
+                $spanManageAccount = $this->htmlFactory->genNonSelfClosingElement("span", [ "Text" ], $appearanceData, [], [ "fs-2", "fw-bold", "lh-1" ], "Konten verwalten");
                 $aButtonCreateAccount = $this->genAccountManagementButton($appearanceData, "Konto erstellen ✏️", "/?view=accounts&action=create");
                 $aButtonAllAccounts = $this->genAccountManagementButton($appearanceData, "Alle Konten ansehen 💾", "/?view=accounts&action=read");
                 $aButtonUpdateAccountPermission = $this->genAccountManagementButton($appearanceData, "Berechtigungen bearbeiten 🚦", "/?view=accounts&action=update");
@@ -117,7 +149,7 @@ class AccountManagementView implements IAccountManagementView
                 $feedContentHTML =
                 "
                     <div class=\"container-fluid p-0\">
-                        <div class=\"row mt-3 mb-5\">
+                        <div class=\"row mb-5\">
                             <div class=\"col-12\">
                                 $spanManageAccount
                             </div>
@@ -142,7 +174,7 @@ class AccountManagementView implements IAccountManagementView
                                 $aButtonDeleteAccount
                             </div>
                         </div>
-                        <div class=\"row mb-3\">
+                        <div class=\"row\">
                             <div class=\"col-12\">
                                 $aButtonReturn
                             </div>
@@ -196,7 +228,7 @@ class AccountManagementView implements IAccountManagementView
                         $passwordSupervisorLabelText = "&nbsp;";
                     }
 
-                    $spanCreateAccount = $this->htmlFactory->genNonSelfClosingElement("span", [ "Text" ], $appearanceData, [], [ "fs-2", "fw-bold" ], "Konto erstellen");
+                    $spanCreateAccount = $this->htmlFactory->genNonSelfClosingElement("span", [ "Text" ], $appearanceData, [], [ "fs-2", "fw-bold", "lh-1" ], "Konto erstellen");
                     $labelEmail = $this->htmlFactory->genLabelText($appearanceData, "Email: ", "emailNewAccount");
                     $labelEmailHint = $this->htmlFactory->genLabelText($appearanceData, $emailAccountLabelText, "emailNewAccount");
 
@@ -212,7 +244,7 @@ class AccountManagementView implements IAccountManagementView
                     $feedContentHTML =
                     "
                     <div class=\"container-fluid p-0\">
-                        <div class=\"row mt-3 mb-5\">
+                        <div class=\"row mb-5\">
                             <div class=\"col-12\">
                                 $spanCreateAccount
                             </div>
@@ -254,7 +286,7 @@ class AccountManagementView implements IAccountManagementView
                                 </form>
                             </div>
                         </div>
-                        <div class=\"row mb-3\">
+                        <div class=\"row\">
                             <div class=\"col-12\">
                                 $aAbortButton
                             </div>
@@ -264,51 +296,11 @@ class AccountManagementView implements IAccountManagementView
                 }
                 else if($messageValue === -5) // Do I have insufficient permissions to create this account? (most likely because a higher permission level was provided than the creator)
                 {
-                    $feedContentHTML =
-                    "
-                    <div class=\"container-fluid p-0\">
-                        <div class=\"row mt-3 mb-5\">
-                            <div class=\"col-2\" style=\"background-image: url('/img/symbol/person-fill-slash-danger.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\"></div>
-                            <div class=\"col-10\">
-                                <span class=\"fs-2 fw-bold text-danger\">Unzureichende Befugnisse</span>
-                            </div>
-                        </div>
-                        <div class=\"row mb-5\">
-                            <div class=\"col-12\">
-                                <span class=\"fs-6 w-100\">Es scheint so, als sei die Anfrage ungültig, da versucht wurde ein Account zu erstellen mit einem Benutzer-Level. das höher ist als Ihr eigenes.</span>
-                            </div>
-                        </div>
-                        <div class=\"row mb-3\">
-                            <div class=\"col-12\">
-                                <a class=\"btn btn-secondary w-100\" href=\"/?view=accounts&action=all\">Zur Übersicht</a>
-                            </div>
-                        </div>
-                    </div>
-                    ";
+                    $feedContentHTML = $this->genActionResultMessage($appearanceData, "/img/symbol/person-fill-slash.svg", "create", "Unzureichende Befugnisse", "Es scheint so, als sei die Anfrage ungültig, da versucht wurde ein Account zu erstellen mit einem Benutzer-Level. das höher ist als Ihr eigenes.");
                 }
                 else if($messageValue === 1) // Was the account creation successful?
                 {
-                    $feedContentHTML =
-                    "
-                    <div class=\"container-fluid p-0\">
-                        <div class=\"row mt-3 mb-5\">
-                            <div class=\"col-2\" style=\"background-image: url('/img/symbol/person-fill-check-success.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\"></div>
-                            <div class=\"col-10\">
-                                <span class=\"fs-2 fw-bold text-success\">Konto erfolgreich erstellt</span>
-                            </div>
-                        </div>
-                        <div class=\"row mb-3\">
-                            <div class=\"col-12\">
-                                <a class=\"btn btn-success w-100\" href=\"/?view=accounts&action=create\">Weiteres Konto anlegen</a>
-                            </div>
-                        </div>
-                        <div class=\"row mb-3\">
-                            <div class=\"col-12\">
-                                <a class=\"btn btn-secondary w-100\" href=\"/?view=accounts&action=all\">Zur Übersicht</a>
-                            </div>
-                        </div>
-                    </div>
-                    ";
+                    $feedContentHTML = $this->genActionResultMessage($appearanceData, "/img/symbol/person-fill-check.svg", "create", "Konto erfolgreich erstellt");
                 }
             }
             else if(strcmp($action, "read") === 0)
@@ -329,7 +321,7 @@ class AccountManagementView implements IAccountManagementView
 
                 $pageNonIndexed = $pageIndex+1;
 
-                $spanTitleAllAccounts = $this->htmlFactory->genNonSelfClosingElement("span", [ "Text" ], $appearanceData, [], [ "fs-2", "fw-bold" ], "Kontenübersicht");
+                $spanTitleAllAccounts = $this->htmlFactory->genNonSelfClosingElement("span", [ "Text" ], $appearanceData, [], [ "fs-2", "fw-bold", "lh-1" ], "Kontenübersicht");
                 $inputSubmitButton = $this->htmlFactory->genSelfClosingElement("input", [ "Interesting" ], $appearanceData, [], [ "btn" ], "", "type=\"submit\" value=\"Seite aufrufen\"");
 
                 $aReturnButton = $this->htmlFactory->genNonSelfClosingElement("a", [ "Uninteresting" ], $appearanceData, [], [ "w-100", "btn" ], "Zurück", "/?view=accounts&action=all");
@@ -339,7 +331,7 @@ class AccountManagementView implements IAccountManagementView
                 $feedContentHTML =
                 "
                 <div class=\"container-fluid p-0\">
-                    <div class=\"row mt-3 mb-5\">
+                    <div class=\"row mb-5\">
                         <div class=\"col-12\">
                             $spanTitleAllAccounts
                         </div>
@@ -380,7 +372,7 @@ class AccountManagementView implements IAccountManagementView
                             </form>
                         </div>
                     </div>
-                    <div class=\"row mb-3\">
+                    <div class=\"row\">
                         <div class=\"col-12\">
                             $aReturnButton
                         </div>
@@ -422,7 +414,7 @@ class AccountManagementView implements IAccountManagementView
                         $passwordSupervisorLabelText = "&nbsp;";
                     }
 
-                    $spanTitleUpdatePermission = $this->htmlFactory->genNonSelfClosingElement("span", [ "Text" ], $appearanceData, [], [ "fs-2", "fw-bold" ], "Berechtigung aktualisieren");
+                    $spanTitleUpdatePermission = $this->htmlFactory->genNonSelfClosingElement("span", [ "Text" ], $appearanceData, [], [ "fs-2", "fw-bold", "lh-1" ], "Berechtigung aktualisieren");
 
                     $labelEmail = $this->htmlFactory->genLabelText($appearanceData, "E-Mail des Kontos: ", "emailAccount");
                     $labelPasswordSupervisor = $this->htmlFactory->genLabelText($appearanceData, "Ihr Passwort zur Freigabe: ", "passwordSupervisor");
@@ -433,7 +425,7 @@ class AccountManagementView implements IAccountManagementView
                     $feedContentHTML =
                     "
                     <div class=\"container-fluid p-0\">
-                        <div class=\"row mt-3 mb-5\">
+                        <div class=\"row mb-5\">
                             <div class=\"col-12\">
                                 $spanTitleUpdatePermission
                             </div>
@@ -468,7 +460,7 @@ class AccountManagementView implements IAccountManagementView
                                 </form>
                             </div>
                         </div>
-                        <div class=\"row mb-3\">
+                        <div class=\"row\">
                             <div class=\"col-12\">
                                 $aAbortButton
                             </div>
@@ -478,75 +470,15 @@ class AccountManagementView implements IAccountManagementView
                 }
                 else if($messageValue === -4) // Is there a general processing error? Maybe it is a bug?
                 {
-                    $feedContentHTML =
-                    "
-                    <div class=\"container-fluid p-0\">
-                        <div class=\"row mt-3 mb-5\">
-                            <div class=\"col-2\" style=\"background-image: url('/img/symbol/cpu-fill-danger.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\"></div>
-                            <div class=\"col-10\">
-                                <span class=\"fs-2 fw-bold text-danger\">Allgemeiner Verarbeitungsfehler</span>
-                            </div>
-                        </div>
-                        <div class=\"row mb-5\">
-                            <div class=\"col-12\">
-                                <span class=\"fs-6 w-100\">Es scheint so, als wäre die Verarbeitung gerade nicht möglich. Bitte versuchen Sie es später erneut!</span>
-                            </div>
-                        </div>
-                        <div class=\"row mb-3\">
-                            <div class=\"col-12\">
-                                <a class=\"btn btn-secondary w-100\" href=\"/?view=accounts&action=all\">Zur Übersicht</a>
-                            </div>
-                        </div>
-                    </div>
-                    ";
+                    $feedContentHTML = $this->genActionResultMessage($appearanceData, "/img/symbol/cpu-fill.svg", "all", "Allgemeiner Verarbeitungsfehler", "Es scheint so, als wäre die Verarbeitung gerade nicht möglich. Bitte versuchen Sie es später erneut!");
                 }
                 else if($messageValue === -5) // Do I have insufficient permissions to update the permissions of this account? (most likely because a higher permission level was provided than the supervisor has)
                 {
-                    $feedContentHTML =
-                    "
-                    <div class=\"container-fluid p-0\">
-                        <div class=\"row mt-3 mb-5\">
-                            <div class=\"col-2\" style=\"background-image: url('/img/symbol/person-fill-slash-danger.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\"></div>
-                            <div class=\"col-10\">
-                                <span class=\"fs-2 fw-bold text-danger\">Unzureichende Befugnisse</span>
-                            </div>
-                        </div>
-                        <div class=\"row mb-5\">
-                            <div class=\"col-12\">
-                                <span class=\"fs-6 w-100\">Es scheint so, als sei die Anfrage ungültig, da z.B. die vergebene Berechtigung höher ist als Ihre eigene oder weil das Zielkonto durch gleiche oder höhere Rechte geschützt ist vor Änderungen.</span>
-                            </div>
-                        </div>
-                        <div class=\"row mb-3\">
-                            <div class=\"col-12\">
-                                <a class=\"btn btn-secondary w-100\" href=\"/?view=accounts&action=all\">Zur Übersicht</a>
-                            </div>
-                        </div>
-                    </div>
-                    ";
+                    $feedContentHTML = $this->genActionResultMessage($appearanceData, "/img/symbol/person-fill-slash.svg", "update", "Unzureichende Befugnisse", "Es scheint so, als sei die Anfrage ungültig, da z.B. die vergebene Berechtigung höher ist als Ihre eigene oder weil das Zielkonto durch gleiche oder höhere Rechte geschützt ist vor Änderungen.");
                 }
                 else if($messageValue === 1) // Was the account permission update successful?
                 {
-                    $feedContentHTML =
-                    "
-                    <div class=\"container-fluid p-0\">
-                        <div class=\"row mt-3 mb-5\">
-                            <div class=\"col-2\" style=\"background-image: url('/img/symbol/person-fill-check-success.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\"></div>
-                            <div class=\"col-10\">
-                                <span class=\"fs-2 fw-bold text-success\">Berechtigung erfolgreich aktualisiert</span>
-                            </div>
-                        </div>
-                        <div class=\"row mb-3\">
-                            <div class=\"col-12\">
-                                <a class=\"btn btn-success w-100\" href=\"/?view=accounts&action=update\">Weitere Berechtigung ändern</a>
-                            </div>
-                        </div>
-                        <div class=\"row mb-3\">
-                            <div class=\"col-12\">
-                                <a class=\"btn btn-secondary w-100\" href=\"/?view=accounts&action=all\">Zur Übersicht</a>
-                            </div>
-                        </div>
-                    </div>
-                    ";
+                    $feedContentHTML = $this->genActionResultMessage($appearanceData, "/img/symbol/person-fill-check.svg", "update", "Berechtigung erfolgreich aktualisiert");
                 }
             }
             else if(strcmp($action, "delete") === 0)
@@ -581,7 +513,7 @@ class AccountManagementView implements IAccountManagementView
                         $passwordSupervisorLabelText = "&nbsp;";
                     }
 
-                    $spanTitleDeleteAccount = $this->htmlFactory->genNonSelfClosingElement("span", [ "Text" ], $appearanceData, [], [ "fs-2", "fw-bold" ], "Konto löschen");
+                    $spanTitleDeleteAccount = $this->htmlFactory->genNonSelfClosingElement("span", [ "Text" ], $appearanceData, [], [ "fs-2", "fw-bold", "lh-1" ], "Konto löschen");
 
                     $labelEmail = $this->htmlFactory->genLabelText($appearanceData, "E-Mail des Kontos: ", "emailAccount");
                     $labelPasswordSupervisor = $this->htmlFactory->genLabelText($appearanceData, "Ihr Passwort zur Freigabe: ", "passwordSupervisor");
@@ -592,7 +524,7 @@ class AccountManagementView implements IAccountManagementView
                     $feedContentHTML =
                     "
                     <div class=\"container-fluid p-0\">
-                        <div class=\"row mt-3 mb-5\">
+                        <div class=\"row mb-5\">
                             <div class=\"col-12\">
                                 $spanTitleDeleteAccount
                             </div>
@@ -624,7 +556,7 @@ class AccountManagementView implements IAccountManagementView
                                 </form>
                             </div>
                         </div>
-                        <div class=\"row mb-3\">
+                        <div class=\"row\">
                             <div class=\"col-12\">
                                 $aAbortButton
                             </div>
@@ -634,51 +566,11 @@ class AccountManagementView implements IAccountManagementView
                 }
                 else if($messageValue === -5) // Do I have insufficient permissions to delete the account?
                 {
-                    $feedContentHTML =
-                    "
-                    <div class=\"container-fluid p-0\">
-                        <div class=\"row mt-3 mb-5\">
-                            <div class=\"col-2\" style=\"background-image: url('/img/symbol/person-fill-slash-danger.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\"></div>
-                            <div class=\"col-10\">
-                                <span class=\"fs-2 fw-bold text-danger\">Unzureichende Befugnisse</span>
-                            </div>
-                        </div>
-                        <div class=\"row mb-5\">
-                            <div class=\"col-12\">
-                                <span class=\"fs-6 w-100\">Sie scheinen zu wenig Befugnisse zu haben, um diese Aktion durchzuführen.</span>
-                            </div>
-                        </div>
-                        <div class=\"row mb-3\">
-                            <div class=\"col-12\">
-                                <a class=\"btn btn-secondary w-100\" href=\"/?view=accounts&action=all\">Zur Übersicht</a>
-                            </div>
-                        </div>
-                    </div>
-                    ";
+                    $feedContentHTML = $this->genActionResultMessage($appearanceData, "/img/symbol/person-fill-slash.svg", "delete", "Unzureichende Befugnisse", "Sie scheinen zu wenig Befugnisse zu haben, um diese Aktion durchzuführen.");
                 }
                 else if($messageValue === 1) // Was the account deletion successful?
                 {
-                    $feedContentHTML =
-                    "
-                    <div class=\"container-fluid p-0\">
-                        <div class=\"row mt-3 mb-5\">
-                            <div class=\"col-2\" style=\"background-image: url('/img/symbol/trash-fill-success.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\"></div>
-                            <div class=\"col-10\">
-                                <span class=\"fs-2 fw-bold text-success\">Konto erfolgreich gelöscht!</span>
-                            </div>
-                        </div>
-                        <div class=\"row mb-3\">
-                            <div class=\"col-12\">
-                                <a class=\"btn btn-success w-100\" href=\"/?view=accounts&action=delete\">Weiteres Konto löschen</a>
-                            </div>
-                        </div>
-                        <div class=\"row mb-3\">
-                            <div class=\"col-12\">
-                                <a class=\"btn btn-secondary w-100\" href=\"/?view=accounts&action=all\">Zur Übersicht</a>
-                            </div>
-                        </div>
-                    </div>
-                    ";
+                    $feedContentHTML = $this->genActionResultMessage($appearanceData, "/img/symbol/trash-fill.svg", "delete", "Konto erfolgreich gelöscht!");
                 }
             }
             else

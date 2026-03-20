@@ -138,7 +138,7 @@ class LegalView implements ILegalView
                 "
                 <div class=\"container-fluid p-0\">
                     <div class=\"row mt-3 mb-5\">
-                        <div class=\"col-2\" style=\"background-image: url('/img/symbol/shield-fill-check-success.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\"></div>
+                        <div class=\"col-2\" style=\"background-image: url('/img/symbol/shield-fill-check.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\"></div>
                         <div class=\"col-10\">
                            <span class=\"fs-2 fw-bold text-success\">$legalTextTitleShort erfolgreich aktualisiert!</span>
                         </div>
@@ -163,7 +163,7 @@ class LegalView implements ILegalView
                 "
                 <div class=\"container-fluid p-0\">
                     <div class=\"row mt-3 mb-5\">
-                        <div class=\"col-2\" style=\"background-image: url('/img/symbol/cpu-fill-danger.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\"></div>
+                        <div class=\"col-2\" style=\"background-image: url('/img/symbol/cpu-fill.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\"></div>
                         <div class=\"col-10\">
                            <span class=\"fs-2 fw-bold text-danger\">Ungültige Anfrage</span>
                         </div>

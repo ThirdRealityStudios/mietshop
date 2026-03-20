@@ -65,7 +65,7 @@ class Router implements IRouter
             $accountView = new AccountView($htmlFactory, $componentFactory, $globalView);
             $legalView = new LegalView($htmlFactory, $componentFactory, $globalView, $errorView, $textFormatView);
             $accountManagementView = new AccountManagementView($htmlFactory, $componentFactory, $globalView);
-            $appearanceManagementView = new AppearanceManagementView($componentFactory, $globalView, $errorView);
+            $appearanceManagementView = new AppearanceManagementView($htmlFactory, $componentFactory, $globalView, $errorView);
 
             $accountModel = new AccountModel($userInputModel, $databaseAdapter);
 
