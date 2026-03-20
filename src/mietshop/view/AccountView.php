@@ -20,22 +20,6 @@ class AccountView implements IAccountView
         $this->globalView = $globalView;
     }
 
-    private function genAccountMenuButton(string $view, string $action, string $title) : string
-    {
-        $menuButtonHTML =
-        "
-        <div class=\"row mt-4\">
-            <div class=\"col-12\">
-                <a class=\"btn btn-primary w-100\" href=\"/?view=$view&action=$action\">$title</a>
-            </div>
-        </div>
-        ";
-
-        // $menuButtonHTML = $this->globalView->genAButtonInteresting($appearanceData, $title, "/?view=$view&action=$action");
-
-        return $menuButtonHTML;
-    }
-
     public function show(array $companyData, array $appearanceData, string $email, bool $isSupervisor, string $permissionRoleName) : void
     {
         $cutFromLength = 30;

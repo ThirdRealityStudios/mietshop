@@ -27,13 +27,11 @@ class LoginView implements ILoginView
         if(is_string($optionalErrorMessage))
         {
             $safeOptionalErrorMessage = htmlspecialchars($optionalErrorMessage, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
-            $inputLabelsInvalidClass = " text-danger";
             $inputFieldsInvalidClass = " is-invalid";
         }
         else
         {
             $safeOptionalErrorMessage = "&nbsp;";
-            $inputLabelsInvalidClass = "";
             $inputFieldsInvalidClass = "";
         }
 

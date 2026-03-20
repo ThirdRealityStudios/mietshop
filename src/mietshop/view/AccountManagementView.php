@@ -6,14 +6,18 @@ use src\mietshop\contracts\IAccountManagementView;
 use src\mietshop\contracts\IAccountModel;
 use src\mietshop\contracts\IGlobalView;
 use src\mietshop\view\html\IComponentFactory;
+use src\mietshop\view\html\IHtmlFactory;
 
 class AccountManagementView implements IAccountManagementView
 {
-    private IGlobalView $globalView;
+    private IHtmlFactory $htmlFactory;
     private IComponentFactory $componentFactory;
 
-    public function __construct(IComponentFactory $componentFactory, IGlobalView $globalView)
+    private IGlobalView $globalView;
+
+    public function __construct(IHtmlFactory $htmlFactory, IComponentFactory $componentFactory, IGlobalView $globalView)
     {
+        $this->htmlFactory = $htmlFactory;
         $this->componentFactory = $componentFactory;
 
         $this->globalView = $globalView;
@@ -62,11 +66,14 @@ class AccountManagementView implements IAccountManagementView
      * (lowest role first at the top, highest role - usually admin - last in list).
      *
      * @param array $permissionRoles
+     * @param array $appearanceData
      * @return string Form select HTML with all permission roles in ascending order.
      */
-    private function genHTMLSelectPermissionLevel(array $permissionRoles) : string
+    private function genHTMLSelectPermissionLevel(array $permissionRoles, array $appearanceData) : string
     {
-        $selectHTML = "<label class=\"form-label p-0\" for=\"permissionLevelOptions\">Benutzer-Level auswählen: </label><select class=\"form-select\" name=\"permissionLevelOptions\" id=\"permissionLevelOptions\">";
+        $labelSelectTitle = $this->htmlFactory->genLabelText($appearanceData, "Benutzer-Level auswählen: ", "permissionLevelOptions");
+
+        $selectHTML = "$labelSelectTitle<select class=\"form-select\" name=\"permissionLevelOptions\" id=\"permissionLevelOptions\">";
 
         // Due to implementation detail, there can be "gaps" between permission levels in the array.
         // Hence, reading all permission levels step-by-step is safer.
@@ -85,6 +92,11 @@ class AccountManagementView implements IAccountManagementView
         return "$selectHTML</select>";
     }
 
+    private function genAccountManagementButton(array $appearanceData, string $title, string $href) : string
+    {
+        return $this->htmlFactory->genNonSelfClosingElement("a", [ "Interesting" ], $appearanceData, [], [ "btn", "w-100" ], $title, $href);
+    }
+
     public function show(array $companyData, array $appearanceData, array $accountResults, array $permissionRoles, string $action, int $messageValue = 0, int $pageIndex = 0, int $pagesAmount = 0): void
     {
         if(empty($companyData))
@@ -95,37 +107,44 @@ class AccountManagementView implements IAccountManagementView
         {
             if(strcmp($action, "all") === 0)
             {
+                $spanManageAccount = $this->htmlFactory->genNonSelfClosingElement("span", [ "Text" ], $appearanceData, [], [ "fs-2", "fw-bold" ], "Konten verwalten");
+                $aButtonCreateAccount = $this->genAccountManagementButton($appearanceData, "Konto erstellen ✏️", "/?view=accounts&action=create");
+                $aButtonAllAccounts = $this->genAccountManagementButton($appearanceData, "Alle Konten ansehen 💾", "/?view=accounts&action=read");
+                $aButtonUpdateAccountPermission = $this->genAccountManagementButton($appearanceData, "Berechtigungen bearbeiten 🚦", "/?view=accounts&action=update");
+                $aButtonDeleteAccount = $this->genAccountManagementButton($appearanceData, "Konto löschen ❌", "/?view=accounts&action=delete");
+                $aButtonReturn = $this->htmlFactory->genNonSelfClosingElement("a", [ "Uninteresting" ], $appearanceData, [], [ "btn", "w-100" ], "Zurück", "/?view=account");
+
                 $feedContentHTML =
                 "
                     <div class=\"container-fluid p-0\">
                         <div class=\"row mt-3 mb-5\">
                             <div class=\"col-12\">
-                                <span class=\"fs-2 fw-bold\">Konten verwalten</span>
+                                $spanManageAccount
                             </div>
                         </div>
                         <div class=\"row mb-3\">
                             <div class=\"col-12\">
-                                <a class=\"btn btn-primary w-100\" href=\"/?view=accounts&action=create\">Konto erstellen ✏️</a>
+                                $aButtonCreateAccount
                             </div>
                         </div>
                         <div class=\"row mb-3\">
                             <div class=\"col-12\">
-                                <a class=\"btn btn-primary w-100\" href=\"/?view=accounts&action=read\">Alle Konten ansehen 💾</a>
+                                $aButtonAllAccounts
                             </div>
                         </div>
                         <div class=\"row mb-3\">
                             <div class=\"col-12\">
-                                <a class=\"btn btn-primary w-100\" href=\"/?view=accounts&action=update\">Berechtigungen bearbeiten 🚦</a>
+                                $aButtonUpdateAccountPermission
                             </div>
                         </div>
                         <div class=\"row mb-5\">
                             <div class=\"col-12\">
-                                <a class=\"btn btn-primary w-100\" href=\"/?view=accounts&action=delete\">Konto löschen ❌</a>
+                                $aButtonDeleteAccount
                             </div>
                         </div>
                         <div class=\"row mb-3\">
                             <div class=\"col-12\">
-                                <a class=\"btn btn-secondary w-100\" href=\"/?view=account\">Zurück</a>
+                                $aButtonReturn
                             </div>
                         </div>
                     </div>
@@ -137,7 +156,7 @@ class AccountManagementView implements IAccountManagementView
                 // Or did something go wrong after submit? (a field was incorrect or creation failed generally)
                 if($messageValue >= -4 && $messageValue <= 0)
                 {
-                    $selectPermissionLevelHTML = $this->genHTMLSelectPermissionLevel($permissionRoles);
+                    $selectPermissionLevelHTML = $this->genHTMLSelectPermissionLevel($permissionRoles, $appearanceData);
 
                     if($messageValue === -1)
                     {
@@ -184,12 +203,25 @@ class AccountManagementView implements IAccountManagementView
                         $passwordSupervisorLabelText = "&nbsp;";
                     }
 
+                    $spanCreateAccount = $this->htmlFactory->genNonSelfClosingElement("span", [ "Text" ], $appearanceData, [], [ "fs-2", "fw-bold" ], "Konto erstellen");
+                    $labelEmail = $this->htmlFactory->genLabelText($appearanceData, "Email: ", "emailNewAccount");
+                    $labelEmailHint = $this->htmlFactory->genLabelText($appearanceData, $emailAccountLabelText, "emailNewAccount");
+
+                    $labelPassword = $this->htmlFactory->genLabelText($appearanceData, "Passwort: ", "passwordNewAccount");
+                    $labelPasswordHint = $this->htmlFactory->genLabelText($appearanceData, $passwordNewAccountLabelText, "passwordNewAccount");
+
+                    $labelPasswordSupervisor = $this->htmlFactory->genLabelText($appearanceData, "Ihr Passwort zur Freigabe: ", "passwordSupervisor");
+                    $labelPasswordSupervisorHint = $this->htmlFactory->genLabelText($appearanceData, $passwordSupervisorLabelText, "passwordNewAccount");
+
+                    $inputSubmitButton = $this->htmlFactory->genSelfClosingElement("input", [ "ActionExecute" ], $appearanceData, [], [ "w-100", "btn" ], "", "value=\"Konto anlegen\" type=\"submit\"");
+                    $aAbortButton = $this->htmlFactory->genNonSelfClosingElement("a", [ "ActionAbort" ], $appearanceData, [], [ "w-100", "btn" ], "Abbrechen", "/?view=accounts&action=all");
+
                     $feedContentHTML =
                     "
                     <div class=\"container-fluid p-0\">
                         <div class=\"row mt-3 mb-5\">
                             <div class=\"col-12\">
-                                <span class=\"fs-2 fw-bold\">Konto erstellen</span>
+                                $spanCreateAccount
                             </div>
                         </div>
                         <div class=\"row mb-3\">
@@ -199,31 +231,31 @@ class AccountManagementView implements IAccountManagementView
                                     <input type=\"hidden\" name=\"action\" value=\"create\">
                                     <div class=\"container-fluid\">
                                         <div class=\"row mb-3\">
-                                            <label class=\"form-label p-0$emailAccountLabelBS\" for=\"emailNewAccount\">E-Mail: </label>
+                                            $labelEmail
                                             <input value=\"\" class=\"form-control w-100$emailAccountFieldBS\" type=\"email\" name=\"emailNewAccount\" id=\"emailNewAccount\" placeholder=\"E-Mail-Adresse\">
                                             <div class=\"row mt-2\">
-                                                <label for=\"emailNewAccount\" class=\"p-0$emailAccountLabelBS\">$emailAccountLabelText</label>
+                                                $labelEmailHint
                                             </div>
                                         </div>
                                         <div class=\"row mb-3\">
-                                            <label class=\"form-label p-0$passwordNewAccountLabelBS\" for=\"passwordNewAccount\">Passwort: </label>
+                                            $labelPassword
                                             <input value=\"\" class=\"form-control w-100$passwordNewAccountFieldBS\" type=\"password\" name=\"passwordNewAccount\" id=\"passwordNewAccount\" placeholder=\"Passwort\">
                                             <div class=\"row mt-2\">
-                                                <label for=\"passwordNewAccount\" class=\"p-0$passwordNewAccountLabelBS\">$passwordNewAccountLabelText</label>
+                                                $labelPasswordHint
                                             </div>
                                         </div>
                                         <div class=\"row mb-3\">
                                             $selectPermissionLevelHTML
                                         </div>
                                         <div class=\"row mb-3\">
-                                            <label class=\"form-label p-0$passwordSupervisorLabelBS\" for=\"passwordSupervisor\">Ihr Passwort zur Freigabe: </label>
+                                            $labelPasswordSupervisor
                                             <input value=\"\" class=\"form-control w-100$passwordSupervisorFieldBS\" type=\"password\" name=\"passwordSupervisor\" id=\"passwordSupervisor\" placeholder=\"Passwort zur Autorisierung\">
                                             <div class=\"row mt-2\">
-                                                <label for=\"passwordSupervisor\" class=\"p-0 fw-bold$passwordSupervisorLabelBS\">$passwordSupervisorLabelText</label>
+                                                $labelPasswordSupervisorHint
                                             </div>
                                         </div>
                                         <div class=\"row mb-2\">
-                                            <input type=\"submit\" class=\"btn btn-success w-100\" value=\"Konto anlegen\">
+                                            $inputSubmitButton
                                         </div>
                                     </div>
                                 </form>
@@ -231,7 +263,7 @@ class AccountManagementView implements IAccountManagementView
                         </div>
                         <div class=\"row mb-3\">
                             <div class=\"col-12\">
-                                <a class=\"btn btn-danger w-100\" href=\"/?view=accounts&action=all\">Abbrechen</a>
+                                $aAbortButton
                             </div>
                         </div>
                     </div>
@@ -304,12 +336,19 @@ class AccountManagementView implements IAccountManagementView
 
                 $pageNonIndexed = $pageIndex+1;
 
+                $spanTitleAllAccounts = $this->htmlFactory->genNonSelfClosingElement("span", [ "Text" ], $appearanceData, [], [ "fs-2", "fw-bold" ], "Kontenübersicht");
+                $inputSubmitButton = $this->htmlFactory->genSelfClosingElement("input", [ "Interesting" ], $appearanceData, [], [ "btn" ], "", "type=\"submit\" value=\"Seite aufrufen\"");
+
+                $aReturnButton = $this->htmlFactory->genNonSelfClosingElement("a", [ "Uninteresting" ], $appearanceData, [], [ "w-100", "btn" ], "Zurück", "/?view=accounts&action=all");
+
+                $kbdPageInfo = $this->htmlFactory->genNonSelfClosingElement("kbd", [ "Frame" ], $appearanceData, [], [ "bg-white", "border", "border-1", "text-black", "fw-bold", "rounded-2" ], "Seite {$pageNonIndexed} / {$pagesAmount}");
+
                 $feedContentHTML =
                 "
                 <div class=\"container-fluid p-0\">
                     <div class=\"row mt-3 mb-5\">
                         <div class=\"col-12\">
-                            <span class=\"fs-2 fw-bold\">Kontenübersicht</span>
+                            $spanTitleAllAccounts
                         </div>
                     </div>
                     <div class=\"row mb-3\">
@@ -334,14 +373,14 @@ class AccountManagementView implements IAccountManagementView
                                             <input class=\"form-control\" type=\"number\" value=\"$pageNonIndexed\" min=\"1\" max=\"{$pagesAmount}\" placeholder=\"Seitenzahl\" name=\"page\">
                                         </div>
                                         <div class=\"col-4\">
-                                            <input class=\"btn btn-primary\" type=\"submit\" value=\"Seite aufrufen\">
+                                            $inputSubmitButton
                                         </div>
                                         <div class=\"col-4\">
                                         </div>
                                     </div>
                                     <div class=\"row mb-3\">
                                         <div class=\"col-12\">
-                                            <kbd class=\"bg-white border border-1 border-primary text-black fw-bold rounded-2\">Seite {$pageNonIndexed} / {$pagesAmount}</kbd>
+                                            $kbdPageInfo
                                         </div>
                                     </div>
                                 </div>
@@ -350,7 +389,7 @@ class AccountManagementView implements IAccountManagementView
                     </div>
                     <div class=\"row mb-3\">
                         <div class=\"col-12\">
-                            <a class=\"btn btn-secondary w-100\" href=\"/?view=accounts&action=all\">Zurück</a>
+                            $aReturnButton
                         </div>
                     </div>
                 </div>
@@ -362,7 +401,7 @@ class AccountManagementView implements IAccountManagementView
                 // Or did something go wrong after submit? (a field was incorrect or permission update failed generally)
                 if($messageValue === -3 || $messageValue === -2 || $messageValue === 0)
                 {
-                    $selectPermissionLevelHTML = $this->genHTMLSelectPermissionLevel($permissionRoles);
+                    $selectPermissionLevelHTML = $this->genHTMLSelectPermissionLevel($permissionRoles, $appearanceData);
 
                     if($messageValue === -2)
                     {
@@ -390,12 +429,20 @@ class AccountManagementView implements IAccountManagementView
                         $passwordSupervisorLabelText = "&nbsp;";
                     }
 
+                    $spanTitleUpdatePermission = $this->htmlFactory->genNonSelfClosingElement("span", [ "Text" ], $appearanceData, [], [ "fs-2", "fw-bold" ], "Berechtigung aktualisieren");
+
+                    $labelEmail = $this->htmlFactory->genLabelText($appearanceData, "E-Mail des Kontos: ", "emailAccount");
+                    $labelPasswordSupervisor = $this->htmlFactory->genLabelText($appearanceData, "Ihr Passwort zur Freigabe: ", "passwordSupervisor");
+
+                    $inputSubmitButton = $this->htmlFactory->genSelfClosingElement("input", [ "ActionExecute" ], $appearanceData, [], [ "w-100", "btn" ], "", "value=\"Berechtigung anpassen\" type=\"submit\"");
+                    $aAbortButton = $this->htmlFactory->genNonSelfClosingElement("a", [ "ActionAbort" ], $appearanceData, [], [ "w-100", "btn" ], "Abbrechen", "/?view=accounts&action=all");
+
                     $feedContentHTML =
                     "
                     <div class=\"container-fluid p-0\">
                         <div class=\"row mt-3 mb-5\">
                             <div class=\"col-12\">
-                                <span class=\"fs-2 fw-bold\">Berechtigung aktualisieren</span>
+                                $spanTitleUpdatePermission
                             </div>
                         </div>
                         <div class=\"row mb-3\">
@@ -405,7 +452,7 @@ class AccountManagementView implements IAccountManagementView
                                     <input type=\"hidden\" name=\"action\" value=\"update\">
                                     <div class=\"container-fluid\">
                                         <div class=\"row mb-3\">
-                                            <label class=\"form-label p-0$emailAccountLabelBS\" for=\"emailAccount\">E-Mail des Kontos: </label>
+                                            $labelEmail
                                             <input value=\"\" class=\"form-control w-100$emailAccountFieldBS\" type=\"email\" name=\"emailAccount\" id=\"emailAccount\" placeholder=\"E-Mail-Adresse\">
                                             <div class=\"row mt-2\">
                                                 <label for=\"emailAccount\" class=\"p-0$emailAccountLabelBS\">$emailAccountLabelText</label>
@@ -415,14 +462,14 @@ class AccountManagementView implements IAccountManagementView
                                             $selectPermissionLevelHTML
                                         </div>
                                         <div class=\"row mb-3\">
-                                            <label class=\"form-label p-0$passwordSupervisorLabelBS\" for=\"passwordSupervisor\">Ihr Passwort zur Freigabe: </label>
+                                            $labelPasswordSupervisor
                                             <input value=\"\" class=\"form-control w-100$passwordSupervisorFieldBS\" type=\"password\" name=\"passwordSupervisor\" id=\"passwordSupervisor\" placeholder=\"Passwort zur Autorisierung\">
                                             <div class=\"row mt-2\">
                                                 <label for=\"passwordSupervisor\" class=\"p-0 fw-bold$passwordSupervisorLabelBS\">$passwordSupervisorLabelText</label>
                                             </div>
                                         </div>
                                         <div class=\"row mb-2\">
-                                            <input type=\"submit\" class=\"btn btn-success w-100\" value=\"Berechtigung anpassen\">
+                                            $inputSubmitButton
                                         </div>
                                     </div>
                                 </form>
@@ -430,7 +477,7 @@ class AccountManagementView implements IAccountManagementView
                         </div>
                         <div class=\"row mb-3\">
                             <div class=\"col-12\">
-                                <a class=\"btn btn-danger w-100\" href=\"/?view=accounts&action=all\">Abbrechen</a>
+                                $aAbortButton
                             </div>
                         </div>
                     </div>
@@ -541,12 +588,20 @@ class AccountManagementView implements IAccountManagementView
                         $passwordSupervisorLabelText = "&nbsp;";
                     }
 
+                    $spanTitleDeleteAccount = $this->htmlFactory->genNonSelfClosingElement("span", [ "Text" ], $appearanceData, [], [ "fs-2", "fw-bold" ], "Konto löschen");
+
+                    $labelEmail = $this->htmlFactory->genLabelText($appearanceData, "E-Mail des Kontos: ", "emailAccount");
+                    $labelPasswordSupervisor = $this->htmlFactory->genLabelText($appearanceData, "Ihr Passwort zur Freigabe: ", "passwordSupervisor");
+
+                    $inputSubmitButton = $this->htmlFactory->genSelfClosingElement("input", [ "ActionExecute" ], $appearanceData, [], [ "w-100", "btn" ], "", "value=\"Konto endgültig löschen\" type=\"submit\"");
+                    $aAbortButton = $this->htmlFactory->genNonSelfClosingElement("a", [ "ActionAbort" ], $appearanceData, [], [ "w-100", "btn" ], "Abbrechen", "/?view=accounts&action=all");
+
                     $feedContentHTML =
                     "
                     <div class=\"container-fluid p-0\">
                         <div class=\"row mt-3 mb-5\">
                             <div class=\"col-12\">
-                                <span class=\"fs-2 fw-bold\">Konto löschen</span>
+                                $spanTitleDeleteAccount
                             </div>
                         </div>
                         <div class=\"row mb-3\">
@@ -556,21 +611,21 @@ class AccountManagementView implements IAccountManagementView
                                     <input type=\"hidden\" name=\"action\" value=\"delete\">
                                     <div class=\"container-fluid\">
                                         <div class=\"row mb-3\">
-                                            <label class=\"form-label p-0$emailAccountLabelBS\" for=\"emailAccount\">E-Mail des Kontos: </label>
+                                            $labelEmail
                                             <input value=\"\" class=\"form-control w-100$emailAccountFieldBS\" type=\"email\" name=\"emailAccount\" id=\"emailAccount\" placeholder=\"E-Mail-Adresse\">
                                             <div class=\"row mt-2\">
                                                 <label for=\"emailAccount\" class=\"p-0$emailAccountLabelBS\">$emailAccountLabelText</label>
                                             </div>
                                         </div>
                                         <div class=\"row mb-3\">
-                                            <label class=\"form-label p-0$passwordSupervisorLabelBS\" for=\"passwordSupervisor\">Ihr Passwort zur Freigabe: </label>
+                                            $labelPasswordSupervisor
                                             <input value=\"\" class=\"form-control w-100$passwordSupervisorFieldBS\" type=\"password\" name=\"passwordSupervisor\" id=\"passwordSupervisor\" placeholder=\"Passwort\">
                                             <div class=\"row mt-2\">
                                                 <label for=\"passwordSupervisor\" class=\"p-0 fw-bold$passwordSupervisorLabelBS\">$passwordSupervisorLabelText</label>
                                             </div>
                                         </div>
                                         <div class=\"row mb-2\">
-                                            <input type=\"submit\" class=\"btn btn-success w-100\" value=\"Konto endgültig löschen\">
+                                            $inputSubmitButton
                                         </div>
                                     </div>
                                 </form>
@@ -578,7 +633,7 @@ class AccountManagementView implements IAccountManagementView
                         </div>
                         <div class=\"row mb-3\">
                             <div class=\"col-12\">
-                                <a class=\"btn btn-danger w-100\" href=\"/?view=accounts&action=all\">Abbrechen</a>
+                                $aAbortButton
                             </div>
                         </div>
                     </div>
