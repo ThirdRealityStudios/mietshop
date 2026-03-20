@@ -150,7 +150,7 @@ class AccountManagementView implements IAccountManagementView
                 "
                     <div class=\"container-fluid p-0\">
                         <div class=\"row mb-5\">
-                            <div class=\"col-12\">
+                            <div class=\"col-12 text-center\">
                                 $spanManageAccount
                             </div>
                         </div>
@@ -220,7 +220,7 @@ class AccountManagementView implements IAccountManagementView
                     if($messageValue === -3)
                     {
                         $passwordSupervisorFieldBS = " is-invalid";
-                        $passwordSupervisorLabelText = "Bitte autorisieren Sie die Aktion mit Ihrem gültigen Kennwort";
+                        $passwordSupervisorLabelText = "Bitte autorisieren Sie die Aktion.";
                     }
                     else
                     {
@@ -411,17 +411,21 @@ class AccountManagementView implements IAccountManagementView
                     if($messageValue === -3)
                     {
                         $passwordSupervisorFieldBS = " is-invalid";
+
                         $passwordSupervisorLabelBS = " text-danger";
                         $passwordSupervisorLabelText = "Bitte autorisieren Sie die Aktion mit Ihrem gültigen Kennwort";
+                        $divPasswordSupervisorLabelText = "<div class=\"row\"><label for=\"passwordSupervisor\" class=\"p-0 fw-bold$passwordSupervisorLabelBS\">$passwordSupervisorLabelText</label></div>";
                     }
                     else
                     {
                         $passwordSupervisorFieldBS = "";
                         $passwordSupervisorLabelBS = "";
-                        $passwordSupervisorLabelText = "&nbsp;";
+
+                        $divPasswordSupervisorLabelText = "";
                     }
 
-                    $spanTitleUpdatePermission = $this->htmlFactory->genNonSelfClosingElement("span", [ "Text" ], $appearanceData, [], [ "fs-2", "fw-bold", "lh-1" ], "Berechtigung aktualisieren");
+                    $spanTitleUpdatePermission0 = $this->htmlFactory->genNonSelfClosingElement("span", [ "Text" ], $appearanceData, [], [ "fs-2", "fw-bold", "lh-1" ], "Berechtigung&nbsp;");
+                    $spanTitleUpdatePermission1 = $this->htmlFactory->genNonSelfClosingElement("span", [ "Text" ], $appearanceData, [], [ "fs-2", "fw-bold" ], "aktualisieren&nbsp;");
 
                     $labelEmail = $this->htmlFactory->genLabelText($appearanceData, "E-Mail des Kontos: ", "emailAccount");
                     $labelPasswordSupervisor = $this->htmlFactory->genLabelText($appearanceData, "Ihr Passwort zur Freigabe: ", "passwordSupervisor");
@@ -432,9 +436,10 @@ class AccountManagementView implements IAccountManagementView
                     $feedContentHTML =
                     "
                     <div class=\"container-fluid p-0\">
-                        <div class=\"row mb-5\">
+                        <div class=\"row mb-4\">
                             <div class=\"col-12 text-center\">
-                                $spanTitleUpdatePermission
+                                $spanTitleUpdatePermission0
+                                $spanTitleUpdatePermission1
                             </div>
                         </div>
                         <div class=\"row mb-3\">
@@ -455,10 +460,8 @@ class AccountManagementView implements IAccountManagementView
                                         </div>
                                         <div class=\"row mb-3\">
                                             $labelPasswordSupervisor
-                                            <input value=\"\" class=\"form-control w-100$passwordSupervisorFieldBS\" type=\"password\" name=\"passwordSupervisor\" id=\"passwordSupervisor\" placeholder=\"Passwort zur Autorisierung\">
-                                            <div class=\"row mt-2\">
-                                                <label for=\"passwordSupervisor\" class=\"p-0 fw-bold$passwordSupervisorLabelBS\">$passwordSupervisorLabelText</label>
-                                            </div>
+                                            <input value=\"\" class=\"form-control w-100 mb-2$passwordSupervisorFieldBS\" type=\"password\" name=\"passwordSupervisor\" id=\"passwordSupervisor\" placeholder=\"Passwort zur Autorisierung\">
+                                            $divPasswordSupervisorLabelText
                                         </div>
                                         <div class=\"row mb-2\">
                                             $inputSubmitButton
@@ -512,12 +515,19 @@ class AccountManagementView implements IAccountManagementView
                         $passwordSupervisorFieldBS = " is-invalid";
                         $passwordSupervisorLabelBS = " text-danger";
                         $passwordSupervisorLabelText = "Bitte autorisieren Sie die Aktion mit Ihrem gültigen Kennwort";
+
+                        $divPasswordSupervisorHint =
+                        "
+                        <div class=\"row mb-2\">
+                            <label for=\"passwordSupervisor\" class=\"p-0 fw-bold$passwordSupervisorLabelBS\">$passwordSupervisorLabelText</label>
+                        </div>
+                        ";
                     }
                     else
                     {
                         $passwordSupervisorFieldBS = "";
-                        $passwordSupervisorLabelBS = "";
-                        $passwordSupervisorLabelText = "&nbsp;";
+
+                        $divPasswordSupervisorHint = "";
                     }
 
                     $spanTitleDeleteAccount = $this->htmlFactory->genNonSelfClosingElement("span", [ "Text" ], $appearanceData, [], [ "fs-2", "fw-bold", "lh-1" ], "Konto löschen");
@@ -531,7 +541,7 @@ class AccountManagementView implements IAccountManagementView
                     $feedContentHTML =
                     "
                     <div class=\"container-fluid p-0\">
-                        <div class=\"row mb-5\">
+                        <div class=\"row mb-4\">
                             <div class=\"col-12 text-center\">
                                 $spanTitleDeleteAccount
                             </div>
@@ -551,10 +561,8 @@ class AccountManagementView implements IAccountManagementView
                                         </div>
                                         <div class=\"row mb-3\">
                                             $labelPasswordSupervisor
-                                            <input value=\"\" class=\"form-control w-100$passwordSupervisorFieldBS\" type=\"password\" name=\"passwordSupervisor\" id=\"passwordSupervisor\" placeholder=\"Passwort\">
-                                            <div class=\"row mt-2\">
-                                                <label for=\"passwordSupervisor\" class=\"p-0 fw-bold$passwordSupervisorLabelBS\">$passwordSupervisorLabelText</label>
-                                            </div>
+                                            <input value=\"\" class=\"form-control w-100 mb-2$passwordSupervisorFieldBS\" type=\"password\" name=\"passwordSupervisor\" id=\"passwordSupervisor\" placeholder=\"Passwort\">
+                                            $divPasswordSupervisorHint
                                         </div>
                                         <div class=\"row mb-2\">
                                             $inputSubmitButton
