@@ -177,7 +177,7 @@ class HtmlFactory implements IHtmlFactory
 
     public function genHr(array $appearanceData) : string
     {
-        return $this->genSelfClosingElement("hr", [ "Frame" ], $appearanceData, [ "border-style: solid;" ], [ "w-100", "border-1" ]);
+        return $this->genSelfClosingElement("hr", [ "Frame" ], $appearanceData, [ "border-style: solid;" ], [ "w-100", "border-2" ]);
     }
 
     // TODO Replace $svgLocalPath through $svgXML (which was loaded or required - implement that on the other hand in the utils folder or something "AssetLoader"...)

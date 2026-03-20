@@ -164,9 +164,14 @@ class AppearanceManagementView implements IAppearanceManagementView
         return
         "
         <div class=\"container-fluid p-0\">
-            <div class=\"row mb-4\">
+            <div class=\"row mb-1\">
                 <div class=\"col-12 text-center\">
                     $spanEdit
+                </div>
+            </div>
+            <div class=\"row mb-2\">
+                <div class=\"col-12\">
+                    $hr
                 </div>
             </div>
             <form class=\"row form\" action=\"/\" method=\"post\">
@@ -233,14 +238,20 @@ class AppearanceManagementView implements IAppearanceManagementView
 
         $aButtonCustomColor = $this->htmlFactory->genAButtonInteresting($appearanceData, "Benutzerdefinierte Farbe festlegen", "/?view=appearance&action=update&target=Color&element=$element&custom=yes", [ "w-100" ]);
 
+        $inputSubmitButton = $this->htmlFactory->genSelfClosingElement("input", [ "Interesting" ], $appearanceData, [], [ "w-100", "btn" ], "", "value=\"Speichern\" type=\"submit\"");
         $aButtonCancel = $this->htmlFactory->genAButtonUninteresting($appearanceData, "Abbrechen", "/?view=appearance&action=update&target=Color", [ "w-100" ]);
 
         return
         "
         <div class=\"container-fluid\">
-            <div class=\"row mb-4\">
+            <div class=\"row mb-1\">
                 <div class=\"col-12 p-0 text-center\">
                     $spanEditTitle
+                </div>
+            </div>
+            <div class=\"row mb-2\">
+                <div class=\"col-12\">
+                    $hr
                 </div>
             </div>
             <form class=\"row form\" action=\"/\" method=\"post\">
@@ -269,7 +280,7 @@ class AppearanceManagementView implements IAppearanceManagementView
                         </div>
                         <div class=\"row mb-4\">
                             <div class=\"col-12 p-0\">
-                                <input type=\"submit\" class=\"w-100 btn btn-primary\" value=\"Speichern\">
+                                $inputSubmitButton
                             </div>
                         </div>
                         <div class=\"row\">
