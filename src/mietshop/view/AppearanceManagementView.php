@@ -32,18 +32,6 @@ class AppearanceManagementView implements IAppearanceManagementView
         $this->globalView->show($companyData, $appearanceData, $feedHTML);
     }
 
-    private function genButton(string $urlTargetValue, string $urlElementValue, string $title) : string
-    {
-        return
-        "
-        <div class=\"row mb-3\">
-            <div class=\"col-12\">
-                <a class=\"btn btn-primary w-100\" href=\"/?view=appearance&action=update&target=$urlTargetValue&element=$urlElementValue&custom=no\">$title</a>
-            </div>
-        </div>
-        ";
-    }
-
     private function genFormColorRadioButton(string $bootstrapColor, bool $isChecked) : string
     {
         $possiblyCheckedProperty = $isChecked ? " checked" : "";
@@ -285,7 +273,7 @@ class AppearanceManagementView implements IAppearanceManagementView
         $this->showPageFeed($companyData, $appearanceData, $feedContentHTML);
     }
 
-    private function genAllColorElements(array $validColorElements) : string
+    private function genAllColorElements(array $appearanceData, array $validColorElements) : string
     {
         $validColorElementsKeys = array_keys($validColorElements);
 
@@ -295,21 +283,33 @@ class AppearanceManagementView implements IAppearanceManagementView
         {
             $validColorElementName = $validColorElements[$validColorElementsKey];
 
-            $buttonsHTML .= $this->genButton("Color", $validColorElementsKey, $validColorElementName);
+            $buttonHTML = $this->htmlFactory->genAButtonInteresting($appearanceData, $validColorElementName, "/?view=appearance&action=update&target=Color&element=$validColorElementsKey&custom=no", [ "w-100" ]);
+
+            $buttonsHTML .=
+            "
+            <div class=\"row mb-3\">
+                <div class=\"col-12\">
+                    $buttonHTML
+                </div>
+            </div>
+            ";
         }
+
+        $spanChangeColorOfTitle = $this->htmlFactory->genNonSelfClosingElement("span", [ "Text" ], $appearanceData, [], [ "fs-2", "fw-bold", "lh-1" ], "Farbe ändern von");
+        $aButtonReturn = $this->htmlFactory->genAButtonUninteresting($appearanceData, "Zurück", "/?view=appearance&action=all", [ "w-100" ]);
 
         $feedContentHTML =
         "
-        <div class=\"container-fluid\">
-            <div class=\"row mt-3 mb-5\">
-                <div class=\"col-12\">
-                    <span class=\"fs-2 fw-bold\">Farbe ändern von</span>
+        <div class=\"container-fluid p-0\">
+            <div class=\"row\">
+                <div class=\"col-12 text-center mb-5\">
+                    $spanChangeColorOfTitle
                 </div>
             </div>
             $buttonsHTML
-            <div class=\"row mt-5 mb-3\">
-                <div class=\"col-12\">
-                    <a class=\"btn btn-secondary w-100\" href=\"/?view=appearance&action=all\">Zurück</a>
+            <div class=\"row\">
+                <div class=\"col-12 mt-4\">
+                    $aButtonReturn
                 </div>
             </div>
         </div>
@@ -320,7 +320,7 @@ class AppearanceManagementView implements IAppearanceManagementView
 
     public function showAllColorElements(array $companyData, array $appearanceData, array $validColorElements) : void
     {
-        $feedContentHTML = $this->genAllColorElements($validColorElements);
+        $feedContentHTML = $this->genAllColorElements($appearanceData, $validColorElements);
 
         $this->showPageFeed($companyData, $appearanceData, $feedContentHTML);
     }
@@ -336,7 +336,7 @@ class AppearanceManagementView implements IAppearanceManagementView
         "
         <div class=\"container-fluid p-0\">
             <div class=\"row mb-5\">
-                <div class=\"col-12\">
+                <div class=\"col-12 text-center\">
                     $spanManageAppearanceTitle
                 </div>
             </div>
