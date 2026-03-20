@@ -5,21 +5,26 @@ namespace src\mietshop\view;
 use src\mietshop\contracts\IAppearanceManagementView;
 use src\mietshop\contracts\IErrorView;
 use src\mietshop\contracts\IGlobalView;
+use src\mietshop\view\html\IComponentFactory;
 
 class AppearanceManagementView implements IAppearanceManagementView
 {
+    private IComponentFactory $componentFactory;
+
     private IGlobalView $globalView;
     private IErrorView $errorView;
 
-    public function __construct(IGlobalView $globalView, IErrorView $errorView)
+    public function __construct(IComponentFactory $componentFactory, IGlobalView $globalView, IErrorView $errorView)
     {
+        $this->componentFactory = $componentFactory;
+
         $this->globalView = $globalView;
         $this->errorView = $errorView;
     }
 
     private function showPageFeed(array $companyData, array $appearanceData, string $feedContentHTML): void
     {
-        $feedHTML = $this->globalView->genFeed($appearanceData, null, $feedContentHTML);
+        $feedHTML = $this->componentFactory->genFeed($appearanceData, null, $feedContentHTML);
 
         $this->globalView->show($companyData, $appearanceData, $feedHTML);
     }

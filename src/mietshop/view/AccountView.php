@@ -4,13 +4,19 @@ namespace src\mietshop\view;
 
 use src\mietshop\contracts\IAccountView;
 use src\mietshop\contracts\IGlobalView;
+use src\mietshop\view\html\IComponentFactory;
+use src\mietshop\view\html\IHtmlFactory;
 
 class AccountView implements IAccountView
 {
+    private IHtmlFactory $htmlFactory;
+    private IComponentFactory $componentFactory;
     private IGlobalView $globalView;
 
-    public function __construct(IGlobalView $globalView)
+    public function __construct(IHtmlFactory $htmlFactory, IComponentFactory $componentFactory, IGlobalView $globalView)
     {
+        $this->htmlFactory = $htmlFactory;
+        $this->componentFactory = $componentFactory;
         $this->globalView = $globalView;
     }
 
@@ -46,12 +52,12 @@ class AccountView implements IAccountView
 
         $accountEmailSafe = htmlspecialchars($accountEmailLimited, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
 
-        $logoffButton = $this->globalView->genNonSelfClosingElement("a", [ "Interesting" ], $appearanceData, [], [ "btn", "w-100" ], "Abmelden 🔐", "/?view=account&action=logout");
+        $logoffButton = $this->htmlFactory->genNonSelfClosingElement("a", [ "Interesting" ], $appearanceData, [], [ "btn", "w-100" ], "Abmelden 🔐", "/?view=account&action=logout");
 
         if($isSupervisor)
         {
-            $optionalManageAccountsButton = $this->globalView->genNonSelfClosingElement("a", [ "Interesting" ], $appearanceData, [], [ "btn", "w-100" ], "Konten verwalten 👥", "/?view=accounts&action=all");
-            $optionalManageAppearanceButton = $this->globalView->genNonSelfClosingElement("a", [ "Interesting" ], $appearanceData, [], [ "btn", "w-100" ], "Darstellung verwalten 🖼️", "/?view=appearance&action=all");
+            $optionalManageAccountsButton = $this->htmlFactory->genNonSelfClosingElement("a", [ "Interesting" ], $appearanceData, [], [ "btn", "w-100" ], "Konten verwalten 👥", "/?view=accounts&action=all");
+            $optionalManageAppearanceButton = $this->htmlFactory->genNonSelfClosingElement("a", [ "Interesting" ], $appearanceData, [], [ "btn", "w-100" ], "Darstellung verwalten 🖼️", "/?view=appearance&action=all");
         }
         else
         {
@@ -97,7 +103,7 @@ class AccountView implements IAccountView
             </div>
         ";
 
-        $feedHTML = $this->globalView->genFeed($appearanceData, null, $feedContent);
+        $feedHTML = $this->componentFactory->genFeed($appearanceData, null, $feedContent);
 
         $this->globalView->show($companyData, $appearanceData, $feedHTML);
     }

@@ -4,13 +4,21 @@ namespace src\mietshop\view;
 
 use src\mietshop\contracts\IErrorView;
 use src\mietshop\contracts\IGlobalView;
+use src\mietshop\view\html\IComponentFactory;
+use src\mietshop\view\html\IHtmlFactory;
 
 class ErrorView implements IErrorView
 {
-    private $globalView;
+    private IComponentFactory $componentFactory;
+    private IHtmlFactory $htmlFactory;
 
-    public function __construct(IGlobalView $globalView)
+    private IGlobalView $globalView;
+
+    public function __construct(IHtmlFactory $htmlFactory, IComponentFactory $componentFactory, IGlobalView $globalView)
     {
+        $this->htmlFactory = $htmlFactory;
+        $this->componentFactory = $componentFactory;
+
         $this->globalView = $globalView;
     }
 
@@ -19,8 +27,8 @@ class ErrorView implements IErrorView
         $errorFeedTitleSafe = htmlspecialchars($errorFeedTitle, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
         $errorFeedContentSafe = htmlspecialchars($errorFeedContent, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
 
-        $pErrorTitle = $this->globalView->genNonSelfClosingElement("p", [ "Text" ], $appearanceData, [], [ "text-center", "fs-2", "fw-bold", "lh-1" ], $errorFeedTitleSafe);
-        $pErrorDescription = $this->globalView->genNonSelfClosingElement("p", [ "Text" ], $appearanceData, [], [ "text-left", "fs-6", "m-0" ], $errorFeedContentSafe);
+        $pErrorTitle = $this->htmlFactory->genNonSelfClosingElement("p", [ "Text" ], $appearanceData, [], [ "text-center", "fs-2", "fw-bold", "lh-1" ], $errorFeedTitleSafe);
+        $pErrorDescription = $this->htmlFactory->genNonSelfClosingElement("p", [ "Text" ], $appearanceData, [], [ "text-left", "fs-6", "m-0" ], $errorFeedContentSafe);
 
         $feedDescriptionHTML =
         "
@@ -38,7 +46,7 @@ class ErrorView implements IErrorView
         </div>
         ";
 
-        $body = $this->globalView->genFeed($appearanceData, null, $feedDescriptionHTML);
+        $body = $this->componentFactory->genFeed($appearanceData, null, $feedDescriptionHTML);
 
         $this->globalView->show($companyData, $appearanceData, $body);
     }

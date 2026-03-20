@@ -25,6 +25,8 @@ use src\mietshop\view\AppearanceManagementView;
 use src\mietshop\view\ErrorView;
 use src\mietshop\view\GlobalView;
 use src\mietshop\view\HomeView;
+use src\mietshop\view\html\ComponentFactory;
+use src\mietshop\view\html\HtmlFactory;
 use src\mietshop\view\ImprintView;
 use src\mietshop\view\LegalView;
 use src\mietshop\view\LoginView;
@@ -39,28 +41,31 @@ class Router implements IRouter
 
     public function route(IHTTPRequest $request, array &$sessionValues, IDatabaseAdapter $databaseAdapter) : void
     {
+        $htmlFactory = new HtmlFactory();
+        $componentFactory = new ComponentFactory($htmlFactory);
+
         $userInputModel = new UserInputModel();
         $colorUtility = new ColorUtility();
         $appearanceModel = new AppearanceModel($userInputModel, $databaseAdapter, $colorUtility);
         $companyModel = new CompanyModel($userInputModel, $databaseAdapter);
         $categoryModel = new CategoryModel($databaseAdapter);
-        $globalView = new GlobalView();
-        $errorView = new ErrorView($globalView);
+        $globalView = new GlobalView($htmlFactory, $componentFactory);
+        $errorView = new ErrorView($htmlFactory, $componentFactory, $globalView);
         $textFormatView = new TextFormatView();
 
         if(empty($request->getQueryKeys()) && empty($request->getPOSTKeys()))
         {
-            $homeView = new HomeView($globalView);
+            $homeView = new HomeView($htmlFactory, $componentFactory, $globalView);
             $homePresenter = new HomePresenter($companyModel, $appearanceModel, $categoryModel, $homeView, $errorView);
             $homePresenter->process($request);
         }
         else
         {
-            $loginView = new LoginView($globalView);
-            $accountView = new AccountView($globalView);
-            $legalView = new LegalView($globalView, $errorView, $textFormatView);
-            $accountManagementView = new AccountManagementView($globalView);
-            $appearanceManagementView = new AppearanceManagementView($globalView, $errorView);
+            $loginView = new LoginView($htmlFactory, $componentFactory, $globalView);
+            $accountView = new AccountView($htmlFactory, $componentFactory, $globalView);
+            $legalView = new LegalView($htmlFactory, $componentFactory, $globalView, $errorView, $textFormatView);
+            $accountManagementView = new AccountManagementView($componentFactory, $globalView);
+            $appearanceManagementView = new AppearanceManagementView($componentFactory, $globalView, $errorView);
 
             $accountModel = new AccountModel($userInputModel, $databaseAdapter);
 
@@ -71,7 +76,7 @@ class Router implements IRouter
 
             if($request->isParameterMatching("view", "imprint"))
             {
-                $imprintView = new ImprintView($globalView);
+                $imprintView = new ImprintView($htmlFactory, $componentFactory, $globalView);
                 $imprintPresenter = new ImprintPresenter($errorView, $imprintView, $companyModel, $appearanceModel, $accountModel);
                 $imprintPresenter->process($request, $sessionValues);
             }

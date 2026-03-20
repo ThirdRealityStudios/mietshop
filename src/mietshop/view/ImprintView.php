@@ -4,13 +4,21 @@ namespace src\mietshop\view;
 
 use src\mietshop\contracts\IGlobalView;
 use src\mietshop\contracts\IImprintView;
+use src\mietshop\view\html\IComponentFactory;
+use src\mietshop\view\html\IHtmlFactory;
 
 class ImprintView implements IImprintView
 {
+    private IHtmlFactory $htmlFactory;
+    private IComponentFactory $componentFactory;
+
     private IGlobalView $globalView;
 
-    public function __construct(IGlobalView $globalView)
+    public function __construct(IHtmlFactory $htmlFactory, IComponentFactory $componentFactory, IGlobalView $globalView)
     {
+        $this->htmlFactory = $htmlFactory;
+        $this->componentFactory = $componentFactory;
+
         $this->globalView = $globalView;
     }
 
@@ -30,35 +38,35 @@ class ImprintView implements IImprintView
 
         if(empty($actionValue))
         {
-            $optionalEditImprintText = $this->globalView->genNonSelfClosingElement("a", [ "Uninteresting" ], $appearanceData, [], [ "btn", "w-100" ], "Impressum bearbeiten", "/?view=imprint&action=update");
+            $optionalEditImprintText = $this->htmlFactory->genNonSelfClosingElement("a", [ "Uninteresting" ], $appearanceData, [], [ "btn", "w-100" ], "Impressum bearbeiten", "/?view=imprint&action=update");
             $optionalEditButton = $showEditButton ? "<div class=\"row mb-4\"><div class=\"col-12\">$optionalEditImprintText</div></div>" : "";
 
-            $optionalP19UStGText = $this->globalView->genSpanText($appearanceData, "Per §19 Abs. 1 UStG wird die Umsatzsteuer nicht ausgewiesen.");
+            $optionalP19UStGText = $this->htmlFactory->genSpanText($appearanceData, "Per §19 Abs. 1 UStG wird die Umsatzsteuer nicht ausgewiesen.");
             $optionalP19UStGTextRow = ($p19ustgApplies === 1) ? "<div class=\"row mb-3\"><div class=\"col-12\">$optionalP19UStGText</div></div>" : "";
 
-            $optionalP36VSBGTextHint = $this->globalView->genSpanText($appearanceData, "Hinweis zur Streitbeilegung gemäß § 36 VSBG:");
-            $optionalP36VSBGTextBriefly = $this->globalView->genSpanText($appearanceData, "Wir nehmen nicht an einem Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teil und sind hierzu auch nicht verpflichtet.");
+            $optionalP36VSBGTextHint = $this->htmlFactory->genSpanText($appearanceData, "Hinweis zur Streitbeilegung gemäß § 36 VSBG:");
+            $optionalP36VSBGTextBriefly = $this->htmlFactory->genSpanText($appearanceData, "Wir nehmen nicht an einem Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teil und sind hierzu auch nicht verpflichtet.");
             $optionalP36VSBGTextRow = ($p36vsbgApplies === 1) ? "<div class=\"row mb-3\"><div class=\"col-12\">$optionalP36VSBGTextHint</div></div><div class=\"row mb-3\"><div class=\"col-12\">$optionalP36VSBGTextBriefly</div></div>" : "";
 
-            $imprintTitle = $this->globalView->genNonSelfClosingElement("p", [ "Text" ], $appearanceData, [], [ "fw-bold", "fs-3" ], "Impressum");
-            $imprintCompanyName = $this->globalView->genSpanText($appearanceData, $companyNameHTMLSafe);
-            $imprintStreet = $this->globalView->genSpanText($appearanceData, $streetHTMLSafe);
-            $imprintZipCode = $this->globalView->genSpanText($appearanceData, $zipCodeHTMLSafe);
-            $imprintPlace = $this->globalView->genSpanText($appearanceData, $placeHTMLSafe);
+            $imprintTitle = $this->htmlFactory->genNonSelfClosingElement("p", [ "Text" ], $appearanceData, [], [ "fw-bold", "fs-3" ], "Impressum");
+            $imprintCompanyName = $this->htmlFactory->genSpanText($appearanceData, $companyNameHTMLSafe);
+            $imprintStreet = $this->htmlFactory->genSpanText($appearanceData, $streetHTMLSafe);
+            $imprintZipCode = $this->htmlFactory->genSpanText($appearanceData, $zipCodeHTMLSafe);
+            $imprintPlace = $this->htmlFactory->genSpanText($appearanceData, $placeHTMLSafe);
 
-            $imprintEmailTitle = $this->globalView->genSpanText($appearanceData, "Email:&nbsp;");
-            $imprintEmail = $this->globalView->genALink($appearanceData, $emailHTMLSafe, "mailto:$emailHTMLSafe");
+            $imprintEmailTitle = $this->htmlFactory->genSpanText($appearanceData, "Email:&nbsp;");
+            $imprintEmail = $this->htmlFactory->genALink($appearanceData, $emailHTMLSafe, "mailto:$emailHTMLSafe");
 
-            $imprintTelTitle = $this->globalView->genSpanText($appearanceData, "Telefon:&nbsp;");
-            $imprintTel = $this->globalView->genALink($appearanceData, $phoneMobileHTMLSafe, "mailto:$phoneMobileHTMLSafe");
+            $imprintTelTitle = $this->htmlFactory->genSpanText($appearanceData, "Telefon:&nbsp;");
+            $imprintTel = $this->htmlFactory->genALink($appearanceData, $phoneMobileHTMLSafe, "mailto:$phoneMobileHTMLSafe");
 
-            $imprintOwnerTitle = $this->globalView->genSpanText($appearanceData, "Geschäftsführer:&nbsp;");
-            $imprintOwner = $this->globalView->genSpanText($appearanceData, $ownerHTMLSafe);
+            $imprintOwnerTitle = $this->htmlFactory->genSpanText($appearanceData, "Geschäftsführer:&nbsp;");
+            $imprintOwner = $this->htmlFactory->genSpanText($appearanceData, $ownerHTMLSafe);
 
-            $imprintTermsOfServiceTitle = $this->globalView->genSpanText($appearanceData, "Allgemeine Geschäftsbedingungen:");
-            $imprintTermsOfService = $this->globalView->genALink($appearanceData, "/?view=termsofservice", "/?view=termsofservice");
+            $imprintTermsOfServiceTitle = $this->htmlFactory->genSpanText($appearanceData, "Allgemeine Geschäftsbedingungen:");
+            $imprintTermsOfService = $this->htmlFactory->genALink($appearanceData, "/?view=termsofservice", "/?view=termsofservice");
 
-            $imprintLandingPageButton = $this->globalView->genAButtonInteresting($appearanceData, "Zur Startseite", "/");
+            $imprintLandingPageButton = $this->htmlFactory->genAButtonInteresting($appearanceData, "Zur Startseite", "/");
 
             $imprintContentHTML =
             "
@@ -340,7 +348,7 @@ class ImprintView implements IImprintView
             }
         }
 
-        $feedHTML = $this->globalView->genFeed($appearanceData, null, $imprintContentHTML);
+        $feedHTML = $this->componentFactory->genFeed($appearanceData, null, $imprintContentHTML);
 
         $this->globalView->show($companyData, $appearanceData, $feedHTML);
     }

@@ -5,13 +5,17 @@ namespace src\mietshop\view;
 use src\mietshop\contracts\IAccountManagementView;
 use src\mietshop\contracts\IAccountModel;
 use src\mietshop\contracts\IGlobalView;
+use src\mietshop\view\html\IComponentFactory;
 
 class AccountManagementView implements IAccountManagementView
 {
     private IGlobalView $globalView;
+    private IComponentFactory $componentFactory;
 
-    public function __construct(IGlobalView $globalView)
+    public function __construct(IComponentFactory $componentFactory, IGlobalView $globalView)
     {
+        $this->componentFactory = $componentFactory;
+
         $this->globalView = $globalView;
     }
 
@@ -637,7 +641,7 @@ class AccountManagementView implements IAccountManagementView
                 ";
             }
 
-            $feedHTML = $this->globalView->genFeed($appearanceData, null, $feedContentHTML);
+            $feedHTML = $this->componentFactory->genFeed($appearanceData, null, $feedContentHTML);
 
             $this->globalView->show($companyData, $appearanceData, $feedHTML);
         }

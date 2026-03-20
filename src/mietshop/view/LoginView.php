@@ -4,13 +4,21 @@ namespace src\mietshop\view;
 
 use src\mietshop\contracts\IGlobalView;
 use src\mietshop\contracts\ILoginView;
+use src\mietshop\view\html\IComponentFactory;
+use src\mietshop\view\html\IHtmlFactory;
 
 class LoginView implements ILoginView
 {
+    private IHtmlFactory $htmlFactory;
+    private IComponentFactory $componentFactory;
+
     private IGlobalView $globalView;
 
-    public function __construct(IGlobalView $globalView)
+    public function __construct(IHtmlFactory $htmlFactory, IComponentFactory $componentFactory, IGlobalView $globalView)
     {
+        $this->htmlFactory = $htmlFactory;
+        $this->componentFactory = $componentFactory;
+
         $this->globalView = $globalView;
     }
 
@@ -29,11 +37,11 @@ class LoginView implements ILoginView
             $inputFieldsInvalidClass = "";
         }
 
-        $spanLoginTitle = $this->globalView->genNonSelfClosingElement("span", [ "Text" ], $appearanceData, [], [ "fw-bold" ], "Anmelden");
-        $textLoginSymbol = $this->globalView->genTextSVG("/img/symbol/box-arrow-in-right.svg", "white");
-        $labelEmail = $this->globalView->genLabelText($appearanceData, "Email:&nbsp;", "Email");
-        $labelPassword = $this->globalView->genLabelText($appearanceData, "Passwort:&nbsp;", "Password");
-        $aLoginButton = $this->globalView->genSelfClosingElement("input", [ "Interesting" ], $appearanceData, [], [ "btn" ], "", "type=\"submit\" value=\"Anmelden\"");
+        $spanLoginTitle = $this->htmlFactory->genNonSelfClosingElement("span", [ "Text" ], $appearanceData, [], [ "fw-bold" ], "Anmelden");
+        $textLoginSymbol = $this->htmlFactory->genTextSVG("/img/symbol/box-arrow-in-right.svg", "white");
+        $labelEmail = $this->htmlFactory->genLabelText($appearanceData, "Email:&nbsp;", "Email");
+        $labelPassword = $this->htmlFactory->genLabelText($appearanceData, "Passwort:&nbsp;", "Password");
+        $aLoginButton = $this->htmlFactory->genSelfClosingElement("input", [ "Interesting" ], $appearanceData, [], [ "btn" ], "", "type=\"submit\" value=\"Anmelden\"");
 
         $feedContent =
         "
@@ -66,7 +74,7 @@ class LoginView implements ILoginView
         </div>    
         ";
 
-        $feedHTML = $this->globalView->genFeed($appearanceData, null, $feedContent);
+        $feedHTML = $this->componentFactory->genFeed($appearanceData, null, $feedContent);
 
         $this->globalView->show($companyData, $appearanceData, $feedHTML);
     }

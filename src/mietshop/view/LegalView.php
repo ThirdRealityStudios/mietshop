@@ -6,6 +6,8 @@ use src\mietshop\contracts\IErrorView;
 use src\mietshop\contracts\IGlobalView;
 use src\mietshop\contracts\ILegalView;
 use src\mietshop\contracts\ITextFormatView;
+use src\mietshop\view\html\IComponentFactory;
+use src\mietshop\view\html\IHtmlFactory;
 
 /**
  * Meant to visualize the terms of service or privacy policy.
@@ -17,12 +19,18 @@ use src\mietshop\contracts\ITextFormatView;
  */
 class LegalView implements ILegalView
 {
+    private IHtmlFactory $htmlFactory;
+    private IComponentFactory $componentFactory;
+
     private IGlobalView $globalView;
     private IErrorView $errorView;
     private ITextFormatView $textFormatView;
 
-    public function __construct(IGlobalView $globalView, IErrorView  $errorView, ITextFormatView $textFormatView)
+    public function __construct(IHtmlFactory $htmlFactory, IComponentFactory $componentFactory, IGlobalView $globalView, IErrorView  $errorView, ITextFormatView $textFormatView)
     {
+        $this->htmlFactory = $htmlFactory;
+        $this->componentFactory = $componentFactory;
+
         $this->globalView = $globalView;
         $this->errorView = $errorView;
         $this->textFormatView = $textFormatView;
@@ -42,14 +50,14 @@ class LegalView implements ILegalView
 
         $legalTextHTMLSafeFormatted = $this->textFormatView->formatAll($legalTextHTMLSafe);
 
-        $optionalEditButton = $this->globalView->genNonSelfClosingElement("a", [ "Uninteresting" ], $appearanceData, [], [ "btn", "w-100" ], "Bearbeiten", "/?view=$legalTextView&action=update");
+        $optionalEditButton = $this->htmlFactory->genNonSelfClosingElement("a", [ "Uninteresting" ], $appearanceData, [], [ "btn", "w-100" ], "Bearbeiten", "/?view=$legalTextView&action=update");
         $optionalEditButtonRow = $showEditButton ? "<div class=\"row mb-4\"><div class=\"col-12\">$optionalEditButton</div></div>" : "";
 
         if(empty($actionValue))
         {
-            $legalTextTitle = $this->globalView->genNonSelfClosingElement("span", [ "Text" ], $appearanceData, [], [ "fs-3", "fw-bold", "lh-1" ], $legalTextTitleLong);
-            $legalTextDescription = $this->globalView->genNonSelfClosingElement("span", [ "Text" ], $appearanceData, [ "white-space: pre-line;" ], [ "fs-6" ], $legalTextHTMLSafeFormatted);
-            $aLandingPageButton = $this->globalView->genAButtonInteresting($appearanceData, "Zur Startseite", "/");
+            $legalTextTitle = $this->htmlFactory->genNonSelfClosingElement("span", [ "Text" ], $appearanceData, [], [ "fs-3", "fw-bold", "lh-1" ], $legalTextTitleLong);
+            $legalTextDescription = $this->htmlFactory->genNonSelfClosingElement("span", [ "Text" ], $appearanceData, [ "white-space: pre-line;" ], [ "fs-6" ], $legalTextHTMLSafeFormatted);
+            $aLandingPageButton = $this->htmlFactory->genAButtonInteresting($appearanceData, "Zur Startseite", "/");
 
             $legalTextContentHTML =
             "
@@ -174,7 +182,7 @@ class LegalView implements ILegalView
             $legalTextContentHTML = "Ungültige Anfrage";
         }
 
-        $feedHTML = $this->globalView->genFeed($appearanceData, null, $legalTextContentHTML);
+        $feedHTML = $this->componentFactory->genFeed($appearanceData, null, $legalTextContentHTML);
 
         $this->globalView->show($companyData, $appearanceData, $feedHTML);
     }

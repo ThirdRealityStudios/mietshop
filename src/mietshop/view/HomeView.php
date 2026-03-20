@@ -4,13 +4,21 @@ namespace src\mietshop\view;
 
 use src\mietshop\contracts\IGlobalView;
 use src\mietshop\contracts\IHomeView;
+use src\mietshop\view\html\IComponentFactory;
+use src\mietshop\view\html\IHtmlFactory;
 
 class HomeView implements IHomeView
 {
+    private IHtmlFactory $htmlFactory;
+    private IComponentFactory $componentFactory;
+
     private IGlobalView $globalView;
 
-    public function __construct(IGlobalView $globalView)
+    public function __construct(IHtmlFactory $htmlFactory, IComponentFactory $componentFactory, IGlobalView $globalView)
     {
+        $this->htmlFactory = $htmlFactory;
+        $this->componentFactory = $componentFactory;
+
         $this->globalView = $globalView;
     }
 
@@ -20,8 +28,8 @@ class HomeView implements IHomeView
 
         $ourRentalObjectsHTMLContent = "";
 
-        $pOurRentalObjects = $this->globalView->genNonSelfClosingElement("p",[ "Text" ], $appearanceData, [], [ "fs-4", "mb-3", "lh-1" ], "Unser Verleihsortiment");
-        $pNumerousObjectsHint = $this->globalView->genNonSelfClosingElement("p",[ "Text" ], $appearanceData, [], [ "fs-6", "mb-3" ], "Zahlreiche Mietartikel aus folgenden Kategorien bieten wir an 😊");
+        $pOurRentalObjects = $this->htmlFactory->genNonSelfClosingElement("p",[ "Text" ], $appearanceData, [], [ "fs-4", "mb-3", "lh-1" ], "Unser Verleihsortiment");
+        $pNumerousObjectsHint = $this->htmlFactory->genNonSelfClosingElement("p",[ "Text" ], $appearanceData, [], [ "fs-6", "mb-3" ], "Zahlreiche Mietartikel aus folgenden Kategorien bieten wir an 😊");
 
         if(sizeof($categories) > 2)
         {
@@ -35,20 +43,20 @@ class HomeView implements IHomeView
             {
                 $safeCategoryName = htmlspecialchars($category);
 
-                $ourRentalObjectsHTMLContent .= $this->globalView->genNonSelfClosingElement("p", [ "Text" ], $appearanceData, [], [ "mb-3" ], $safeCategoryName);
+                $ourRentalObjectsHTMLContent .= $this->htmlFactory->genNonSelfClosingElement("p", [ "Text" ], $appearanceData, [], [ "mb-3" ], $safeCategoryName);
             }
 
-            $ourRentalObjectsHTMLContent .= $this->globalView->genNonSelfClosingElement("a", [ "Interesting" ], $appearanceData, [], [ "btn" ], "Jetzt stöbern und anfragen", "/?view=search");
+            $ourRentalObjectsHTMLContent .= $this->htmlFactory->genNonSelfClosingElement("a", [ "Interesting" ], $appearanceData, [], [ "btn" ], "Jetzt stöbern und anfragen", "/?view=search");
         }
         else
         {
             // TODO Fetch amount of articles in the system.
             $articleAmount = 3;
 
-            $spanRentalObjectsNotAvailableHint = $this->globalView->genNonSelfClosingElement("span",[ "Text" ], $appearanceData, [], [ "fs-4" ], "Mietartikel im Aufbau&nbsp;");
-            $pSorry = $this->globalView->genPText($appearanceData, "Sorry, aber derzeit scheint der Inhaber noch keine Mietartikel oder Kategorien online gestellt zu haben.");
-            $pComeBackLater = $this->globalView->genPText($appearanceData, "Bitte schauen Sie später noch einmal vorbei.");
-            $pObjectForecast = $this->globalView->genPText($appearanceData, "Hier sollten bald zahlreiche Artikel erscheinen 😊");
+            $spanRentalObjectsNotAvailableHint = $this->htmlFactory->genNonSelfClosingElement("span",[ "Text" ], $appearanceData, [], [ "fs-4" ], "Mietartikel im Aufbau&nbsp;");
+            $pSorry = $this->htmlFactory->genPText($appearanceData, "Sorry, aber derzeit scheint der Inhaber noch keine Mietartikel oder Kategorien online gestellt zu haben.");
+            $pComeBackLater = $this->htmlFactory->genPText($appearanceData, "Bitte schauen Sie später noch einmal vorbei.");
+            $pObjectForecast = $this->htmlFactory->genPText($appearanceData, "Hier sollten bald zahlreiche Artikel erscheinen 😊");
 
             // Is there no article AND no category online? (then VERY likely website was freshly installed)
             if($articleAmount === 0)
@@ -72,8 +80,8 @@ class HomeView implements IHomeView
             }
             else // No category was created for any article BUT at least one article is online (so give users the opportunity to go there and see)
             {
-                $pExploreHint = $this->globalView->genNonSelfClosingElement("p",[ "Text" ], $appearanceData, [], [ "fs-6", "mb-4" ], "Klicken Sie auf die Schaltfläche, um unsere Mietartikel zu erkunden 😊");
-                $aButtonExploreObjects = $this->globalView->genAButtonInteresting($appearanceData, "Jetzt stöbern und anfragen", "/?view=search");
+                $pExploreHint = $this->htmlFactory->genNonSelfClosingElement("p",[ "Text" ], $appearanceData, [], [ "fs-6", "mb-4" ], "Klicken Sie auf die Schaltfläche, um unsere Mietartikel zu erkunden 😊");
+                $aButtonExploreObjects = $this->htmlFactory->genAButtonInteresting($appearanceData, "Jetzt stöbern und anfragen", "/?view=search");
 
                 $ourRentalObjectsHTMLContent =
                 "
@@ -84,7 +92,7 @@ class HomeView implements IHomeView
             }
         }
 
-        $body .= $this->globalView->genFeed($appearanceData, null, $ourRentalObjectsHTMLContent);
+        $body .= $this->componentFactory->genFeed($appearanceData, null, $ourRentalObjectsHTMLContent);
 
         $this->globalView->show($companyData, $appearanceData, $body);
     }
