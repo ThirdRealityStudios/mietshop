@@ -221,12 +221,42 @@ class ImprintView implements IImprintView
                     $p36vsbgAppliesInputBSClass = " is-invalid";
                 }
 
+                $spanImprintTitle = $this->htmlFactory->genNonSelfClosingElement("span", [ "Text" ], $appearanceData, [], [ "fs-3", "fw-bold", "lh-1" ], "Impressum aktualisieren");
+
+                $labelCompanyName = $this->htmlFactory->genLabelText($appearanceData, "Unternehmensname (max. $companyNameMaxLength Zeichen):", "companyName");
+                $labelStreet = $this->htmlFactory->genLabelText($appearanceData, "Straße (inkl. Nr., max. $streetMaxLength Zeichen):", "street");
+                $labelZipCode = $this->htmlFactory->genLabelText($appearanceData, "PLZ (max. $zipCodeMaxLength Zeichen):", "zipCode");
+                $labelPlace = $this->htmlFactory->genLabelText($appearanceData, "Ort (max. $placeMaxLength Zeichen):", "place");
+
+                $labelEmail = $this->htmlFactory->genLabelText($appearanceData, "E-Mail (max. $emailMaxLength Zeichen):", "email");
+
+                $labelPhoneMobile = $this->htmlFactory->genLabelText($appearanceData, "Telefon (mobil, max. $phoneMobileMaxLength Zeichen):", "phoneMobile");
+                $labelPhoneNormal = $this->htmlFactory->genLabelText($appearanceData, "Telefon (normal, max. $phoneNormalMaxLength Zeichen):", "phoneNormal");
+
+                $labelOwner = $this->htmlFactory->genLabelText($appearanceData, "Geschäftsführer (Vor- & Zuname, max. $ownerMaxLength Zeichen):", "owner");
+
+                $labelP19UStGApplies = $this->htmlFactory->genLabelText($appearanceData, "Hinweis zu §19 Abs. 1 UStG anzeigen:", "p19UStGApplies");
+                $labelP36VSBGApplies = $this->htmlFactory->genLabelText($appearanceData, "Hinweis zur Streitbeilegung gemäß § 36 VSBG anzeigen:", "p36VSBGApplies");
+
+                $hr = $this->htmlFactory->genHr($appearanceData);
+
+                // <input type=\"submit\" class=\"w-100 btn btn-primary\" value=\"Speichern\">
+                $inputSubmitButton = $this->htmlFactory->genSelfClosingElement("input", [ "Interesting" ], $appearanceData, [], [ "w-100", "btn" ], "", "type=\"submit\" value=\"Speichern\"");
+
+                // <a class=\"w-100 btn btn-secondary\" href=\"/?view=imprint\">Zurück</a>
+                $aReturnButton = $this->htmlFactory->genAButtonUninteresting($appearanceData, "Zurück", "/?view=imprint", [ "w-100", "btn" ]);
+
                 $imprintContentHTML =
                 "
-                    <div class=\"container-fluid\">
-                        <div class=\"row\">
+                    <div class=\"container-fluid p-0\">
+                        <div class=\"row mb-1\">
+                            <div class=\"col-12 text-center\">
+                                $spanImprintTitle
+                            </div>
+                        </div>
+                        <div class=\"row mb-2\">
                             <div class=\"col-12\">
-                                <p class=\"fs-1\">Impressum aktualisieren</p>
+                                $hr
                             </div>
                         </div>
                         <form class=\"row form\" action=\"/?view=imprint&action=update\" method=\"post\">
@@ -234,82 +264,82 @@ class ImprintView implements IImprintView
                                 <div class=\"container-fluid p-0\">
                                     <div class=\"row mb-3\">
                                         <div class=\"col-12\">
-                                            <label class=\"form-label$companyNameLabelBSClass\" for=\"companyName\">Unternehmensname (max. $companyNameMaxLength Zeichen):</label>
+                                            $labelCompanyName
                                             <input type=\"text\" class=\"w-100 form-control$companyNameInputBSClass\" id=\"companyName\" name=\"companyName\" value=\"{$companyNameHTMLSafe}\" maxlength=\"$companyNameMaxLength\">
                                         </div>
                                     </div>
                                     <div class=\"row mb-3\">
                                         <div class=\"col-12\">
-                                            <label class=\"form-label$streetLabelBSClass\" for=\"street\">Straße (inkl. Nr., max. $streetMaxLength Zeichen):</label>
+                                            $labelStreet
                                             <input type=\"text\" class=\"w-100 form-control$streetInputBSClass\" id=\"street\" name=\"street\" value=\"{$streetHTMLSafe}\" maxlength=\"$streetMaxLength\">
                                         </div>
                                     </div>
                                     <div class=\"row mb-3\">
                                         <div class=\"col-12\">
-                                            <label class=\"form-label$zipCodeLabelBSClass\" for=\"zipCode\">PLZ (max. $zipCodeMaxLength Zeichen):</label>
+                                            $labelZipCode
                                             <input type=\"text\" class=\"w-100 form-control$zipCodeInputBSClass\" id=\"zipCode\" name=\"zipCode\" value=\"{$zipCodeHTMLSafe}\" maxlength=\"$zipCodeMaxLength\">
                                         </div>
                                     </div>
                                     <div class=\"row mb-3\">
                                         <div class=\"col-12\">
-                                            <label class=\"form-label$placeLabelBSClass\" for=\"place\">Ort (max. $placeMaxLength Zeichen):</label>
+                                            $labelPlace
                                             <input type=\"text\" class=\"w-100 form-control$placeInputBSClass\" id=\"place\" name=\"place\" value=\"{$placeHTMLSafe}\" maxlength=\"$placeMaxLength\">
                                         </div>
                                     </div>
                                     <div class=\"row mb-3\">
                                         <div class=\"col-12\">
-                                            <label class=\"form-label$emailLabelBSClass\" for=\"email\">E-Mail (max. $emailMaxLength Zeichen):</label>
+                                            $labelEmail
                                             <input type=\"email\" class=\"w-100 form-control$emailInputBSClass\" id=\"email\" name=\"email\" value=\"{$emailHTMLSafe}\" maxlength=\"$emailMaxLength\">
                                         </div>
                                     </div>
                                     <div class=\"row mb-3\">
                                         <div class=\"col-12\">
-                                            <label class=\"form-label$phoneMobileLabelBSClass\" for=\"phoneMobile\">Telefon (mobil, max. $phoneMobileMaxLength Zeichen):</label>
+                                            $labelPhoneMobile
                                             <input type=\"tel\" class=\"w-100 form-control$phoneMobileInputBSClass\" id=\"phoneMobile\" name=\"phoneMobile\" value=\"{$phoneMobileHTMLSafe}\" maxlength=\"$phoneMobileMaxLength\">
                                         </div>
                                     </div>
                                     <div class=\"row mb-3\">
                                         <div class=\"col-12\">
-                                            <label class=\"form-label$phoneNormalLabelBSClass\" for=\"phoneNormal\">Telefon (normal, max. $phoneNormalMaxLength Zeichen):</label>
+                                            $labelPhoneNormal
                                             <input type=\"tel\" class=\"w-100 form-control$phoneNormalInputBSClass\" id=\"phoneNormal\" name=\"phoneNormal\" value=\"{$phoneNormalHTMLSafe}\" maxlength=\"$phoneNormalMaxLength\">
                                         </div>
                                     </div>
                                     <div class=\"row mb-3\">
                                         <div class=\"col-12\">
-                                            <label class=\"form-label$ownerLabelBSClass\" for=\"owner\">Geschäftsführer (Vor- & Zuname, max. $ownerMaxLength Zeichen):</label>
+                                            $labelOwner
                                             <input type=\"text\" class=\"w-100 form-control$ownerInputBSClass\" id=\"owner\" name=\"owner\" value=\"{$ownerHTMLSafe}\" maxlength=\"$ownerMaxLength\">
                                         </div>
                                     </div>
-                                    <div class=\"row mb-3\">
+                                    <div class=\"row mb-2\">
                                         <div class=\"col-12\">
-                                            <hr class=\"w-100 border border-1 border-primary\">
+                                            $hr
                                         </div>
                                     </div>
                                     <div class=\"row mb-3\">
                                         <div class=\"col-12 align-items-start\">
-                                            <label class=\"form-label$p19ustgAppliesLabelBSClass\" for=\"p19UStGApplies\">Hinweis zu §19 Abs. 1 UStG anzeigen:</label>
+                                            $labelP19UStGApplies
                                             <input type=\"checkbox\" class=\"form-check$p19ustgAppliesInputBSClass\" id=\"p19UStGApplies\" name=\"p19UStGApplies\"{$p19UStGAppliesHTML}>
                                         </div>
                                     </div>
-                                    <div class=\"row mb-3\">
+                                    <div class=\"row mb-2\">
                                         <div class=\"col-12 align-items-start\">
-                                            <label class=\"form-label$p36vsbgAppliesLabelBSClass\" for=\"p36VSBGApplies\">Hinweis zur Streitbeilegung gemäß § 36 VSBG anzeigen:</label>
+                                            $labelP36VSBGApplies
                                             <input type=\"checkbox\" class=\"form-check$p36vsbgAppliesInputBSClass\" id=\"p36VSBGApplies\" name=\"p36VSBGApplies\"{$p36VSBGAppliesHTML}>
                                         </div>
                                     </div>
                                     <div class=\"row mb-3\">
                                         <div class=\"col-12\">
-                                            <hr class=\"w-100 border border-1 border-primary\">
+                                            $hr
                                         </div>
                                     </div>
                                     <div class=\"row mb-3\">
                                         <div class=\"col-12\">
-                                            <input type=\"submit\" class=\"w-100 btn btn-primary\" value=\"Speichern\">
+                                            $inputSubmitButton
                                         </div>
                                     </div>
-                                    <div class=\"row mb-3\">
+                                    <div class=\"row\">
                                         <div class=\"col-12\">
-                                            <a class=\"w-100 btn btn-secondary\" href=\"/?view=imprint\">Zurück</a>
+                                            $aReturnButton
                                         </div>
                                     </div> 
                                 </div>

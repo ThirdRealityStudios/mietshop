@@ -215,6 +215,9 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
 
                                             $updatedColorSuccessfully = $this->appearanceModel->setColor($colorChosen, $postElementValue);
 
+                                            // Reload the appearance data, as it was updated.
+                                            $appearanceData = $this->appearanceModel->getAppearanceData();
+
                                             if($updatedColorSuccessfully)
                                             {
                                                 $this->appearanceManagementView->showColorUpdateSuccessful($companyData, $appearanceData, $postElementValue, $postCustomValue);
@@ -242,6 +245,9 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
                                         if(is_string($possibleColorBootstrap))
                                         {
                                             $updatedColorSuccessfully = $this->appearanceModel->setColor($possibleColorBootstrap, $postElementValue);
+
+                                            // Reload the appearance data, as it was updated.
+                                            $appearanceData = $this->appearanceModel->getAppearanceData();
 
                                             if($updatedColorSuccessfully)
                                             {
