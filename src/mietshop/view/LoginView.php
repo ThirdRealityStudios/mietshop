@@ -28,11 +28,20 @@ class LoginView implements ILoginView
         {
             $safeOptionalErrorMessage = htmlspecialchars($optionalErrorMessage, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
             $inputFieldsInvalidClass = " is-invalid";
+            $spanOptionalErrorMessage = $this->htmlFactory->genSpanText($appearanceData, $safeOptionalErrorMessage);
+            $divOptionalErrorMessage =
+            "
+            <div class=\"row mb-2 text-left\">
+                <div class=\"col-12 p-0\">
+                    $spanOptionalErrorMessage
+                </div>
+            </div>
+            ";
         }
         else
         {
-            $safeOptionalErrorMessage = "&nbsp;";
             $inputFieldsInvalidClass = "";
+            $divOptionalErrorMessage = "";
         }
 
         $spanLoginTitle = $this->htmlFactory->genNonSelfClosingElement("span", [ "Text" ], $appearanceData, [], [ "fw-bold" ], "Anmelden");
@@ -41,12 +50,19 @@ class LoginView implements ILoginView
         $labelPassword = $this->htmlFactory->genLabelText($appearanceData, "Passwort:&nbsp;", "Password");
         $aLoginButton = $this->htmlFactory->genSelfClosingElement("input", [ "Interesting" ], $appearanceData, [], [ "btn" ], "", "type=\"submit\" value=\"Anmelden\"");
 
+        $hr = $this->htmlFactory->genHr($appearanceData);
+
         $feedContent =
         "
         <div class=\"container-fluid\">
-            <div class=\"row mb-5\">
+            <div class=\"row mb-1\">
                 <div class=\"col-12 text-center fs-1 lh-1\">
                     $spanLoginTitle&nbsp;$textLoginSymbol
+                </div>
+            </div>
+            <div class=\"row mb-1\">
+                <div class=\"col-12 p-0\">
+                    $hr
                 </div>
             </div>
             <form class=\"row form\" action=\"/?view=login\" method=\"post\">
@@ -55,13 +71,14 @@ class LoginView implements ILoginView
                         $labelEmail
                         <input class=\"form-control$inputFieldsInvalidClass\" type=\"email\" placeholder=\"E-Mail-Adresse eingeben ...\" id=\"Email\" name=\"Email\" required>
                     </div>
-                    <div class=\"row mb-3\">
+                    <div class=\"row mb-2\">
                         $labelPassword
                         <input class=\"form-control$inputFieldsInvalidClass\" type=\"password\" id=\"Password\" name=\"Password\" placeholder=\"Passwort eingeben ...\" required>
                     </div>
-                    <div class=\"row mb-3 text-left\">
-                        <div class=\"col-12\">
-                            <span class=\"fs-6 text-danger fw-bold\">{$safeOptionalErrorMessage}</span>
+                    $divOptionalErrorMessage
+                    <div class=\"row mb-2\">
+                        <div class=\"col-12 p-0\">
+                            $hr
                         </div>
                     </div>
                     <div class=\"row\">

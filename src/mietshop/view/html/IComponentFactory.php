@@ -22,4 +22,6 @@ interface IComponentFactory
      * @return string Feed HTML
      */
     public function genFeed(array $appearanceData, ?string $pictureURL, string $descriptionHTML) : string;
+
+    public function genActionResultMessage(array $appearanceData, string $svgPath, string $returnHref, string $actionRepeatHref, string $title, string $description = "") : string;
 }

@@ -68,76 +68,16 @@ class AppearanceManagementView implements IAppearanceManagementView
         return $colorRadioButtons;
     }
 
-    private function genColorUpdateFailed(string $element, string $custom) : string
-    {
-        return
-        "
-        <div class=\"container-fluid p-0\">
-            <div class=\"row mt-3 mb-5\">
-                <div class=\"col-2\" style=\"background-image: url('/img/symbol/paint-bucket.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\"></div>
-                <div class=\"col-10\">
-                    <span class=\"fs-2 fw-bold text-danger\">Farbe ändern fehlgeschlagen</span>
-                </div>
-            </div>
-            <div class=\"row mb-5\">
-                <div class=\"col-12\">
-                    <span class=\"fs-6 w-100\">Es scheint so, als wenn die Farbe nicht geändert werden konnte. Entweder haben Sie eine falsche Farbe angegeben (z.B. im falschen Format) oder es liegt derzeit eine technische Störung vor. Bitte versuchen Sie es (später) nochmal.</span>
-                </div>
-            </div>
-            <div class=\"row mb-3\">
-                <div class=\"col-12\">
-                    <a class=\"btn btn-primary w-100\" href=\"/?view=appearance&action=update&target=Color&element=$element&custom=$custom\">Nochmal versuchen</a>
-                </div>
-            </div>
-            <div class=\"row mb-3\">
-                <div class=\"col-12\">
-                    <a class=\"btn btn-secondary w-100\" href=\"/?view=appearance&action=update&target=Color\">Zurück zur Übersicht</a>
-                </div>
-            </div>
-        </div>
-        ";
-    }
-
     public function showColorUpdateFailed(array $companyData, array $appearanceData, string $element, string $custom) : void
     {
-        $feedContentHTML = $this->genColorUpdateFailed($element, $custom);
+        $feedContentHTML = $this->componentFactory->genActionResultMessage($appearanceData, "/img/symbol/paint-bucket.svg", "/?view=appearance&action=update&target=Color", "/?view=appearance&action=update&target=Color&element=$element&custom=$custom", "Farbe ändern fehlgeschlagen", "Es scheint so, als wenn die Farbe nicht geändert werden konnte. Entweder haben Sie eine falsche Farbe angegeben (z.B. im falschen Format) oder es liegt derzeit eine technische Störung vor. Bitte versuchen Sie es (später) nochmal.");
 
         $this->showPageFeed($companyData, $appearanceData, $feedContentHTML);
     }
 
-    private function genColorUpdateSuccessful(string $element, string $custom) : string
-    {
-        return
-            "
-        <div class=\"container-fluid p-0\">
-            <div class=\"row mt-3 mb-5\">
-                <div class=\"col-2\" style=\"background-image: url('/img/symbol/paint-bucket.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\"></div>
-                <div class=\"col-10\">
-                    <span class=\"fs-2 fw-bold text-success\">Farbe ändern erfolgreich</span>
-                </div>
-            </div>
-            <div class=\"row mb-5\">
-                <div class=\"col-12\">
-                    <span class=\"fs-6 w-100\">Farbe erfolgreich geändert ✓</span>
-                </div>
-            </div>
-            <div class=\"row mb-3\">
-                <div class=\"col-12\">
-                    <a class=\"btn btn-primary w-100\" href=\"/?view=appearance&action=update&target=Color&element=$element&custom=$custom\">Farbe erneut ändern</a>
-                </div>
-            </div>
-            <div class=\"row mb-3\">
-                <div class=\"col-12\">
-                    <a class=\"btn btn-secondary w-100\" href=\"/?view=appearance&action=update&target=Color\">Zurück zur Übersicht</a>
-                </div>
-            </div>
-        </div>
-        ";
-    }
-
     public function showColorUpdateSuccessful(array $companyData, array $appearanceData, string $element, string $custom) : void
     {
-        $feedContentHTML = $this->genColorUpdateSuccessful($element, $custom);
+        $feedContentHTML = $this->componentFactory->genActionResultMessage($appearanceData, "/img/symbol/paint-bucket.svg", "/?view=appearance&action=update&target=Color", "/?view=appearance&action=update&target=Color&element=$element&custom=$custom", "Farbe erfolgreich geändert!");
 
         $this->showPageFeed($companyData, $appearanceData, $feedContentHTML);
     }
@@ -250,7 +190,7 @@ class AppearanceManagementView implements IAppearanceManagementView
                 </div>
             </div>
             <div class=\"row mb-2\">
-                <div class=\"col-12\">
+                <div class=\"col-12 p-0\">
                     $hr
                 </div>
             </div>
@@ -308,15 +248,26 @@ class AppearanceManagementView implements IAppearanceManagementView
 
         $buttonsHTML = "";
 
-        foreach($validColorElementsKeys as $validColorElementsKey)
+        for($i = 0; $i < sizeof($validColorElementsKeys); $i++)
         {
+            $validColorElementsKey = $validColorElementsKeys[$i];
+
             $validColorElementName = $validColorElements[$validColorElementsKey];
 
             $buttonHTML = $this->htmlFactory->genAButtonInteresting($appearanceData, $validColorElementName, "/?view=appearance&action=update&target=Color&element=$validColorElementsKey&custom=no", [ "w-100" ]);
 
+            if($i < (sizeof($validColorElementsKeys) - 1))
+            {
+                $mb = "mb-3";
+            }
+            else
+            {
+                $mb = "mb-2";
+            }
+
             $buttonsHTML .=
             "
-            <div class=\"row mb-3\">
+            <div class=\"row $mb\">
                 <div class=\"col-12\">
                     $buttonHTML
                 </div>
@@ -327,17 +278,29 @@ class AppearanceManagementView implements IAppearanceManagementView
         $spanChangeColorOfTitle = $this->htmlFactory->genNonSelfClosingElement("span", [ "Text" ], $appearanceData, [], [ "fs-2", "fw-bold", "lh-1" ], "Farbe ändern von");
         $aButtonReturn = $this->htmlFactory->genAButtonUninteresting($appearanceData, "Zurück", "/?view=appearance&action=all", [ "w-100" ]);
 
+        $hr = $this->htmlFactory->genHr($appearanceData);
+
         $feedContentHTML =
         "
         <div class=\"container-fluid p-0\">
-            <div class=\"row\">
-                <div class=\"col-12 text-center mb-5\">
+            <div class=\"row mb-1\">
+                <div class=\"col-12 text-center\">
                     $spanChangeColorOfTitle
                 </div>
             </div>
+            <div class=\"row mb-2\">
+                <div class=\"col-12\">
+                    $hr
+                </div>
+            </div>
             $buttonsHTML
+            <div class=\"row mb-2\">
+                <div class=\"col-12\">
+                    $hr
+                </div>
+            </div>
             <div class=\"row\">
-                <div class=\"col-12 mt-4\">
+                <div class=\"col-12\">
                     $aButtonReturn
                 </div>
             </div>
@@ -361,12 +324,19 @@ class AppearanceManagementView implements IAppearanceManagementView
         $aButtonChangeImage = $this->htmlFactory->genAButtonInteresting($appearanceData, "Grafiken ändern 📸", "/?view=appearance&action=update&target=Image", [ "w-100" ]);
         $aButtonReturn = $this->htmlFactory->genAButtonUninteresting($appearanceData, "Zurück", "/?view=account", [ "w-100" ]);
 
+        $hr = $this->htmlFactory->genHr($appearanceData);
+
         $feedContentHTML =
         "
         <div class=\"container-fluid p-0\">
-            <div class=\"row mb-5\">
+            <div class=\"row mb-1\">
                 <div class=\"col-12 text-center\">
                     $spanManageAppearanceTitle
+                </div>
+            </div>
+            <div class=\"row mb-2\">
+                <div class=\"col-12\">
+                    $hr
                 </div>
             </div>
             <div class=\"row mb-3\">
@@ -374,9 +344,14 @@ class AppearanceManagementView implements IAppearanceManagementView
                     $aButtonChangeColor
                 </div>
             </div>
-            <div class=\"row mb-5\">
+            <div class=\"row mb-2\">
                 <div class=\"col-12\">
                     $aButtonChangeImage
+                </div>
+            </div>
+            <div class=\"row mb-2\">
+                <div class=\"col-12\">
+                    $hr
                 </div>
             </div>
             <div class=\"row\">
