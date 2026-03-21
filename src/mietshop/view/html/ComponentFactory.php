@@ -78,18 +78,36 @@ class ComponentFactory implements IComponentFactory
         $spanTitle = $this->htmlFactory->genNonSelfClosingElement("span", [ "Text" ], $appearanceData, [], [ "fw-bold", "inline-block", "lh-1" ], "$title&nbsp;$svgForText");
         $spanDescription = $this->htmlFactory->genNonSelfClosingElement("span", [ "Text" ], $appearanceData, [], [ "w-100" ], $description);
 
-        // /?view=accounts&action=all  // /?view=accounts&action=$action
         $aRepeatActionButton = $this->htmlFactory->genNonSelfClosingElement("a", [ "Interesting" ], $appearanceData, [], [ "btn", "w-100" ], "Zur Übersicht", $returnHref);
 
         $aReturnButton = $this->htmlFactory->genNonSelfClosingElement("a", [ "Uninteresting" ], $appearanceData, [], [ "btn", "w-100" ], "Aktion wiederholen", $actionRepeatHref);
 
-        $descriptionHTML = (!empty($description)) ? "<div class=\"row mb-5\"><div class=\"col-12\">$spanDescription</div></div>" : "";
+        $hr = $this->htmlFactory->genHr($appearanceData);
+
+        $descriptionHTML = (!empty($description)) ?
+        "
+        <div class=\"row mb-2\">
+            <div class=\"col-12\">
+                $spanDescription
+            </div>
+        </div>
+        <div class=\"row mb-2\">
+            <div class=\"col-12\">
+                $hr
+            </div>
+        </div>
+        " : "";
 
         return
-            "
+        "
         <div class=\"container-fluid p-0\">
-            <div class=\"row mb-5 fs-2\">
+            <div class=\"row mb-1 fs-2\">
                 $spanTitle
+            </div>
+            <div class=\"row mb-2\">
+                <div class=\"col-12\">
+                    $hr
+                </div>
             </div>
             $descriptionHTML
             <div class=\"row mb-3\">
