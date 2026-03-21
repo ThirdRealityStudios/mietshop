@@ -38,8 +38,27 @@ class ImprintView implements IImprintView
 
         if(empty($actionValue))
         {
-            $optionalEditImprintText = $this->htmlFactory->genNonSelfClosingElement("a", [ "Uninteresting" ], $appearanceData, [], [ "btn", "w-100" ], "Impressum bearbeiten", "/?view=imprint&action=update");
-            $optionalEditButton = $showEditButton ? "<div class=\"row mb-4\"><div class=\"col-12\">$optionalEditImprintText</div></div>" : "";
+            $hr = $this->htmlFactory->genHr($appearanceData);
+
+            $optionalEditImprintText = $this->htmlFactory->genNonSelfClosingElement("a", [ "Uninteresting" ], $appearanceData, [], [ "btn", "w-100" ], "Bearbeiten", "/?view=imprint&action=update");
+            $optionalEditButton = $showEditButton ?
+            "
+            <div class=\"row mb-1\">
+                <div class=\"col-12\">
+                    $hr
+                </div>
+            </div>
+            <div class=\"row mb-1\">
+                <div class=\"col-12\">
+                    $optionalEditImprintText
+                </div>
+            </div>
+            <div class=\"row mb-1\">
+                <div class=\"col-12\">
+                    $hr
+                </div>
+            </div>
+            " : "";
 
             $optionalP19UStGText = $this->htmlFactory->genSpanText($appearanceData, "Per §19 Abs. 1 UStG wird die Umsatzsteuer nicht ausgewiesen.");
             $optionalP19UStGTextRow = ($p19ustgApplies === 1) ? "<div class=\"row mb-3\"><div class=\"col-12\">$optionalP19UStGText</div></div>" : "";
@@ -48,7 +67,7 @@ class ImprintView implements IImprintView
             $optionalP36VSBGTextBriefly = $this->htmlFactory->genSpanText($appearanceData, "Wir nehmen nicht an einem Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teil und sind hierzu auch nicht verpflichtet.");
             $optionalP36VSBGTextRow = ($p36vsbgApplies === 1) ? "<div class=\"row mb-3\"><div class=\"col-12\">$optionalP36VSBGTextHint</div></div><div class=\"row mb-3\"><div class=\"col-12\">$optionalP36VSBGTextBriefly</div></div>" : "";
 
-            $imprintTitle = $this->htmlFactory->genNonSelfClosingElement("p", [ "Text" ], $appearanceData, [], [ "fw-bold", "fs-3" ], "Impressum");
+            $imprintTitle = $this->htmlFactory->genNonSelfClosingElement("span", [ "Text" ], $appearanceData, [], [ "fw-bold", "fs-3" ], "Impressum");
             $imprintCompanyName = $this->htmlFactory->genSpanText($appearanceData, $companyNameHTMLSafe);
             $imprintStreet = $this->htmlFactory->genSpanText($appearanceData, $streetHTMLSafe);
             $imprintZipCode = $this->htmlFactory->genSpanText($appearanceData, $zipCodeHTMLSafe);
@@ -68,10 +87,12 @@ class ImprintView implements IImprintView
 
             $imprintLandingPageButton = $this->htmlFactory->genAButtonInteresting($appearanceData, "Zur Startseite", "/");
 
+            $titleMarginBottom = $showEditButton ? "mb-1" : "mb-4";
+
             $imprintContentHTML =
             "
             <div class=\"container-fluid p-0\">
-                <div class=\"row lh-1\">
+                <div class=\"row lh-1 $titleMarginBottom\">
                     <div class=\"col-12\">
                         $imprintTitle
                     </div>
@@ -119,7 +140,7 @@ class ImprintView implements IImprintView
                 </div>
                 $optionalP36VSBGTextRow
                 $optionalP19UStGTextRow
-                <div class=\"row\">
+                <div class=\"row mt-4\">
                     <div class=\"col-12\">
                         $imprintLandingPageButton
                     </div>
@@ -132,92 +153,72 @@ class ImprintView implements IImprintView
             if($messageValue <= 0) // Show the form and highlight the invalid field, based on $messageValue given.
             {
                 $companyNameMaxLength = $companyData["CompanyName"][1];
-                $companyNameLabelBSClass = "";
                 $companyNameInputBSClass = "";
                 if($messageValue === -1)
                 {
-                    $companyNameLabelBSClass = " text-danger";
                     $companyNameInputBSClass = " is-invalid";
                 }
 
                 $streetMaxLength = $companyData["Street"][1];
-                $streetLabelBSClass = "";
                 $streetInputBSClass = "";
                 if($messageValue === -2)
                 {
-                    $streetLabelBSClass = " text-danger";
                     $streetInputBSClass = " is-invalid";
                 }
 
                 $zipCodeMaxLength = $companyData["ZipCode"][1];
-                $zipCodeLabelBSClass = "";
                 $zipCodeInputBSClass = "";
                 if($messageValue === -3)
                 {
-                    $zipCodeLabelBSClass = " text-danger";
                     $zipCodeInputBSClass = " is-invalid";
                 }
 
                 $placeMaxLength = $companyData["Place"][1];
-                $placeLabelBSClass = "";
                 $placeInputBSClass = "";
                 if($messageValue === -4)
                 {
-                    $placeLabelBSClass = " text-danger";
                     $placeInputBSClass = " is-invalid";
                 }
 
                 $emailMaxLength = $companyData["Email"][1];
-                $emailLabelBSClass = "";
                 $emailInputBSClass = "";
                 if($messageValue === -5)
                 {
-                    $emailLabelBSClass = " text-danger";
                     $emailInputBSClass = " is-invalid";
                 }
 
                 $phoneMobileMaxLength = $companyData["PhoneMobile"][1];
-                $phoneMobileLabelBSClass = "";
                 $phoneMobileInputBSClass = "";
                 if($messageValue === -6)
                 {
-                    $phoneMobileLabelBSClass = " text-danger";
                     $phoneMobileInputBSClass = " is-invalid";
                 }
 
                 $phoneNormalMaxLength = $companyData["PhoneNormal"][1];
-                $phoneNormalLabelBSClass = "";
                 $phoneNormalInputBSClass = "";
                 if($messageValue === -7)
                 {
-                    $phoneNormalLabelBSClass = " text-danger";
                     $phoneNormalInputBSClass = " is-invalid";
                 }
 
                 $ownerMaxLength = $companyData["Owner"][1];
-                $ownerLabelBSClass = "";
                 $ownerInputBSClass = "";
                 if($messageValue === -8)
                 {
-                    $ownerLabelBSClass = " text-danger";
                     $ownerInputBSClass = " is-invalid";
                 }
 
                 $p19UStGAppliesHTML = ($p19ustgApplies === 1) ? " checked" : "";
-                $p19ustgAppliesLabelBSClass = "";
                 $p19ustgAppliesInputBSClass = "";
                 if($messageValue === -9)
                 {
-                    $p19ustgAppliesLabelBSClass = " text-danger";
                     $p19ustgAppliesInputBSClass = " is-invalid";
                 }
 
                 $p36VSBGAppliesHTML = ($p36vsbgApplies === 1) ? " checked" : "";
-                $p36vsbgAppliesLabelBSClass = "";
                 $p36vsbgAppliesInputBSClass = "";
                 if($messageValue === -10)
                 {
-                    $p36vsbgAppliesLabelBSClass = " text-danger";
                     $p36vsbgAppliesInputBSClass = " is-invalid";
                 }
 
@@ -350,27 +351,7 @@ class ImprintView implements IImprintView
             }
             else if($messageValue === 1) // Show that update was all ok.
             {
-                $imprintContentHTML =
-                "
-                <div class=\"container-fluid p-0\">
-                    <div class=\"row mt-3 mb-5\">
-                        <div class=\"col-2\" style=\"background-image: url('/img/symbol/trash-fill.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\"></div>
-                        <div class=\"col-10\">
-                           <span class=\"fs-2 fw-bold text-success\">Impressum erfolgreich aktualisiert!</span>
-                        </div>
-                    </div>
-                    <div class=\"row mb-3\">
-                        <div class=\"col-12\">
-                            <a class=\"btn btn-success w-100\" href=\"/?view=imprint&action=update\">Impressum weiter bearbeiten</a>
-                        </div>
-                    </div>
-                    <div class=\"row mb-3\">
-                        <div class=\"col-12\">
-                            <a class=\"btn btn-secondary w-100\" href=\"/?view=imprint\">Zur Übersicht</a>
-                        </div>
-                    </div>
-                </div>
-                ";
+                $imprintContentHTML = $this->componentFactory->genActionResultMessage($appearanceData, "/img/symbol/shield-fill-check.svg", "/?view=imprint", "/?view=imprint&action=update", "Impressum erfolgreich aktualisiert!");
             }
             else
             {

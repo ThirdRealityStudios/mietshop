@@ -81,7 +81,7 @@ class ImprintPresenter implements IImprintPresenter
             }
         }
 
-        return 0; // No invalid field submitted
+        return 1; // No invalid field submitted
     }
 
     public function process(IHTTPRequest &$httpRequest, array &$sessionValues): void
@@ -106,7 +106,7 @@ class ImprintPresenter implements IImprintPresenter
                     if($this->isEveryPostParameterSent($httpRequest))
                     {
                         // There might be an invalid field submitted (only the first field interesting - but if not then 0 is calculated here).
-                        $firstInvalidField = $this->uploadImprintForm($httpRequest);
+                        $uploadResponseCode = $this->uploadImprintForm($httpRequest);
 
                         // Get the updated company data.
                         $companyData = $this->companyModel->getCompanyData();
@@ -117,7 +117,7 @@ class ImprintPresenter implements IImprintPresenter
                         }
                         else
                         {
-                            $this->imprintView->show($companyData, $appearanceData, false, "update", $firstInvalidField);
+                            $this->imprintView->show($companyData, $appearanceData, false, "update", $uploadResponseCode);
                         }
                     }
                     else // Does the user want to see the submit form?
