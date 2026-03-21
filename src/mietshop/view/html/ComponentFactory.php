@@ -78,9 +78,25 @@ class ComponentFactory implements IComponentFactory
         $spanTitle = $this->htmlFactory->genNonSelfClosingElement("span", [ "Text" ], $appearanceData, [], [ "fw-bold", "inline-block", "lh-1" ], "$title&nbsp;$svgForText");
         $spanDescription = $this->htmlFactory->genNonSelfClosingElement("span", [ "Text" ], $appearanceData, [], [ "w-100" ], $description);
 
-        $aRepeatActionButton = $this->htmlFactory->genNonSelfClosingElement("a", [ "Interesting" ], $appearanceData, [], [ "btn", "w-100" ], "Zur Übersicht", $returnHref);
+        $aReturnButton = $this->htmlFactory->genNonSelfClosingElement("a", [ "Interesting" ], $appearanceData, [], [ "btn", "w-100" ], "Zur Übersicht", $returnHref);
 
-        $aReturnButton = $this->htmlFactory->genNonSelfClosingElement("a", [ "Uninteresting" ], $appearanceData, [], [ "btn", "w-100" ], "Aktion wiederholen", $actionRepeatHref);
+        if(!empty($actionRepeatHref))
+        {
+            $aRepeatActionButton = $this->htmlFactory->genNonSelfClosingElement("a", [ "Uninteresting" ], $appearanceData, [], [ "btn", "w-100" ], "Aktion wiederholen", $actionRepeatHref);
+            $divRepeatActionButton =
+            "
+            <div class=\"row mb-3\">
+                <div class=\"col-12\">
+                    $aRepeatActionButton
+                </div>
+            </div>
+            ";
+        }
+        else
+        {
+            $divRepeatActionButton = "";
+        }
+
 
         $hr = $this->htmlFactory->genHr($appearanceData);
 
@@ -101,7 +117,7 @@ class ComponentFactory implements IComponentFactory
         return
         "
         <div class=\"container-fluid p-0\">
-            <div class=\"row mb-1 fs-2\">
+            <div class=\"row mb-1 fs-2 text-center\">
                 $spanTitle
             </div>
             <div class=\"row mb-2\">
@@ -110,14 +126,10 @@ class ComponentFactory implements IComponentFactory
                 </div>
             </div>
             $descriptionHTML
-            <div class=\"row mb-3\">
+            $divRepeatActionButton
+            <div class=\"row mt-2\">
                 <div class=\"col-12\">
                     $aReturnButton
-                </div>
-            </div>
-            <div class=\"row\">
-                <div class=\"col-12\">
-                    $aRepeatActionButton
                 </div>
             </div>
         </div>

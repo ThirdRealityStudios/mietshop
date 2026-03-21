@@ -67,7 +67,7 @@ class ImprintView implements IImprintView
             $optionalP36VSBGTextBriefly = $this->htmlFactory->genSpanText($appearanceData, "Wir nehmen nicht an einem Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teil und sind hierzu auch nicht verpflichtet.");
             $optionalP36VSBGTextRow = ($p36vsbgApplies === 1) ? "<div class=\"row mb-3\"><div class=\"col-12\">$optionalP36VSBGTextHint</div></div><div class=\"row mb-3\"><div class=\"col-12\">$optionalP36VSBGTextBriefly</div></div>" : "";
 
-            $imprintTitle = $this->htmlFactory->genNonSelfClosingElement("span", [ "Text" ], $appearanceData, [], [ "fw-bold", "fs-3" ], "Impressum");
+            $imprintTitle = $this->htmlFactory->genNonSelfClosingElement("span", [ "Text" ], $appearanceData, [], [ "fw-bold", "fs-3", "lh-1" ], "Impressum");
             $imprintCompanyName = $this->htmlFactory->genSpanText($appearanceData, $companyNameHTMLSafe);
             $imprintStreet = $this->htmlFactory->genSpanText($appearanceData, $streetHTMLSafe);
             $imprintZipCode = $this->htmlFactory->genSpanText($appearanceData, $zipCodeHTMLSafe);

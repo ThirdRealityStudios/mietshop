@@ -23,5 +23,14 @@ interface IComponentFactory
      */
     public function genFeed(array $appearanceData, ?string $pictureURL, string $descriptionHTML) : string;
 
+    /**
+     * @param array $appearanceData
+     * @param string $svgPath
+     * @param string $returnHref
+     * @param string $actionRepeatHref Optional, in the meaning of: you can give an empty string here to indicate, you don't need it. Otherwise, pass the corresponding value / string you want.
+     * @param string $title
+     * @param string $description
+     * @return string
+     */
     public function genActionResultMessage(array $appearanceData, string $svgPath, string $returnHref, string $actionRepeatHref, string $title, string $description = "") : string;
 }

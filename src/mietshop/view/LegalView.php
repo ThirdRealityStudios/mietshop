@@ -50,8 +50,27 @@ class LegalView implements ILegalView
 
         $legalTextHTMLSafeFormatted = $this->textFormatView->formatAll($legalTextHTMLSafe);
 
+        $hr = $this->htmlFactory->genHr($appearanceData);
+
         $optionalEditButton = $this->htmlFactory->genNonSelfClosingElement("a", [ "Uninteresting" ], $appearanceData, [], [ "btn", "w-100" ], "Bearbeiten", "/?view=$legalTextView&action=update");
-        $optionalEditButtonRow = $showEditButton ? "<div class=\"row mb-4\"><div class=\"col-12\">$optionalEditButton</div></div>" : "";
+        $optionalEditButtonRow = $showEditButton ?
+        "
+        <div class=\"row mt-1 mb-1\">
+            <div class=\"col-12\">
+                $hr
+            </div>
+        </div>
+        <div class=\"row mb-1\">
+            <div class=\"col-12\">
+                $optionalEditButton
+            </div>
+        </div>
+        <div class=\"row\">
+            <div class=\"col-12\">
+                $hr
+            </div>
+        </div>
+        " : "";
 
         if(empty($actionValue))
         {
@@ -62,18 +81,18 @@ class LegalView implements ILegalView
             $legalTextContentHTML =
             "
             <div class=\"container-fluid p-0\">
-                <div class=\"row mb-4\">
+                <div class=\"row\">
                     <div class=\"col-12 text-center\">
                         $legalTextTitle
                     </div>
                 </div>
                 $optionalEditButtonRow
-                <div class=\"row mb-3\">
+                <div class=\"row mt-3 mb-3\">
                     <div class=\"col-12\">
                         $legalTextDescription
                     </div>
                 </div>
-                <div class=\"row\">
+                <div class=\"row mt-4\">
                     <div class=\"col-12\">
                         $aLandingPageButton
                     </div>
@@ -86,29 +105,38 @@ class LegalView implements ILegalView
             if($messageValue <= 0) // Show the form and highlight the invalid text field, based on $messageValue given.
             {
                 $legalTextMaxLength = $companyData[$legalTextKey][1];
-                $legalTextLabelBSClass = "";
                 $legalTextInputBSClass = "";
                 if($messageValue === -1)
                 {
-                    $legalTextLabelBSClass = " text-danger";
                     $legalTextInputBSClass = " is-invalid";
                 }
+
+                $spanLegalTitle = $this->htmlFactory->genNonSelfClosingElement("span", [ "Text" ], $appearanceData, [], [ "fs-3", "fw-bold" ], "Bearbeiten");
+                $labelMaxCharacterHint = $this->htmlFactory->genLabelText($appearanceData, "Maximal $legalTextMaxLength Zeichen erlaubt.", "$legalTextInputIdentifier");
+
+                $inputSubmitButton = $this->htmlFactory->genSelfClosingElement("input", [ "Interesting" ], $appearanceData, [], [ "btn", "w-100" ], "", "value=\"Speichern\" type=\"submit\"");
+                $aButtonCancel = $this->htmlFactory->genAButtonUninteresting($appearanceData, "Abbrechen", "/?view=$legalTextView", [ "w-100", "btn" ]);
 
                 $legalTextContentHTML =
                  "
                  <div class=\"container-fluid\">
-                     <div class=\"row\">
+                     <div class=\"row mb-1\">
                          <div class=\"col-12\">
-                             <p class=\"fs-2 fw-bold\">Bearbeiten</p>
+                             $spanLegalTitle
                          </div>
                      </div>
+                     <div class=\"row mb-1\">
+                        <div class=\"col-12\">
+                            $hr
+                        </div>
+                    </div>
                      <form class=\"row form\" action=\"/?view=$legalTextView&action=update\" method=\"post\">
                          <div class=\"col-12\">
                              <div class=\"container-fluid p-0\">
                                  <div class=\"row mb-3\">
                                      <div class=\"col-12\">
-                                         <label class=\"form-label $legalTextLabelBSClass\" for=\"$legalTextInputIdentifier\">( max. $legalTextMaxLength Zeichen )</label>
-                                         <textarea rows=\"25\" placeholder=\"$legalTextTitleShort hier eingeben ...\" class=\"w-100 h-100 form-control$legalTextInputBSClass\" id=\"$legalTextInputIdentifier\" name=\"$legalTextInputIdentifier\" maxlength=\"$legalTextMaxLength\">{$legalTextHTMLSafe}</textarea>
+                                         $labelMaxCharacterHint
+                                         <textarea rows=\"25\" placeholder=\"$legalTextTitleShort hier eingeben ...\" class=\"mt-3 w-100 h-100 form-control$legalTextInputBSClass\" id=\"$legalTextInputIdentifier\" name=\"$legalTextInputIdentifier\" maxlength=\"$legalTextMaxLength\">{$legalTextHTMLSafe}</textarea>
                                      </div>
                                  </div>
                                  <div class=\"row mb-3\">
@@ -118,12 +146,17 @@ class LegalView implements ILegalView
                                 </div>
                                 <div class=\"row mb-3\">
                                     <div class=\"col-12\">
-                                        <input type=\"submit\" class=\"w-100 btn btn-primary\" value=\"Speichern\">
+                                        $hr
                                     </div>
                                 </div>
                                 <div class=\"row mb-3\">
                                     <div class=\"col-12\">
-                                        <a class=\"w-100 btn btn-secondary\" href=\"/?view=$legalTextView\">Abbrechen</a>
+                                        $inputSubmitButton
+                                    </div>
+                                </div>
+                                <div class=\"row mb-3\">
+                                    <div class=\"col-12\">
+                                        $aButtonCancel
                                     </div>
                                 </div> 
                             </div>
@@ -134,52 +167,17 @@ class LegalView implements ILegalView
             }
             else if($messageValue === 1) // Show that update was all ok.
             {
-                $legalTextContentHTML =
-                "
-                <div class=\"container-fluid p-0\">
-                    <div class=\"row mt-3 mb-5\">
-                        <div class=\"col-2\" style=\"background-image: url('/img/symbol/shield-fill-check.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\"></div>
-                        <div class=\"col-10\">
-                           <span class=\"fs-2 fw-bold text-success\">$legalTextTitleShort erfolgreich aktualisiert!</span>
-                        </div>
-                    </div>
-                    <div class=\"row mb-3\">
-                        <div class=\"col-12\">
-                            <a class=\"btn btn-success w-100\" href=\"/?view=$legalTextView&action=update\">$legalTextTitleShort weiter bearbeiten</a>
-                        </div>
-                    </div>
-                    <div class=\"row mb-3\">
-                        <div class=\"col-12\">
-                            <a class=\"btn btn-secondary w-100\" href=\"/?view=$legalTextView\">$legalTextTitleShort aufrufen</a>
-                        </div>
-                    </div>
-                </div>
-                ";
+                $legalTextContentHTML = $this->componentFactory->genActionResultMessage($appearanceData, "/img/symbol/shield-fill-check.svg", "/?view=$legalTextView", "/?view=$legalTextView&action=update", "Datenschutz aktualisiert!");
             }
             else
             {
                 // Invalid request
-                $legalTextContentHTML =
-                "
-                <div class=\"container-fluid p-0\">
-                    <div class=\"row mt-3 mb-5\">
-                        <div class=\"col-2\" style=\"background-image: url('/img/symbol/cpu-fill.svg'); background-size: contain; background-repeat: no-repeat; background-position: center;\"></div>
-                        <div class=\"col-10\">
-                           <span class=\"fs-2 fw-bold text-danger\">Ungültige Anfrage</span>
-                        </div>
-                    </div>
-                    <div class=\"row mb-3\">
-                        <div class=\"col-12\">
-                            <a class=\"btn btn-secondary w-100\" href=\"/?view=$legalTextView\">$legalTextTitleShort aufrufen</a>
-                        </div>
-                    </div>
-                </div>
-                ";
+                $legalTextContentHTML = $this->componentFactory->genActionResultMessage($appearanceData, "/img/symbol/cpu-fill.svg", "/?view=$legalTextView", "", "Ungültige Anfrage");
             }
         }
         else
         {
-            $legalTextContentHTML = "Ungültige Anfrage";
+            $legalTextContentHTML = $this->componentFactory->genActionResultMessage($appearanceData, "/img/symbol/cpu-fill.svg", "/?view=$legalTextView", "", "Ungültige Anfrage");
         }
 
         $feedHTML = $this->componentFactory->genFeed($appearanceData, null, $legalTextContentHTML);

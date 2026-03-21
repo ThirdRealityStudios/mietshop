@@ -218,7 +218,7 @@ class HtmlFactory implements IHtmlFactory
         }
         else
         {
-            $svgFileContent = str_replace("<svg ", "<svg $style class=\"$classes\" ", $svgFileContent);
+            $svgFileContent = str_replace("<svg ", "<svg $style class=\"$classesPrepared\" ", $svgFileContent);
         }
 
         if(is_array($svgFileContent))
