@@ -482,18 +482,35 @@ class GlobalView implements IGlobalView
 
         $sideMenuBody = $this->htmlFactory->genNonSelfClosingElement("div", [ "Window" ], $appearanceData, [], [ "offcanvas-body" ], $sideMenuBodyContent);
 
+        // <img src=\"/favicon.png\" alt=\"favicon.png\" width=\"70\" height=\"70\">
+        // <div style=\"background-image: url('favicon.png'); background-size: auto 70px; background-repeat: no-repeat; height: 70px; width: 100%;\"></div>
+
+        /*
+         * <button class=\"navbar-toggler float-end\" type=\"button\" data-bs-toggle=\"offcanvas\" data-bs-target=\"#offcanvasNavbar\" aria-controls=\"offcanvasNavbar\" aria-label=\"Toggle navigation\">
+                        <span class=\"navbar-toggler-icon\"></span>
+                    </button>
+         */
+
         $navContent =
         "
-        <div class=\"container-fluid\">
-		        <img src=\"/favicon.png\" alt=\"favicon.png\" width=\"70\" height=\"70\">
-                <button class=\"navbar-toggler\" type=\"button\" data-bs-toggle=\"offcanvas\" data-bs-target=\"#offcanvasNavbar\" aria-controls=\"offcanvasNavbar\" aria-label=\"Toggle navigation\">
-                    <span class=\"navbar-toggler-icon\"></span>
-                </button>
-                <div class=\"offcanvas offcanvas-end\" tabindex=\"-1\" id=\"offcanvasNavbar\" aria-labelledby=\"offcanvasNavbarLabel\" role=\"dialog\">
-                    $sideMenuHeader
-                    $sideMenuBody
+        <div class=\"container-fluid p-0\">
+            <div class=\"row w-100 p-0 m-0\">
+                <div class=\"col-12 p-0 m-0 text-left\">
+                    <img src=\"/favicon.png\" alt=\"favicon.png\" class=\"p-2 ps-3\" style=\"width: auto; height: auto; max-width: 100%; max-height: 80px;\">
                 </div>
             </div>
+            <div class=\"row w-100 p-0 m-0 position-absolute\">
+                <div class=\"col-12 p-0 m-0 text-center\">
+                    <button class=\"navbar-toggler float-end p-absolute me-3\" type=\"button\" data-bs-toggle=\"offcanvas\" data-bs-target=\"#offcanvasNavbar\" aria-controls=\"offcanvasNavbar\" aria-label=\"Toggle navigation\">
+                        <span class=\"navbar-toggler-icon\"></span>
+                    </button>
+                </div>
+            </div>
+            <div class=\"offcanvas offcanvas-end\" tabindex=\"-1\" id=\"offcanvasNavbar\" aria-labelledby=\"offcanvasNavbarLabel\" role=\"dialog\">
+                $sideMenuHeader
+                $sideMenuBody
+            </div>
+        </div>
         ";
 
         $navBootstrap = $this->htmlFactory->genNonSelfClosingElement("nav", [ "Window", "Frame" ], $appearanceData, [ "border-bottom-style: solid;", "border-bottom-width: 3px;" ], [ "navbar", "sticky-top", "w-100", "z-2", "mb-5" ], $navContent);
