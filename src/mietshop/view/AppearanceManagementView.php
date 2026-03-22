@@ -82,6 +82,20 @@ class AppearanceManagementView implements IAppearanceManagementView
         $this->showPageFeed($companyData, $appearanceData, $feedContentHTML);
     }
 
+    public function showImageUpdateSuccessful(array $companyData, array $appearanceData, string $element) : void
+    {
+        $feedContentHTML = $this->componentFactory->genActionResultMessage($appearanceData, "/img/symbol/image.svg", "/?view=appearance&action=update&target=Image", "/?view=appearance&action=update&target=Image&element=$element", "Grafik erfolgreich geändert!");
+
+        $this->showPageFeed($companyData, $appearanceData, $feedContentHTML);
+    }
+
+    public function showImageUpdateFailed(array $companyData, array $appearanceData, string $element) : void
+    {
+        $feedContentHTML = $this->componentFactory->genActionResultMessage($appearanceData, "/img/symbol/image.svg", "/?view=appearance&action=update&target=Image", "/?view=appearance&action=update&target=Image&element=$element", "Grafik ändern fehlgeschlagen!");
+
+        $this->showPageFeed($companyData, $appearanceData, $feedContentHTML);
+    }
+
     private function genCustomColorForm(array $appearanceData, string $element, string $hexCodeColor) : string
     {
         $hexCodeHint = "";
@@ -242,6 +256,74 @@ class AppearanceManagementView implements IAppearanceManagementView
         $this->showPageFeed($companyData, $appearanceData, $feedContentHTML);
     }
 
+    private function genImageLogoForm(array $appearanceData, string $element) : string
+    {
+        $hr = $this->htmlFactory->genHr($appearanceData);
+
+        $spanEditTitle = $this->htmlFactory->genNonSelfClosingElement("span", [ "Text" ], $appearanceData, [], [ "fs-2", "fw-bold", "lh-1" ], "Logo ändern");
+
+        $aButtonCancel = $this->htmlFactory->genAButtonUninteresting($appearanceData, "Abbrechen", "/?view=appearance&action=update&target=Image", [ "w-100" ]);
+
+        $labelUploadImage = $this->htmlFactory->genLabelText($appearanceData, "Bild hochladen", "images");
+        $inputUploadButton = $this->htmlFactory->genSelfClosingElement("input", [], $appearanceData, [], [ "form-control" ], "", "type=\"file\" id=\"images\" name=\"image[]\" multiple=\"multiple\"");
+
+        $inputSubmitButton = $this->htmlFactory->genSelfClosingElement("input", [ "Interesting" ], $appearanceData, [], [ "btn", "w-100" ], "", "value=\"Speichern\" type=\"submit\"");
+
+        return
+        "
+        <div class=\"container-fluid\">
+            <div class=\"row mb-1\">
+                <div class=\"col-12 p-0 text-center\">
+                    $spanEditTitle
+                </div>
+            </div>
+            <div class=\"row mb-2\">
+                <div class=\"col-12 p-0\">
+                    $hr
+                </div>
+            </div>
+            <form class=\"row form\" action=\"/\" method=\"post\" enctype=\"multipart/form-data\">
+                <input type=\"hidden\" name=\"view\" value=\"appearance\">
+                <input type=\"hidden\" name=\"action\" value=\"update\">
+                <input type=\"hidden\" name=\"target\" value=\"Image\">
+                <input type=\"hidden\" name=\"element\" value=\"$element\">
+                <div class=\"col-12\">
+                    <div class=\"container-fluid p-0\">
+                        <div class=\"row mb-2\">
+                            <div class=\"col-12 p-0\">
+                                $labelUploadImage
+                                $inputUploadButton
+                            </div>
+                        </div>
+                        <div class=\"row mb-2\">
+                            <div class=\"col-12 p-0\">
+                                $hr
+                            </div>
+                        </div>
+                        <div class=\"row mb-4\">
+                            <div class=\"col-12 p-0\">
+                                $inputSubmitButton
+                            </div>
+                        </div> 
+                        <div class=\"row\">
+                            <div class=\"col-12 p-0\">
+                                $aButtonCancel
+                            </div>
+                        </div> 
+                    </div>
+                </div>
+            </form>   
+        </div>
+        ";
+    }
+
+    public function showImageLogoForm(array $companyData, array $appearanceData, string $element) : void
+    {
+        $feedContentHTML = $this->genImageLogoForm($appearanceData, $element);
+
+        $this->showPageFeed($companyData, $appearanceData, $feedContentHTML);
+    }
+
     private function genAllColorElements(array $appearanceData, array $validColorElements) : string
     {
         $validColorElementsKeys = array_keys($validColorElements);
@@ -310,9 +392,84 @@ class AppearanceManagementView implements IAppearanceManagementView
         return $feedContentHTML;
     }
 
+    private function genAllImageElements(array $appearanceData, array $validImageElements) : string
+    {
+        $validImageElementsKeys = array_keys($validImageElements);
+
+        $buttonsHTML = "";
+
+        for($i = 0; $i < sizeof($validImageElementsKeys); $i++)
+        {
+            $validImageElementsKey = $validImageElementsKeys[$i];
+
+            $validImageElementName = $validImageElements[$validImageElementsKey];
+
+            $buttonHTML = $this->htmlFactory->genAButtonInteresting($appearanceData, $validImageElementName, "/?view=appearance&action=update&target=Image&element=$validImageElementsKey", [ "w-100" ]);
+
+            if($i < (sizeof($validImageElementsKeys) - 1))
+            {
+                $mb = "mb-3";
+            }
+            else
+            {
+                $mb = "mb-2";
+            }
+
+            $buttonsHTML .=
+                "
+            <div class=\"row $mb\">
+                <div class=\"col-12\">
+                    $buttonHTML
+                </div>
+            </div>
+            ";
+        }
+
+        $spanChangeImageOfTitle = $this->htmlFactory->genNonSelfClosingElement("span", [ "Text" ], $appearanceData, [], [ "fs-2", "fw-bold", "lh-1" ], "Grafik ändern von");
+        $aButtonReturn = $this->htmlFactory->genAButtonUninteresting($appearanceData, "Zurück", "/?view=appearance&action=all", [ "w-100" ]);
+
+        $hr = $this->htmlFactory->genHr($appearanceData);
+
+        $feedContentHTML =
+            "
+        <div class=\"container-fluid p-0\">
+            <div class=\"row mb-1\">
+                <div class=\"col-12 text-center\">
+                    $spanChangeImageOfTitle
+                </div>
+            </div>
+            <div class=\"row mb-2\">
+                <div class=\"col-12\">
+                    $hr
+                </div>
+            </div>
+            $buttonsHTML
+            <div class=\"row mb-2\">
+                <div class=\"col-12\">
+                    $hr
+                </div>
+            </div>
+            <div class=\"row\">
+                <div class=\"col-12\">
+                    $aButtonReturn
+                </div>
+            </div>
+        </div>
+        ";
+
+        return $feedContentHTML;
+    }
+
     public function showAllColorElements(array $companyData, array $appearanceData, array $validColorElements) : void
     {
         $feedContentHTML = $this->genAllColorElements($appearanceData, $validColorElements);
+
+        $this->showPageFeed($companyData, $appearanceData, $feedContentHTML);
+    }
+
+    public function showAllImageElements(array $companyData, array $appearanceData, array $validImageElements) : void
+    {
+        $feedContentHTML = $this->genAllImageElements($appearanceData, $validImageElements);
 
         $this->showPageFeed($companyData, $appearanceData, $feedContentHTML);
     }

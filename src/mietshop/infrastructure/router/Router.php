@@ -9,7 +9,8 @@ use src\mietshop\model\AccountModel;
 use src\mietshop\model\AppearanceModel;
 use src\mietshop\model\CategoryModel;
 use src\mietshop\model\CompanyModel;
-use src\mietshop\model\UserInputModel;
+use src\mietshop\model\ImageModel;
+use src\mietshop\model\ValidationModel;
 use src\mietshop\presenter\AccountManagementPresenter;
 use src\mietshop\presenter\AccountPresenter;
 use src\mietshop\presenter\AppearanceManagementPresenter;
@@ -44,9 +45,10 @@ class Router implements IRouter
         $htmlFactory = new HtmlFactory();
         $componentFactory = new ComponentFactory($htmlFactory);
 
-        $userInputModel = new UserInputModel();
+        $userInputModel = new ValidationModel();
         $colorUtility = new ColorUtility();
         $appearanceModel = new AppearanceModel($userInputModel, $databaseAdapter, $colorUtility);
+        $imageModel = new ImageModel();
         $companyModel = new CompanyModel($userInputModel, $databaseAdapter);
         $categoryModel = new CategoryModel($databaseAdapter);
         $globalView = new GlobalView($htmlFactory, $componentFactory);
@@ -72,7 +74,7 @@ class Router implements IRouter
             $loginPresenter = new LoginPresenter($companyModel, $appearanceModel, $accountModel, $loginView, $accountView, $errorView);
             $accountPresenter = new AccountPresenter($companyModel, $appearanceModel, $accountModel, $accountView, $errorView);
             $accountManagementPresenter = new AccountManagementPresenter($companyModel, $accountModel, $appearanceModel, $accountManagementView, $errorView);
-            $appearanceManagementPresenter = new AppearanceManagementPresenter($companyModel, $accountModel, $appearanceModel, $userInputModel, $appearanceManagementView, $errorView);
+            $appearanceManagementPresenter = new AppearanceManagementPresenter($companyModel, $accountModel, $appearanceModel, $imageModel, $userInputModel, $appearanceManagementView, $errorView);
 
             if($request->isParameterMatching("view", "imprint"))
             {

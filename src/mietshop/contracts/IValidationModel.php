@@ -7,7 +7,7 @@ namespace src\mietshop\contracts;
  * for across most software components,
  * so they can access these.
  */
-interface IUserInputModel
+interface IValidationModel
 {
     /**
      * Tells you if an email is valid and using the common format,

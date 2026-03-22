@@ -4,19 +4,19 @@ namespace src\mietshop\model;
 
 use PDOException;
 use src\mietshop\contracts\IAccountModel;
-use src\mietshop\contracts\IUserInputModel;
+use src\mietshop\contracts\IValidationModel;
 use src\mietshop\infrastructure\database\IDatabaseAdapter;
 
 class AccountModel implements IAccountModel
 {
-    private IUserInputModel $userInputModel;
+    private IValidationModel $userInputModel;
     private IDatabaseAdapter $databaseAdapter;
 
     /**
      * @param IDatabaseAdapter $databaseAdapter
      * @throws PDOException
      */
-    public function __construct(IUserInputModel $userInputModel, IDatabaseAdapter $databaseAdapter)
+    public function __construct(IValidationModel $userInputModel, IDatabaseAdapter $databaseAdapter)
     {
         $this->userInputModel = $userInputModel;
         $this->databaseAdapter = $databaseAdapter;

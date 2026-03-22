@@ -27,6 +27,8 @@ interface IAppearanceManagementView
      */
     public function showCustomColorForm(array $companyData, array $appearanceData, string $element, string $hexCodeColor) : void;
 
+    public function showImageLogoForm(array $companyData, array $appearanceData, string $element) : void;
+
     /**
      * Shows all elements you can change the color of.
      *
@@ -71,4 +73,8 @@ interface IAppearanceManagementView
      * @return string
      */
     public function showColorUpdateFailed(array $companyData, array $appearanceData, string $element, string $custom) : void;
+
+    public function showImageUpdateSuccessful(array $companyData, array $appearanceData, string $element) : void;
+
+    public function showImageUpdateFailed(array $companyData, array $appearanceData, string $element) : void;
 }

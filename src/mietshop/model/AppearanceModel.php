@@ -4,13 +4,13 @@ namespace src\mietshop\model;
 
 use PDOException;
 use src\mietshop\contracts\IAppearanceModel;
-use src\mietshop\contracts\IUserInputModel;
+use src\mietshop\contracts\IValidationModel;
 use src\mietshop\infrastructure\database\IDatabaseAdapter;
 use src\mietshop\utils\IColorUtility;
 
 class AppearanceModel implements IAppearanceModel
 {
-    private IUserInputModel $userInputModel;
+    private IValidationModel $userInputModel;
     private IDatabaseAdapter $databaseAdapter;
     private IColorUtility $colorUtility;
 
@@ -120,7 +120,7 @@ class AppearanceModel implements IAppearanceModel
      * @param IDatabaseAdapter $databaseAdapter Database adapter. Make sure you have connected yet.
      * @throws PDOException
      */
-    public function __construct(IUserInputModel $userInputModel, IDatabaseAdapter $databaseAdapter, IColorUtility $colorUtility)
+    public function __construct(IValidationModel $userInputModel, IDatabaseAdapter $databaseAdapter, IColorUtility $colorUtility)
     {
         $this->databaseAdapter = $databaseAdapter;
         $this->userInputModel = $userInputModel;

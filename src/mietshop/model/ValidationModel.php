@@ -2,9 +2,9 @@
 
 namespace src\mietshop\model;
 
-use src\mietshop\contracts\IUserInputModel;
+use src\mietshop\contracts\IValidationModel;
 
-class UserInputModel implements IUserInputModel
+class ValidationModel implements IValidationModel
 {
     public function isValidEmail(string $email): bool
     {

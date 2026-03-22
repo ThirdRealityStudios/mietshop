@@ -4,7 +4,7 @@ namespace src\mietshop\model;
 
 use PDOException;
 use src\mietshop\contracts\ICompanyModel;
-use src\mietshop\contracts\IUserInputModel;
+use src\mietshop\contracts\IValidationModel;
 use src\mietshop\infrastructure\database\IDatabaseAdapter;
 
 /**
@@ -17,7 +17,7 @@ use src\mietshop\infrastructure\database\IDatabaseAdapter;
 class CompanyModel implements ICompanyModel
 {
     private IDatabaseAdapter $databaseAdapter;
-    private IUserInputModel $userInputModel;
+    private IValidationModel $userInputModel;
 
     // md5(random_bytes(6));
 
@@ -25,10 +25,10 @@ class CompanyModel implements ICompanyModel
      * @param IDatabaseAdapter $databaseAdapter Database adapter. Make sure you have connected yet.
      * @throws PDOException
      */
-    public function __construct(IUserInputModel $userInputModel, IDatabaseAdapter $databaseAdapter)
+    public function __construct(IValidationModel $validationModel, IDatabaseAdapter $databaseAdapter)
     {
         $this->databaseAdapter = $databaseAdapter;
-        $this->userInputModel = $userInputModel;
+        $this->userInputModel = $validationModel;
 
         $sql =
             "
