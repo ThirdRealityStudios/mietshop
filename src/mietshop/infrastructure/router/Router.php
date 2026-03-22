@@ -20,6 +20,7 @@ use src\mietshop\presenter\LoginPresenter;
 use src\mietshop\presenter\PrivacyPolicyPresenter;
 use src\mietshop\presenter\TermsOfServicePresenter;
 use src\mietshop\utils\ColorUtility;
+use src\mietshop\utils\FileUtility;
 use src\mietshop\view\AccountManagementView;
 use src\mietshop\view\AccountView;
 use src\mietshop\view\AppearanceManagementView;
@@ -45,10 +46,12 @@ class Router implements IRouter
         $htmlFactory = new HtmlFactory();
         $componentFactory = new ComponentFactory($htmlFactory);
 
-        $userInputModel = new ValidationModel();
+        $fileUtility = new FileUtility();
         $colorUtility = new ColorUtility();
+
+        $userInputModel = new ValidationModel();
         $appearanceModel = new AppearanceModel($userInputModel, $databaseAdapter, $colorUtility);
-        $imageModel = new ImageModel();
+        $imageModel = new ImageModel($fileUtility);
         $companyModel = new CompanyModel($userInputModel, $databaseAdapter);
         $categoryModel = new CategoryModel($databaseAdapter);
         $globalView = new GlobalView($htmlFactory, $componentFactory);
