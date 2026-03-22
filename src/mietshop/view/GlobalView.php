@@ -486,7 +486,7 @@ class GlobalView implements IGlobalView
         "
         <div class=\"container-fluid p-0\">
             <div class=\"d-flex w-100 p-0 m-0\">
-                <div class=\"flex-grow-1 fs-1 ps-3 pt-2 pb-2\">
+                <div class=\"flex-grow-1 fs-1 ps-4 pt-2 pb-2\">
                     <img src=\"/favicon.png\" alt=\"favicon.png\" style=\"width: auto; height: auto; max-width: 100%; max-height: 2.5em;\">
                 </div>
                 <div class=\"align-self-center ps-4 pt-2 pe-4 pb-2\">
