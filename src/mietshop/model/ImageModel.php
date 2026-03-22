@@ -64,6 +64,11 @@ class ImageModel implements IImageModel
             return false;
         }
 
+        if(!imagesavealpha($imageTmp, true))
+        {
+            return false;
+        }
+
         // quality is a value from 0 (worst) to 100 (best)
         // imagejpeg($imageTmp, $outputImage, $quality);
 
