@@ -65,6 +65,7 @@ Upload, edit, or delete:
 * Dependency Injection is applied where possible to decouple components.
 * Lazy loading can be applied for Models and Views to optimize performance.
 * The architecture follows SOLID principles to ensure maintainability, testability, and flexibility.
+* use constant DIRECTORY_SEPARATOR in PHP for OS-independent application
 
 ---
 

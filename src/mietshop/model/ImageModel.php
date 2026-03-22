@@ -16,24 +16,67 @@ class ImageModel implements IImageModel
 
     private function convertImage($originalImage, $outputImage, $quality)
     {
-        // jpg, png, gif or bmp?
-        $exploded = explode('.',$originalImage);
-        $ext = $exploded[count($exploded) - 1];
+        $mimeType = mime_content_type($originalImage);
 
-        if (preg_match('/jpg|jpeg/i',$ext))
-            $imageTmp=imagecreatefromjpeg($originalImage);
-        else if (preg_match('/png/i',$ext))
-            $imageTmp=imagecreatefrompng($originalImage);
-        else if (preg_match('/gif/i',$ext))
-            $imageTmp=imagecreatefromgif($originalImage);
-        else if (preg_match('/bmp/i',$ext))
-            $imageTmp=imagecreatefrombmp($originalImage);
-        else
+        if(!is_string($mimeType))
+        {
             return false;
+        }
+
+        /*
+        // images
+        'png' => 'image/png',
+            'jpe' => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'jpg' => 'image/jpeg',
+            'gif' => 'image/gif',
+            'bmp' => 'image/bmp',
+            'ico' => 'image/vnd.microsoft.icon',
+            'tiff' => 'image/tiff',
+            'tif' => 'image/tiff',
+            'svg' => 'image/svg+xml',
+            'svgz' => 'image/svg+xml',
+        */
+
+        if(strcmp($mimeType, "image/jpeg") === 0)
+        {
+            $imageTmp = imagecreatefromjpeg($originalImage);
+        }
+        else if(strcmp($mimeType, "image/png") === 0)
+        {
+            $imageTmp = imagecreatefrompng($originalImage);
+        }
+        else if(strcmp($mimeType, "image/gif") === 0)
+        {
+            $imageTmp = imagecreatefromgif($originalImage);
+        }
+        else if(strcmp($mimeType, "image/bmp") === 0)
+        {
+            $imageTmp = imagecreatefrombmp($originalImage);
+        }
+        else
+        {
+            return false;
+        }
+
+        if(is_bool($imageTmp))
+        {
+            return false;
+        }
 
         // quality is a value from 0 (worst) to 100 (best)
-        imagejpeg($imageTmp, $outputImage, $quality);
-        imagedestroy($imageTmp);
+        // imagejpeg($imageTmp, $outputImage, $quality);
+
+        // quality is a value from 0 (best quality without compression) to 9 (worst but smallest)
+        if(!imagepng($imageTmp, $outputImage, $quality))
+        {
+            return false;
+        }
+
+        if(!imagedestroy($imageTmp))
+        {
+            return false;
+        }
 
         return true;
     }
@@ -98,9 +141,9 @@ class ImageModel implements IImageModel
             $uploadedPicturesAmount = 0; // in reality no file was uploaded (only metadata about the upload).
         }
 
-        $pictureFolderAbsolutePath = $_SERVER['DOCUMENT_ROOT']."/$localPath";
+        $pictureFolderAbsolutePath = $_SERVER['DOCUMENT_ROOT']."$localPath";
 
-        $unprocessedFolderPath = "$pictureFolderAbsolutePath/unprocessed";
+        $unprocessedFolderPath = $_SERVER['DOCUMENT_ROOT'].DIRECTORY_SEPARATOR.'unprocessed';
 
         // Recursively create the needed folder structure if not done yet,
         // meaning for the articles picture directory and its subdirectory "unprocessed".
@@ -141,10 +184,10 @@ class ImageModel implements IImageModel
                 return false;
             }
 
-            $fileExtension = $this->fileUtility->getImageFileExtension($fileName);
+            // $fileExtension = $this->fileUtility->getImageFileExtension($fileName);
 
             // Upload filepath where all unprocessed images are.
-            $uploadFilepath = "$unprocessedFolderPath/$finalFileName.$fileExtension";
+            $uploadFilepath = $unprocessedFolderPath.DIRECTORY_SEPARATOR.$finalFileName;
 
             if(!move_uploaded_file($fileTmpName, $uploadFilepath))
             {
@@ -153,7 +196,7 @@ class ImageModel implements IImageModel
             }
 
             // if-statement is true: the funtion convertImage(..) fails somehow to treat ALL uploaded files (only one)
-            if(!$this->convertImage($uploadFilepath, $pictureFolderAbsolutePath."/$finalFileName.jpg", 90))
+            if(!$this->convertImage($uploadFilepath, "$pictureFolderAbsolutePath$finalFileName", 9))
             {
                 // Converting the uploaded picture file to JPEG failed.
                 return false;
@@ -181,7 +224,7 @@ class ImageModel implements IImageModel
             // But directories can also be contained, so further checks are being made in for-loop.
             foreach($unprocessedFolderFiles as $filename)
             {
-                $unprocessedPhotoFilepath = $unprocessedFolderPath."/$filename";
+                $unprocessedPhotoFilepath = $unprocessedFolderPath.DIRECTORY_SEPARATOR.$filename;
 
                 // Try to delete photo (and if unsuccessful, log the error into the log file).
                 if(!is_dir($unprocessedPhotoFilepath) && !unlink($unprocessedPhotoFilepath))
