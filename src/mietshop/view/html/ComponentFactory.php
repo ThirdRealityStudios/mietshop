@@ -136,14 +136,13 @@ class ComponentFactory implements IComponentFactory
         ";
     }
 
-    public function genMultipleFileUploadForm(array $appearanceData, string $formAction, string $fileUploadButtonLabel, string $formFileUploadButtonName, string $formSubmitButtonTitle, string $returnHref, array $hiddenInput = []) : string
+    private function preGenFileUploadFormElements(array $appearanceData, string $fileUploadButtonLabel, string $formFileUploadButtonName, string $formSubmitButtonTitle, string $returnHref, array $hiddenInput = []) : array
     {
         $hr = $this->htmlFactory->genHr($appearanceData);
 
         $aButtonCancel = $this->htmlFactory->genAButtonUninteresting($appearanceData, "Abbrechen", $returnHref, [ "w-100" ]);
 
         $labelUploadImage = $this->htmlFactory->genLabelText($appearanceData, $fileUploadButtonLabel, $formFileUploadButtonName);
-        $inputUploadButton = $this->htmlFactory->genSelfClosingElement("input", [], $appearanceData, [], [ "form-control" ], "", "type=\"file\" id=\"$formFileUploadButtonName\" name=\"{$formFileUploadButtonName}[]\" multiple=\"multiple\"");
 
         $inputSubmitButton = $this->htmlFactory->genSelfClosingElement("input", [ "Interesting" ], $appearanceData, [], [ "btn", "w-100" ], "", "value=\"$formSubmitButtonTitle\" type=\"submit\"");
 
@@ -163,31 +162,45 @@ class ComponentFactory implements IComponentFactory
             }
         }
 
+        return [ "hr" => $hr, "aButtonCancel" => $aButtonCancel, "labelUploadImage" => $labelUploadImage, "inputSubmitButton" => $inputSubmitButton, "hiddenInputHTML" => $hiddenInputHTML ];
+    }
+
+    public function genSingleFileUploadForm(array $appearanceData, string $formAction, string $fileUploadButtonLabel, string $formFileUploadButtonName, string $formSubmitButtonTitle, string $returnHref, array $hiddenInput = []) : string
+    {
+
+    }
+
+    public function genMultipleFileUploadForm(array $appearanceData, string $formAction, string $fileUploadButtonLabel, string $formFileUploadButtonName, string $formSubmitButtonTitle, string $returnHref, array $hiddenInput = []) : string
+    {
+        $preGeneratedForm = $this->preGenFileUploadFormElements($appearanceData, $fileUploadButtonLabel, $formFileUploadButtonName, $formSubmitButtonTitle, $returnHref, $hiddenInput);
+
+        $inputUploadButton = $this->htmlFactory->genSelfClosingElement("input", [], $appearanceData, [], [ "form-control" ], "", "type=\"file\" id=\"$formFileUploadButtonName\" name=\"{$formFileUploadButtonName}[]\" multiple=\"multiple\"");
+
         return
         "
         <form class=\"row form\" action=\"$formAction\" method=\"post\" enctype=\"multipart/form-data\">
-            $hiddenInputHTML
+            {$preGeneratedForm["hiddenInputHTML"]}
             <div class=\"col-12\">
                 <div class=\"container-fluid p-0\">
                     <div class=\"row mb-2\">
                         <div class=\"col-12 p-0\">
-                            $labelUploadImage
+                            {$preGeneratedForm["labelUploadImage"]}
                             $inputUploadButton
                         </div>
                     </div>
                     <div class=\"row mb-2\">
                         <div class=\"col-12 p-0\">
-                            $hr
+                            {$preGeneratedForm["hr"]}
                         </div>
                     </div>
                     <div class=\"row mb-4\">
                         <div class=\"col-12 p-0\">
-                            $inputSubmitButton
+                            {$preGeneratedForm["inputSubmitButton"]}
                         </div>
                     </div> 
                     <div class=\"row\">
                         <div class=\"col-12 p-0\">
-                            $aButtonCancel
+                            {$preGeneratedForm["aButtonCancel"]}
                         </div>
                     </div> 
                 </div>
