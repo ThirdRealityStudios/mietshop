@@ -262,12 +262,8 @@ class AppearanceManagementView implements IAppearanceManagementView
 
         $spanEditTitle = $this->htmlFactory->genNonSelfClosingElement("span", [ "Text" ], $appearanceData, [], [ "fs-2", "fw-bold", "lh-1" ], "Logo ändern");
 
-        $aButtonCancel = $this->htmlFactory->genAButtonUninteresting($appearanceData, "Abbrechen", "/?view=appearance&action=update&target=Image", [ "w-100" ]);
-
-        $labelUploadImage = $this->htmlFactory->genLabelText($appearanceData, "Bild hochladen", "images");
-        $inputUploadButton = $this->htmlFactory->genSelfClosingElement("input", [], $appearanceData, [], [ "form-control" ], "", "type=\"file\" id=\"images\" name=\"image[]\" multiple=\"multiple\"");
-
-        $inputSubmitButton = $this->htmlFactory->genSelfClosingElement("input", [ "Interesting" ], $appearanceData, [], [ "btn", "w-100" ], "", "value=\"Speichern\" type=\"submit\"");
+        $hiddenInputData = [ [ "name" => "view", "value" => "appearance" ], [ "name" => "action", "value" => "update" ], [ "name" => "target", "value" => "Image" ], [ "name" => "element", "value" => $element ] ];
+        $formFilesUpload = $this->componentFactory->genMultipleFileUploadForm($appearanceData, DIRECTORY_SEPARATOR, "Bilder hochladen", "image", "Alle speichern", "/?view=appearance&action=update&target=Image", $hiddenInputData);
 
         return
         "
@@ -282,37 +278,7 @@ class AppearanceManagementView implements IAppearanceManagementView
                     $hr
                 </div>
             </div>
-            <form class=\"row form\" action=\"/\" method=\"post\" enctype=\"multipart/form-data\">
-                <input type=\"hidden\" name=\"view\" value=\"appearance\">
-                <input type=\"hidden\" name=\"action\" value=\"update\">
-                <input type=\"hidden\" name=\"target\" value=\"Image\">
-                <input type=\"hidden\" name=\"element\" value=\"$element\">
-                <div class=\"col-12\">
-                    <div class=\"container-fluid p-0\">
-                        <div class=\"row mb-2\">
-                            <div class=\"col-12 p-0\">
-                                $labelUploadImage
-                                $inputUploadButton
-                            </div>
-                        </div>
-                        <div class=\"row mb-2\">
-                            <div class=\"col-12 p-0\">
-                                $hr
-                            </div>
-                        </div>
-                        <div class=\"row mb-4\">
-                            <div class=\"col-12 p-0\">
-                                $inputSubmitButton
-                            </div>
-                        </div> 
-                        <div class=\"row\">
-                            <div class=\"col-12 p-0\">
-                                $aButtonCancel
-                            </div>
-                        </div> 
-                    </div>
-                </div>
-            </form>   
+            $formFilesUpload
         </div>
         ";
     }

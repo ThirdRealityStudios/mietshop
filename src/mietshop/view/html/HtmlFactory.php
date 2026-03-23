@@ -129,7 +129,7 @@ class HtmlFactory implements IHtmlFactory
 
         $optionalFourthWhitespace = ((!empty($possibleStyleTagProperty) || !empty($possibleClassTagProperty) || !empty($optionalHrefTagProperty)) && !empty($optionalMoreTagInformation)) ? " " : "";
 
-        $optionalFirstWhitespace = (!empty($possibleStyleTagProperty) || !empty($possibleClassTagProperty) || !empty($optionalHrefTagProperty)) ? " " : "";
+        $optionalFirstWhitespace = (!empty($possibleStyleTagProperty) || !empty($possibleClassTagProperty) || !empty($optionalHrefTagProperty) || !empty($optionalMoreTagInformation)) ? " " : "";
 
         return "<$tag$optionalFirstWhitespace$possibleStyleTagProperty$optionalSecondWhitespace$possibleClassTagProperty$optionalThirdWhitespace$optionalHrefTagProperty$optionalFourthWhitespace$optionalMoreTagInformation>";
     }
