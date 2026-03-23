@@ -136,7 +136,7 @@ class ComponentFactory implements IComponentFactory
         ";
     }
 
-    private function preGenFileUploadFormElements(array $appearanceData, string $fileUploadButtonLabel, string $formFileUploadButtonName, string $formSubmitButtonTitle, string $returnHref, array $hiddenInput = []) : array
+    private function preGenFileUploadFormElements(array $appearanceData, string $fileUploadButtonLabel, string $formFileUploadButtonName, string $formSubmitButtonTitle, string $returnHref, array $hiddenInput = [], array $acceptMimeTypes = []) : array
     {
         $hr = $this->htmlFactory->genHr($appearanceData);
 
@@ -162,19 +162,25 @@ class ComponentFactory implements IComponentFactory
             }
         }
 
-        return [ "hr" => $hr, "aButtonCancel" => $aButtonCancel, "labelUploadImage" => $labelUploadImage, "inputSubmitButton" => $inputSubmitButton, "hiddenInputHTML" => $hiddenInputHTML ];
+        $acceptMimeTypesProperty = empty($acceptMimeTypes) ? "" : " accept=\"";
+
+        for($i = 0; $i < sizeof($acceptMimeTypes); $i++)
+        {
+            $acceptMimeType = $i < (sizeof($acceptMimeTypes) - 1) ? "{$acceptMimeTypes[$i]}, " : $acceptMimeTypes[$i];
+
+            $acceptMimeTypesProperty .= $acceptMimeType;
+        }
+
+        $acceptMimeTypesProperty .= empty($acceptMimeTypes) ? "" : "\"";
+
+        return [ "hr" => $hr, "aButtonCancel" => $aButtonCancel, "labelUploadImage" => $labelUploadImage, "inputSubmitButton" => $inputSubmitButton, "hiddenInputHTML" => $hiddenInputHTML, "acceptMimeTypesProperty" => $acceptMimeTypesProperty];
     }
 
-    public function genSingleFileUploadForm(array $appearanceData, string $formAction, string $fileUploadButtonLabel, string $formFileUploadButtonName, string $formSubmitButtonTitle, string $returnHref, array $hiddenInput = []) : string
+    public function genMultipleFileUploadForm(array $appearanceData, string $formAction, string $fileUploadButtonLabel, string $formFileUploadButtonName, string $formSubmitButtonTitle, string $returnHref, array $hiddenInput = [], array $acceptMimeTypes = []) : string
     {
+        $preGeneratedForm = $this->preGenFileUploadFormElements($appearanceData, $fileUploadButtonLabel, $formFileUploadButtonName, $formSubmitButtonTitle, $returnHref, $hiddenInput, $acceptMimeTypes);
 
-    }
-
-    public function genMultipleFileUploadForm(array $appearanceData, string $formAction, string $fileUploadButtonLabel, string $formFileUploadButtonName, string $formSubmitButtonTitle, string $returnHref, array $hiddenInput = []) : string
-    {
-        $preGeneratedForm = $this->preGenFileUploadFormElements($appearanceData, $fileUploadButtonLabel, $formFileUploadButtonName, $formSubmitButtonTitle, $returnHref, $hiddenInput);
-
-        $inputUploadButton = $this->htmlFactory->genSelfClosingElement("input", [], $appearanceData, [], [ "form-control" ], "", "type=\"file\" id=\"$formFileUploadButtonName\" name=\"{$formFileUploadButtonName}[]\" multiple=\"multiple\"");
+        $inputUploadButton = $this->htmlFactory->genSelfClosingElement("input", [], $appearanceData, [], [ "form-control" ], "", "type=\"file\" id=\"$formFileUploadButtonName\" name=\"{$formFileUploadButtonName}[]\" multiple{$preGeneratedForm["acceptMimeTypesProperty"]}");
 
         return
         "

@@ -263,7 +263,7 @@ class AppearanceManagementView implements IAppearanceManagementView
         $spanEditTitle = $this->htmlFactory->genNonSelfClosingElement("span", [ "Text" ], $appearanceData, [], [ "fs-2", "fw-bold", "lh-1" ], "Logo ändern");
 
         $hiddenInputData = [ [ "name" => "view", "value" => "appearance" ], [ "name" => "action", "value" => "update" ], [ "name" => "target", "value" => "Image" ], [ "name" => "element", "value" => $element ] ];
-        $formFilesUpload = $this->componentFactory->genMultipleFileUploadForm($appearanceData, DIRECTORY_SEPARATOR, "Bilder hochladen", "image", "Alle speichern", "/?view=appearance&action=update&target=Image", $hiddenInputData);
+        $formFilesUpload = $this->componentFactory->genMultipleFileUploadForm($appearanceData, DIRECTORY_SEPARATOR, "Bilder hochladen", "image", "Alle speichern", "/?view=appearance&action=update&target=Image", $hiddenInputData, [ "image/png", "image/jpeg", "image/gif", "image/bmp" ]);
 
         return
         "
