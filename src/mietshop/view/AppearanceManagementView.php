@@ -283,9 +283,9 @@ class AppearanceManagementView implements IAppearanceManagementView
         ";
     }
 
-    public function showImageLogoForm(array $companyData, array $appearanceData, string $element) : void
+    public function showImageForm(array $companyData, array $appearanceData, string $editFormTitle, string $element) : void
     {
-        $feedContentHTML = $this->genImageForm($appearanceData, "Firmenlogo ändern", $element);
+        $feedContentHTML = $this->genImageForm($appearanceData, $editFormTitle, $element);
 
         $this->showPageFeed($companyData, $appearanceData, $feedContentHTML);
     }

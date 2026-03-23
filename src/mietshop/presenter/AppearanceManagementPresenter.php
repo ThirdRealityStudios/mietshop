@@ -270,11 +270,15 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
 
                 if(strcmp($elementValue, "Logo") === 0)
                 {
-                    $this->appearanceManagementView->showImageLogoForm($companyData, $appearanceData, $elementValue);
+                    $this->appearanceManagementView->showImageForm($companyData, $appearanceData, "Firmenlogo ändern", $elementValue);
                 }
                 else if(strcmp($elementValue, "Background") === 0)
                 {
-
+                    $this->appearanceManagementView->showImageForm($companyData, $appearanceData, "Hintergrund ändern", $elementValue);
+                }
+                else if(strcmp($elementValue, "Favicon") === 0)
+                {
+                    $this->appearanceManagementView->showImageForm($companyData, $appearanceData, "Browser-Tab-Symbol ändern", $elementValue);
                 }
                 else
                 {
