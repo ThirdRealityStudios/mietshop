@@ -256,14 +256,14 @@ class AppearanceManagementView implements IAppearanceManagementView
         $this->showPageFeed($companyData, $appearanceData, $feedContentHTML);
     }
 
-    private function genImageLogoForm(array $appearanceData, string $element) : string
+    private function genImageForm(array $appearanceData, string $editFormTitle, string $element) : string
     {
         $hr = $this->htmlFactory->genHr($appearanceData);
 
-        $spanEditTitle = $this->htmlFactory->genNonSelfClosingElement("span", [ "Text" ], $appearanceData, [], [ "fs-2", "fw-bold", "lh-1" ], "Logo ändern");
+        $spanEditTitle = $this->htmlFactory->genNonSelfClosingElement("span", [ "Text" ], $appearanceData, [], [ "fs-2", "fw-bold", "lh-1" ], $editFormTitle);
 
         $hiddenInputData = [ [ "name" => "view", "value" => "appearance" ], [ "name" => "action", "value" => "update" ], [ "name" => "target", "value" => "Image" ], [ "name" => "element", "value" => $element ] ];
-        $formFilesUpload = $this->componentFactory->genFileUploadForm($appearanceData, DIRECTORY_SEPARATOR, "Bilder hochladen", "image", "Alle speichern", "/?view=appearance&action=update&target=Image", $hiddenInputData, [ "image/png", "image/jpeg", "image/gif", "image/bmp" ]);
+        $formFilesUpload = $this->componentFactory->genFileUploadForm($appearanceData, DIRECTORY_SEPARATOR, "PNG, JPEG, BMP oder GIF akzeptiert (wird auf Website zu PNG konvertiert)", "image", "Bild hochladen", "/?view=appearance&action=update&target=Image", $hiddenInputData, [ "image/png", "image/jpeg", "image/gif", "image/bmp" ]);
 
         return
         "
@@ -285,7 +285,7 @@ class AppearanceManagementView implements IAppearanceManagementView
 
     public function showImageLogoForm(array $companyData, array $appearanceData, string $element) : void
     {
-        $feedContentHTML = $this->genImageLogoForm($appearanceData, $element);
+        $feedContentHTML = $this->genImageForm($appearanceData, "Firmenlogo ändern", $element);
 
         $this->showPageFeed($companyData, $appearanceData, $feedContentHTML);
     }
