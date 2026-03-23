@@ -14,7 +14,7 @@ class ImageModel implements IImageModel
         $this->fileUtility = $fileUtility;
     }
 
-    private function convertImage($originalImage, $outputImage, $quality)
+    private function convertImageToPNG($originalImage, $outputImage, $quality) : bool
     {
         $mimeType = mime_content_type($originalImage);
 
@@ -102,7 +102,150 @@ class ImageModel implements IImageModel
         return true;
     }
 
-    public function upload(string $localPath, string $finalFileName, array $uploadedFiles, string $postName) : bool
+    public function uploadImageAsPNG(string $localPath, string $finalFileName, array $uploadedImage, string $postName) : bool
+    {
+        // UPLOAD_ERR_OK         Value: 0
+        // There is no error, the file uploaded with success.
+
+        // UPLOAD_ERR_INI_SIZE   Value: 1
+        // The uploaded file exceeds the upload_max_filesize directive in php.ini.
+
+        // UPLOAD_ERR_FORM_SIZE  Value: 2
+        // The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form.
+
+        // UPLOAD_ERR_PARTIAL    Value: 3
+        // The uploaded file was only partially uploaded.
+
+        // UPLOAD_ERR_NO_FILE    Value: 4
+        // No file was uploaded.
+
+        // UPLOAD_ERR_NO_TMP_DIR Value: 6
+        // Missing a temporary folder. Introduced in PHP 4.3.10 and PHP 5.0.3.
+
+        // UPLOAD_ERR_CANT_WRITE Value: 7
+        // Failed to write file to disk. Introduced in PHP 5.1.0.
+
+        // UPLOAD_ERR_EXTENSION  Value: 8
+        // A PHP extension stopped the file upload. Introduced in PHP 5.2.0.
+
+        if(!$this->isUploadInformationAvailable($uploadedImage, $postName))
+        {
+            return false;
+        }
+
+        if(is_array($uploadedImage[$postName]['name']))
+        {
+            // Then multiple images uploaded - not allowed here.
+
+            return false;
+        }
+
+        if($uploadedImage[$postName]['error'] === UPLOAD_ERR_NO_FILE)
+        {
+            // in reality no file was uploaded (only metadata about the upload).
+            return false;
+        }
+
+        $pictureFolderAbsolutePath = "{$_SERVER['DOCUMENT_ROOT']}$localPath";
+
+        $unprocessedFolderPath = $_SERVER['DOCUMENT_ROOT'].DIRECTORY_SEPARATOR.'unprocessed';
+
+        // Recursively create the needed folder structure if not done yet,
+        // meaning for the articles picture directory and its subdirectory "unprocessed".
+        if(!is_dir($unprocessedFolderPath))
+        {
+            if(!mkdir($unprocessedFolderPath, 0777, true))
+            {
+                // Creating "unprocessed" directory failed..
+                return false;
+            }
+        }
+
+        // TODO Below was for loop before for multiple uploaded files. Adjust for only one uploaded image!
+
+        $fileName = $uploadedImage[$postName]['name'];
+        $fileTmpName = $uploadedImage[$postName]['tmp_name'];
+        $fileType = $uploadedImage[$postName]['type'];
+        $fileSize = $uploadedImage[$postName]['size'];
+        $uploadError = $uploadedImage[$postName]['error'];
+
+        if($uploadError == UPLOAD_ERR_NO_FILE || // No file was uploaded
+           $uploadError == UPLOAD_ERR_PARTIAL || // File was only uploaded partially, not completely
+           $uploadError === UPLOAD_ERR_INI_SIZE || // No maximum file size was specified in php.ini
+           $uploadError === UPLOAD_ERR_FORM_SIZE || // Max file size specified in HTML form exceeded
+           $uploadError === UPLOAD_ERR_NO_TMP_DIR || // No directory was specified for temporary files in php.ini
+           $uploadError === UPLOAD_ERR_CANT_WRITE || // Missing write permissions on server
+           $uploadError === UPLOAD_ERR_EXTENSION || // A PHP extension or other software (e.g. antivirus) stopped the upload process on server-side
+           $uploadError !== UPLOAD_ERR_OK)
+        {
+            return false;
+        }
+
+        // Upload filepath where all unprocessed images are.
+        $uploadFilepath = $unprocessedFolderPath.DIRECTORY_SEPARATOR.$finalFileName;
+
+        if(!move_uploaded_file($fileTmpName, $uploadFilepath))
+        {
+            // Moving temporary file to server folder failed..
+            return false;
+        }
+
+        // if-statement is true: the funtion convertImage(..) fails somehow to treat ALL uploaded files (only one)
+        if(!$this->convertImageToPNG($uploadFilepath, "$pictureFolderAbsolutePath$finalFileName", 9))
+        {
+            // Converting the uploaded picture file to JPEG failed.
+            return false;
+        }
+
+        // Delete original uploaded file.
+        $deleteOriginalUploadFileSuccess = unlink($uploadFilepath);
+
+        if(!$deleteOriginalUploadFileSuccess)
+        {
+            return false;
+        }
+
+        $unprocessedFolderFiles = scandir($unprocessedFolderPath);
+
+        // Check if there are still unprocessed picture files in "unprocessed" folder for whatever reason.
+        // If scandir(..) determined, the given path does not represent a directory, it will return false.
+        // Otherwise it returns the array of files inside.
+        // So a check is needed to match that scenario too.
+        if(is_array($unprocessedFolderFiles) && count($unprocessedFolderFiles) > 0)
+        {
+            // Delete all photo files inside folder "unprocessed".
+            // $filename is the file name with file extension, e.g. "myphoto.jpg".
+            // But directories can also be contained, so further checks are being made in for-loop.
+            foreach($unprocessedFolderFiles as $filename)
+            {
+                $unprocessedPhotoFilepath = $unprocessedFolderPath.DIRECTORY_SEPARATOR.$filename;
+
+                // Try to delete photo (and if unsuccessful, just skip).
+                if(!is_dir($unprocessedPhotoFilepath) && !unlink($unprocessedPhotoFilepath))
+                {
+                    return false;
+                }
+            }
+        }
+        else
+        {
+            // Something went wrong. The directory structure could not be determined.
+            return false;
+        }
+
+        // Delete temporary folder again,
+        // because all uploaded pictures have been normally procssed and deleted in that folder yet.
+        // Bugfix: there was no check if the folder is indeed empty, so I added code before this if-statement for treatment.
+        if(!rmdir($unprocessedFolderPath))
+        {
+            return false;
+        }
+
+        return true; // Upload succeeded of all pictures.
+    }
+
+    /*
+    public function uploadImageAsPNG(string $localPath, string $finalFileName, array $uploadedFiles, string $postName) : bool
     {
         // UPLOAD_ERR_OK         Value: 0
         // There is no error, the file uploaded with success.
@@ -132,6 +275,8 @@ class ImageModel implements IImageModel
         {
             return false;
         }
+
+        var_dump($uploadedFiles);
 
         $uploadedPicturesAmount = sizeof($uploadedFiles[$postName]['name']);
 
@@ -249,4 +394,5 @@ class ImageModel implements IImageModel
 
         return true; // Upload succeeded of all pictures.
     }
+     */
 }

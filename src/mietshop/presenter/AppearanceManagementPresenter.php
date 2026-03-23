@@ -309,7 +309,7 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
             {
                 if(strcmp($postElementValue, "Logo") === 0)
                 {
-                    $updatedImageSuccessfully = $this->imageModel->upload(DIRECTORY_SEPARATOR, "favicon.png", $_FILES, "image");
+                    $updatedImageSuccessfully = $this->imageModel->uploadImageAsPNG(DIRECTORY_SEPARATOR, "favicon.png", $_FILES, "image");
 
                     // Reload the appearance data, as it was updated.
                     $appearanceData = $this->appearanceModel->getAppearanceData();

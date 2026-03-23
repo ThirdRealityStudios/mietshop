@@ -34,5 +34,5 @@ interface IComponentFactory
      */
     public function genActionResultMessage(array $appearanceData, string $svgPath, string $returnHref, string $actionRepeatHref, string $title, string $description = "") : string;
 
-    public function genMultipleFileUploadForm(array $appearanceData, string $formAction, string $fileUploadButtonLabel, string $formFileUploadButtonName, string $formSubmitButtonTitle, string $returnHref, array $hiddenInput = []) : string;
+    public function genFileUploadForm(array $appearanceData, string $formAction, string $fileUploadButtonLabel, string $formFileUploadButtonName, string $formSubmitButtonTitle, string $returnHref, array $hiddenInput = [], array $acceptMimeTypes = [], bool $isMultipleFileUpload = false) : string;
 }

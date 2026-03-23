@@ -176,11 +176,14 @@ class ComponentFactory implements IComponentFactory
         return [ "hr" => $hr, "aButtonCancel" => $aButtonCancel, "labelUploadImage" => $labelUploadImage, "inputSubmitButton" => $inputSubmitButton, "hiddenInputHTML" => $hiddenInputHTML, "acceptMimeTypesProperty" => $acceptMimeTypesProperty];
     }
 
-    public function genMultipleFileUploadForm(array $appearanceData, string $formAction, string $fileUploadButtonLabel, string $formFileUploadButtonName, string $formSubmitButtonTitle, string $returnHref, array $hiddenInput = [], array $acceptMimeTypes = []) : string
+    public function genFileUploadForm(array $appearanceData, string $formAction, string $fileUploadButtonLabel, string $formFileUploadButtonName, string $formSubmitButtonTitle, string $returnHref, array $hiddenInput = [], array $acceptMimeTypes = [], bool $isMultipleFileUpload = false) : string
     {
         $preGeneratedForm = $this->preGenFileUploadFormElements($appearanceData, $fileUploadButtonLabel, $formFileUploadButtonName, $formSubmitButtonTitle, $returnHref, $hiddenInput, $acceptMimeTypes);
 
-        $inputUploadButton = $this->htmlFactory->genSelfClosingElement("input", [], $appearanceData, [], [ "form-control" ], "", "type=\"file\" id=\"$formFileUploadButtonName\" name=\"{$formFileUploadButtonName}[]\" multiple{$preGeneratedForm["acceptMimeTypesProperty"]}");
+        $optionalMultipleProperty = $isMultipleFileUpload ? " multiple" : "";
+        $optionalArrayIndicator = $isMultipleFileUpload ? "[]" : "";
+
+        $inputUploadButton = $this->htmlFactory->genSelfClosingElement("input", [], $appearanceData, [], [ "form-control" ], "", "type=\"file\" id=\"$formFileUploadButtonName\" name=\"{$formFileUploadButtonName}$optionalArrayIndicator\"$optionalMultipleProperty{$preGeneratedForm["acceptMimeTypesProperty"]}");
 
         return
         "
