@@ -140,9 +140,17 @@ class ImageModel implements IImageModel
             return false;
         }
 
-        if($uploadedImage[$postName]['error'] === UPLOAD_ERR_NO_FILE)
+        $uploadError = $uploadedImage[$postName]['error'];
+
+        if($uploadError === UPLOAD_ERR_NO_FILE || // No file was uploaded
+            $uploadError === UPLOAD_ERR_PARTIAL || // File was only uploaded partially, not completely
+            $uploadError === UPLOAD_ERR_INI_SIZE || // No maximum file size was specified in php.ini
+            $uploadError === UPLOAD_ERR_FORM_SIZE || // Max file size specified in HTML form exceeded
+            $uploadError === UPLOAD_ERR_NO_TMP_DIR || // No directory was specified for temporary files in php.ini
+            $uploadError === UPLOAD_ERR_CANT_WRITE || // Missing write permissions on server
+            $uploadError === UPLOAD_ERR_EXTENSION || // A PHP extension or other software (e.g. antivirus) stopped the upload process on server-side
+            $uploadError !== UPLOAD_ERR_OK)
         {
-            // in reality no file was uploaded (only metadata about the upload).
             return false;
         }
 
@@ -167,19 +175,6 @@ class ImageModel implements IImageModel
         $fileTmpName = $uploadedImage[$postName]['tmp_name'];
         $fileType = $uploadedImage[$postName]['type'];
         $fileSize = $uploadedImage[$postName]['size'];
-        $uploadError = $uploadedImage[$postName]['error'];
-
-        if($uploadError == UPLOAD_ERR_NO_FILE || // No file was uploaded
-           $uploadError == UPLOAD_ERR_PARTIAL || // File was only uploaded partially, not completely
-           $uploadError === UPLOAD_ERR_INI_SIZE || // No maximum file size was specified in php.ini
-           $uploadError === UPLOAD_ERR_FORM_SIZE || // Max file size specified in HTML form exceeded
-           $uploadError === UPLOAD_ERR_NO_TMP_DIR || // No directory was specified for temporary files in php.ini
-           $uploadError === UPLOAD_ERR_CANT_WRITE || // Missing write permissions on server
-           $uploadError === UPLOAD_ERR_EXTENSION || // A PHP extension or other software (e.g. antivirus) stopped the upload process on server-side
-           $uploadError !== UPLOAD_ERR_OK)
-        {
-            return false;
-        }
 
         // Upload filepath where all unprocessed images are.
         $uploadFilepath = $unprocessedFolderPath.DIRECTORY_SEPARATOR.$finalFileName;
