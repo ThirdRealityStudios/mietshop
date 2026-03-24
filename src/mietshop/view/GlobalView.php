@@ -502,7 +502,7 @@ class GlobalView implements IGlobalView
         </div>
         ";
 
-        $navBootstrap = $this->htmlFactory->genNonSelfClosingElement("nav", [ "Window", "Frame" ], $appearanceData, [ "border-bottom-style: solid;", "border-bottom-width: 3px;" ], [ "navbar", "sticky-top", "w-100", "z-2", "mb-5" ], $navContent);
+        $navBootstrap = $this->htmlFactory->genNonSelfClosingElement("nav", [ "Window", "Frame" ], $appearanceData, [ "border-bottom-style: solid;", "border-bottom-width: 3px;" ], [ "navbar", "sticky-top", "w-100", "z-2" ], $navContent);
 
         return $navBootstrap;
     }
@@ -544,7 +544,7 @@ class GlobalView implements IGlobalView
 
         $bodyContainer =
         "
-        <div class=\"container-fluid\">
+        <div class=\"container-fluid pt-5\" style=\"background-image: url('/img/background.png'); background-repeat: no-repeat; background-size: cover;\">
             $body
         </div>
         ";

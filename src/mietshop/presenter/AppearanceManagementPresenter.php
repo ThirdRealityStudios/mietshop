@@ -313,27 +313,35 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
             {
                 if(strcmp($postElementValue, "Logo") === 0)
                 {
-                    $updatedImageSuccessfully = $this->imageModel->uploadImageAsPNG(DIRECTORY_SEPARATOR, "favicon.png", $_FILES, "image", 1024 * 1024, 400); // 1 Mb maximum for favicon.
-
-                    // Reload the appearance data, as it was updated.
-                    $appearanceData = $this->appearanceModel->getAppearanceData();
-
-                    if($updatedImageSuccessfully)
-                    {
-                        $this->appearanceManagementView->showImageUpdateSuccessful($companyData, $appearanceData, $postElementValue);
-                    }
-                    else
-                    {
-                        $this->appearanceManagementView->showImageUpdateFailed($companyData, $appearanceData, $postElementValue);
-                    }
+                    $localPath = DIRECTORY_SEPARATOR;
+                    $finalFileName ="favicon.png";
+                    $maxBytesAccepted = 1024 * 1024;
+                    $heightPx = 400;
                 }
                 else if(strcmp($postElementValue, "Background") === 0)
                 {
-
+                    $localPath = DIRECTORY_SEPARATOR.'img'.DIRECTORY_SEPARATOR;
+                    $finalFileName ="background.png";
+                    $maxBytesAccepted = 1024 * 1024 * 12;
+                    $heightPx = 1440; // Matches the height of 2k resolution.
                 }
                 else
                 {
                     $this->showInvalidRequestView($companyData);
+                }
+
+                $updatedImageSuccessfully = $this->imageModel->uploadImageAsPNG($localPath, $finalFileName, $_FILES, "image", $maxBytesAccepted, $heightPx); // 1 Mb maximum for favicon.
+
+                // Reload the appearance data, as it was updated.
+                $appearanceData = $this->appearanceModel->getAppearanceData();
+
+                if($updatedImageSuccessfully)
+                {
+                    $this->appearanceManagementView->showImageUpdateSuccessful($companyData, $appearanceData, $postElementValue);
+                }
+                else
+                {
+                    $this->appearanceManagementView->showImageUpdateFailed($companyData, $appearanceData, $postElementValue);
                 }
             }
             else
