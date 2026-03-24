@@ -120,9 +120,9 @@ class ImageModel implements IImageModel
 
         $imageTmp = $this->createImageFromFile($imageFilepath);
 
-        $finalImg = imagescale($imageTmp, $newWidth, $newHeight, IMG_BICUBIC);
+        $finalImg = imagescale($imageTmp, $newWidth, $newHeight, IMG_BILINEAR_FIXED);
 
-        if(is_bool($finalImg) || is_resource($finalImg))
+        if(is_bool($finalImg) || is_resource($finalImg) || !imagesavealpha($finalImg, true) || !imageinterlace($finalImg, true))
         {
             return false;
         }
@@ -200,7 +200,7 @@ class ImageModel implements IImageModel
         return true;
     }
 
-    public function uploadImageAsPNG(string $localPath, string $finalFileName, array $uploadedImage, string $postName, int $maxBytesAccepted) : bool
+    public function uploadImageAsPNG(string $localPath, string $finalFileName, array $uploadedImage, string $postName, int $maxBytesAccepted, int $heightPx) : bool
     {
         if(!$this->isUploadInformationAvailable($uploadedImage, $postName))
         {
@@ -264,7 +264,7 @@ class ImageModel implements IImageModel
         }
 
         // if-statement is true: the funtion convertImage(..) fails somehow to treat ALL uploaded files (only one)
-        if(!$this->convertImageToPNG($uploadFilepath, "$pictureFolderAbsolutePath$finalFileName", 9, 100))
+        if(!$this->convertImageToPNG($uploadFilepath, "$pictureFolderAbsolutePath$finalFileName", 9, $heightPx))
         {
             // Converting the uploaded picture file to JPEG failed.
             return false;

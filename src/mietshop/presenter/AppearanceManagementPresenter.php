@@ -313,7 +313,7 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
             {
                 if(strcmp($postElementValue, "Logo") === 0)
                 {
-                    $updatedImageSuccessfully = $this->imageModel->uploadImageAsPNG(DIRECTORY_SEPARATOR, "favicon.png", $_FILES, "image", 1024 * 1024); // 1 Mb maximum for favicon.
+                    $updatedImageSuccessfully = $this->imageModel->uploadImageAsPNG(DIRECTORY_SEPARATOR, "favicon.png", $_FILES, "image", 1024 * 1024, 400); // 1 Mb maximum for favicon.
 
                     // Reload the appearance data, as it was updated.
                     $appearanceData = $this->appearanceModel->getAppearanceData();
