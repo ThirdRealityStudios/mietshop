@@ -36,7 +36,7 @@ class PrivacyPolicyPresenter implements IPrivacyPolicyPresenter
 
         if(empty($companyData))
         {
-            $this->errorView->show([], "Abfragefehler", "Derzeit scheint es einen technischen Fehler mit der Datenabfrage im System zu geben. Bitte versuchen Sie es später erneut.");
+            $this->errorView->show($companyData, $appearanceData, "Abfragefehler", "Derzeit scheint es einen technischen Fehler mit der Datenabfrage im System zu geben. Bitte versuchen Sie es später erneut.");
         }
         else
         {
@@ -60,7 +60,7 @@ class PrivacyPolicyPresenter implements IPrivacyPolicyPresenter
 
                         if(empty($companyData))
                         {
-                            $this->errorView->show([], "Abfragefehler", "Derzeit scheint es einen technischen Fehler mit der Datenabfrage im System zu geben. Bitte versuchen es später erneut.");
+                            $this->errorView->show($companyData, $appearanceData, "Abfragefehler", "Derzeit scheint es einen technischen Fehler mit der Datenabfrage im System zu geben. Bitte versuchen es später erneut.");
                         }
                         else
                         {

@@ -649,7 +649,7 @@ class AccountManagementView implements IAccountManagementView
 
             $feedHTML = $this->componentFactory->genFeed($appearanceData, null, $feedContentHTML);
 
-            $this->globalView->show($companyData, $appearanceData, $feedHTML);
+            $this->globalView->show($companyData, $appearanceData, $feedHTML, $backgroundFilepath);
         }
     }
 }

@@ -13,4 +13,8 @@ interface IFileUtility
      * @return string
      */
     public function getImageFileExtension($filepath) : string;
+
+    public function getFilename(string $filepath) : string;
+
+    public function getDirectoryPath(string $filepath) : string;
 }

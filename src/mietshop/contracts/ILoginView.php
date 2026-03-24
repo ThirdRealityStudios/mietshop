@@ -17,5 +17,5 @@ interface ILoginView
      * @param string|null $optionalErrorMessage Optional error message (e.g. "Wrong credentials"). Pass null if you don't need an error message.
      * @return void
      */
-    public function show(array $companyData, array $appearanceData, ?string $optionalErrorMessage) : void;
+    public function show(array $companyData, array $appearanceData, ?string $optionalErrorMessage): void;
 }

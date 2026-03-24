@@ -22,7 +22,7 @@ class ErrorView implements IErrorView
         $this->globalView = $globalView;
     }
 
-    public function show(array $companyData, array $appearanceData, string $errorFeedTitle, string $errorFeedContent) : void
+    public function show(array $companyData, array $appearanceData, string $errorFeedTitle, string $errorFeedContent = "") : void
     {
         $errorFeedTitleSafe = htmlspecialchars($errorFeedTitle, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
         $errorFeedContentSafe = htmlspecialchars($errorFeedContent, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");

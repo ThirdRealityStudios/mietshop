@@ -17,4 +17,27 @@ class FileUtility implements IFileUtility
 
         return $fileExtensionLowerCase;
     }
+
+    public function getFilename(string $filepath) : string
+    {
+        return basename($filepath);
+    }
+
+    public function getDirectoryPath(string $filepath) : string
+    {
+        $filename = $this->getFilename($filepath);
+
+        if(str_ends_with($filepath, $filename))
+        {
+            $offset = strlen($filepath) - strlen($filename);
+
+            $replaced = substr_replace($filepath, "", $offset, strlen($filename));
+
+            return is_string($replaced) ? $replaced : $filepath;
+        }
+        else
+        {
+            return $filepath; // It is a directory path yet.
+        }
+    }
 }

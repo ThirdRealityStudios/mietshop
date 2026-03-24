@@ -14,4 +14,12 @@ interface IImageModel
      * @return bool
      */
     public function uploadImageAsPNG(string $localPath, string $finalFileName, array $uploadedImage, string $postName, int $maxBytesAccepted, int $heightPx) : bool;
+
+    /**
+     * @param string $imageFilepath
+     * @param int $newHeight
+     * @param int $compressionLevel 0 (no compression) to 9
+     * @return bool
+     */
+    public function resizePNG(string $imageFilepath, int $newHeight, int $compressionLevel) : bool;
 }

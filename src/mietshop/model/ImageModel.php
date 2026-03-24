@@ -45,6 +45,7 @@ class ImageModel implements IImageModel
     /**
      * Converts files of usual image types to an instance,
      * ready to process.
+     * The alpha channel is set to be saved and to activate interlacing.
      * The function can create GdImage instances from the types:
      *
      * - png
@@ -102,7 +103,7 @@ class ImageModel implements IImageModel
         return $image;
     }
 
-    public function resize(string $imageFilepath, int $newHeight) : bool
+    public function resizePNG(string $imageFilepath, int $newHeight, int $compressionLevel) : bool
     {
         $size = getimagesize($imageFilepath);
 
@@ -120,34 +121,14 @@ class ImageModel implements IImageModel
 
         $imageTmp = $this->createImageFromFile($imageFilepath);
 
-        $finalImg = imagescale($imageTmp, $newWidth, $newHeight, IMG_BILINEAR_FIXED);
+        $finalImg = imagescale($imageTmp, $newWidth, $newHeight, IMG_BICUBIC);
 
-        if(is_bool($finalImg) || is_resource($finalImg) || !imagesavealpha($finalImg, true) || !imageinterlace($finalImg, true))
-        {
-            return false;
-        }
-
-        if(!imagepng($finalImg, $imageFilepath, 9))
+        if(!imagepng($finalImg, $imageFilepath, $compressionLevel))
         {
             return false;
         }
 
         if(!imagedestroy($finalImg))
-        {
-            return false;
-        }
-
-        // Then load the image again from the disk as an instance to resize it, and save again on disk.
-        // (not possible otherwise currently).
-
-        $imgDownsized = $this->createImageFromFile($imageFilepath);
-
-        if(!imagepng($imgDownsized, $imageFilepath, 9))
-        {
-            return false;
-        }
-
-        if(!imagedestroy($imgDownsized))
         {
             return false;
         }
@@ -171,7 +152,7 @@ class ImageModel implements IImageModel
         // imagejpeg($imageTmp, $outputImage, $quality);
 
         // quality is a value from 0 (best quality without compression) to 9 (worst but smallest)
-        if(!imagepng($imageTmp, $outputImage, $compression))
+        if(!imagepng($imageTmp, $outputImage, 0))
         {
             return false;
         }
@@ -181,7 +162,7 @@ class ImageModel implements IImageModel
             return false;
         }
 
-        return $this->resize($outputImage, $heightPx);
+        return $this->resizePNG($outputImage, $heightPx, $compression);
     }
 
     private function isUploadInformationAvailable(array $uploadedFiles, string $postName) : bool

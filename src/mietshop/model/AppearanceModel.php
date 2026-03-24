@@ -72,11 +72,52 @@ class AppearanceModel implements IAppearanceModel
 
         $columnNames = $this->genSQLColumnNames($acceptedElements);
 
-        for($count = 0; $count < sizeof($columnNames); $count++)
+        for($i = 0; $i < sizeof($columnNames); $i++)
         {
-            $bootstrapColorChosen = IAppearanceModel::ACCEPTED_BOOTSTRAP_COLORS[$count % sizeof(IAppearanceModel::ACCEPTED_BOOTSTRAP_COLORS)];
+            $columnName = $columnNames[$i];
 
-            $sql .= ($count < (sizeof($columnNames)-1)) ? "'$bootstrapColorChosen', " : "'$bootstrapColorChosen'";
+            if(str_starts_with($columnName, "Image"))
+            {
+                $copy = $columnName;
+                $columnName = str_replace("Image", "", $columnName);
+
+                if(!is_string($columnName))
+                {
+                    // This is a dirty solution but there is currently no other way
+                    // than to restore the old string before replacement (as it failed).
+                    // Normally, the database column name should be shortened by "Image" at the beginning
+                    // (if it begins with such) in order to enable the further image element differentiation below.
+                    $columnName = $copy;
+                }
+            }
+
+            if(in_array($columnName, $this->getImageElements())) // Is it not a color element but image element?
+            {
+                if(strcmp($columnName, "Favicon") === 0)
+                {
+                    // Set the local path (relative to DOCUMENT_ROOT)
+                    $insertValueChosen = "/favicon.png";
+                }
+                else if(strcmp($columnName, "Background") === 0)
+                {
+                    $insertValueChosen = "/img/background.png";
+                }
+                else if(strcmp($columnName, "Logo") === 0)
+                {
+                    $insertValueChosen = "/img/logo/company/logo.png";
+                }
+                else
+                {
+                    $insertValueChosen = ""; // TODO In future: could point to a default message picture "Image does not exist".
+                }
+            }
+            else // then it is a color element:
+            {
+                // A Bootstrap color name was chosen to insert here.
+                $insertValueChosen = IAppearanceModel::ACCEPTED_BOOTSTRAP_COLORS[$i % sizeof(IAppearanceModel::ACCEPTED_BOOTSTRAP_COLORS)];
+            }
+
+            $sql .= ($i < (sizeof($columnNames)-1)) ? "'$insertValueChosen', " : "'$insertValueChosen'";
         }
 
         return $sql;
@@ -311,11 +352,9 @@ class AppearanceModel implements IAppearanceModel
         }
     }
 
-    public function getAppearanceData(): array
+    private function initColorElementProperties(array &$appearanceData) : void
     {
         $colorElements = $this->getColorElements();
-
-        $preparedArray = [];
 
         foreach($colorElements as $colorElement)
         {
@@ -381,9 +420,34 @@ class AppearanceModel implements IAppearanceModel
                 }
             }
 
-            $preparedArray["Color"][$colorElement] = [$classCode, $styleCode];
+            $appearanceData["Color"][$colorElement] = [$classCode, $styleCode];
         }
+    }
 
-        return $preparedArray;
+    private function getImageElements() : array
+    {
+        return array_keys(IAppearanceModel::ACCEPTED_ELEMENTS["Image"]);
+    }
+
+    private function initImageElementProperties(array &$appearanceData) : void
+    {
+        $imageElements = $this->getImageElements();
+
+        foreach($imageElements as $imageElement)
+        {
+            $filepath = $this->getImage($imageElement);
+
+            $appearanceData["Image"][$imageElement] = [ $filepath ];
+        }
+    }
+
+    public function getAppearanceData(): array
+    {
+        $appearanceData = [];
+
+        $this->initColorElementProperties($appearanceData);
+        $this->initImageElementProperties($appearanceData);
+
+        return $appearanceData;
     }
 }

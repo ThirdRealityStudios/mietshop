@@ -373,7 +373,7 @@ class GlobalView implements IGlobalView
 
     private function genDefaultHTMLDoc(array $appearanceData, string $bodyHTML, string $companyName) : string
     {
-        $head = $this->genHeadHTML($companyName);
+        $head = $this->genHeadHTML($companyName, $appearanceData);
 
         $bodyContent = $this->htmlFactory->genNonSelfClosingElement("div", [ "Background" ], $appearanceData, [], [], $bodyHTML);
         $body = $this->htmlFactory->genNonSelfClosingElement("body", [ "Window" ], $appearanceData, [], [], $bodyContent);
@@ -390,11 +390,14 @@ class GlobalView implements IGlobalView
         return $html;
     }
 
-    private function genHeadHTML($companyName) : string
+    private function genHeadHTML(string $companyName, array $appearanceData) : string
     {
-        return "
+        $faviconFilepath = $appearanceData["Image"]["Favicon"][0];
+
+        return
+        "
         <head>
-            <link rel=\"icon\" type=\"image/png\" href=\"/favicon.png\"/>
+            <link rel=\"icon\" type=\"image/png\" href=\"$faviconFilepath\"/>
             <link rel=\"apple-touch-icon\" href=\"/apple-touch-icon.png\"/>
             <meta charset=\"utf-8\">
             <meta name=\"description\" content=\"{$companyName}\">
@@ -446,10 +449,12 @@ class GlobalView implements IGlobalView
         $aPrivacyPolicy = $this->genNavLink($appearanceData, "Datenschutzerklärung", "/?view=privacypolicy");
         $aImprint = $this->genNavLink($appearanceData, "Impressum", "/?view=imprint");
 
+        $companyLogoFilepath = $appearanceData["Image"]["Logo"][0];
+
         $sideMenuHeaderTitle = $this->htmlFactory->genNonSelfClosingElement("h5", [ "Text" ], $appearanceData, [], [ "offcanvas-title" ], $companyName, "", "id=\"offcanvasNavbarLabel\"");
 
         $sideMenuHeaderContent =
-            "
+        "
         $sideMenuHeaderTitle
         <button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"offcanvas\" aria-label=\"Close\"></button>
         ";
@@ -487,7 +492,7 @@ class GlobalView implements IGlobalView
         <div class=\"container-fluid p-0\">
             <div class=\"d-flex w-100 p-0 m-0\">
                 <div class=\"flex-grow-1 fs-1 ps-4 pt-2 pb-2\">
-                    <img src=\"/favicon.png\" alt=\"favicon.png\" style=\"width: auto; height: auto; max-width: 100%; max-height: 2.5em;\">
+                    <img src=\"$companyLogoFilepath\" alt=\"favicon.png\" style=\"width: auto; height: auto; max-width: 100%; max-height: 2.5em;\">
                 </div>
                 <div class=\"align-self-center ps-4 pt-2 pe-4 pb-2\">
                     <button class=\"navbar-toggler\" type=\"button\" data-bs-toggle=\"offcanvas\" data-bs-target=\"#offcanvasNavbar\" aria-controls=\"offcanvasNavbar\" aria-label=\"Toggle navigation\">
@@ -542,14 +547,13 @@ class GlobalView implements IGlobalView
 
         $companyNameHTMLSafe = htmlspecialchars($companyData["CompanyName"][0] ?? "Internal Loading Error", ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 
-        $bodyContainer =
-        "
-        <div class=\"container-fluid pt-5\" style=\"background-image: url('/img/background.png'); background-repeat: no-repeat; background-size: cover;\">
-            $body
-        </div>
-        ";
+        $backgroundFilepath = $appearanceData["Image"]["Background"][0];
 
-        $bodyHTML = $this->genBootstrapHeader($companyNameHTMLSafe, $appearanceData).$bodyContainer.$this->genBootstrapFooter($companyData, $appearanceData);
+        $styles = empty($backgroundFilepath) ? [] : [ "background-image: url('$backgroundFilepath');", "background-repeat: no-repeat;", "background-size: cover;" ];
+
+        $divBodyContainer = $this->htmlFactory->genNonSelfClosingElement("div", [], $appearanceData, $styles, [ "container-fluid", "pt-5" ], $body);
+
+        $bodyHTML = $this->genBootstrapHeader($companyNameHTMLSafe, $appearanceData).$divBodyContainer.$this->genBootstrapFooter($companyData, $appearanceData);
 
         echo $this->genDefaultHTMLDoc($appearanceData, $bodyHTML, $companyNameHTMLSafe);
     }

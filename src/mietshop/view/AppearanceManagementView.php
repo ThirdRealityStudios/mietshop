@@ -249,7 +249,8 @@ class AppearanceManagementView implements IAppearanceManagementView
         ";
     }
 
-    public function showDefaultColorForm(array $companyData, array $appearanceData, string $element, array $validColors, string $selectedBootstrapColor) : void
+    public function showDefaultColorForm(array $companyData, array $appearanceData, string $element, array $validColors, string $selectedBootstrapColor
+    ) : void
     {
         $feedContentHTML = $this->genDefaultColorForm($appearanceData, $element, $validColors, $selectedBootstrapColor);
 

@@ -28,5 +28,5 @@ interface IGlobalView
      * @param string $body Your body HTML
      * @return void
      */
-    public function show(array $companyData, array $appearanceData, string $body) : void;
+    public function show(array $companyData, array $appearanceData, string $body): void;
 }

@@ -11,24 +11,27 @@ use src\mietshop\contracts\IErrorView;
 use src\mietshop\contracts\IImageModel;
 use src\mietshop\contracts\IValidationModel;
 use src\mietshop\infrastructure\http\IHTTPRequest;
+use src\mietshop\utils\IFileUtility;
 
 class AppearanceManagementPresenter implements IAppearanceManagementPresenter
 {
     private ICompanyModel $companyModel;
     private IAccountModel $accountModel;
+    private IFileUtility $fileUtility;
     private IAppearanceModel $appearanceModel;
     private IImageModel $imageModel;
     private IValidationModel $userInputModel;
     private IAppearanceManagementView $appearanceManagementView;
     private IErrorView $errorView;
 
-    public function __construct(ICompanyModel $companyModel, IAccountModel $accountModel, IAppearanceModel $appearanceModel, IImageModel $imageModel, IValidationModel $userInputModel, IAppearanceManagementView $appearanceManagementView, IErrorView $errorView)
+    public function __construct(ICompanyModel $companyModel, IAccountModel $accountModel, IAppearanceModel $appearanceModel, IImageModel $imageModel, IValidationModel $userInputModel, IFileUtility $fileUtility, IAppearanceManagementView $appearanceManagementView, IErrorView $errorView)
     {
         $this->companyModel = $companyModel;
         $this->accountModel = $accountModel;
         $this->appearanceModel = $appearanceModel;
         $this->imageModel = $imageModel;
         $this->userInputModel = $userInputModel;
+        $this->fileUtility = $fileUtility;
 
         $this->appearanceManagementView = $appearanceManagementView;
         $this->errorView = $errorView;
@@ -298,7 +301,7 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
         }
     }
 
-    private function postProcessImageUpdate(IHTTPRequest $request, array $companyData, array $validElements) : void
+    private function postProcessImageUpdate(IHTTPRequest $request, array $companyData, array $appearanceData, array $validElements) : void
     {
         $postElementValue = $request->getPOSTValue("element");
 
@@ -313,22 +316,29 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
             {
                 if(strcmp($postElementValue, "Logo") === 0)
                 {
-                    $localPath = DIRECTORY_SEPARATOR;
-                    $finalFileName ="favicon.png";
-                    $maxBytesAccepted = 1024 * 1024;
-                    $heightPx = 400;
+                    $filepath = $appearanceData["Image"]["Logo"][0];
+                    $maxBytesAccepted = 1024 * 1024 * 12;
+                    $heightPx = 600;
                 }
                 else if(strcmp($postElementValue, "Background") === 0)
                 {
-                    $localPath = DIRECTORY_SEPARATOR.'img'.DIRECTORY_SEPARATOR;
-                    $finalFileName ="background.png";
+                    $filepath = $appearanceData["Image"]["Background"][0];
                     $maxBytesAccepted = 1024 * 1024 * 12;
-                    $heightPx = 1440; // Matches the height of 2k resolution.
+                    $heightPx = 1024; // Matches the height of 2k resolution.
+                }
+                else if(strcmp($postElementValue, "Favicon") === 0)
+                {
+                    $filepath = $appearanceData["Image"]["Favicon"][0];
+                    $maxBytesAccepted = 1024 * 1024 * 12;
+                    $heightPx = 256; // Typical tab icon dimension, about 256 pixels.
                 }
                 else
                 {
                     $this->showInvalidRequestView($companyData);
                 }
+
+                $localPath = $this->fileUtility->getDirectoryPath($filepath);
+                $finalFileName = $this->fileUtility->getFilename($filepath);
 
                 $updatedImageSuccessfully = $this->imageModel->uploadImageAsPNG($localPath, $finalFileName, $_FILES, "image", $maxBytesAccepted, $heightPx); // 1 Mb maximum for favicon.
 
@@ -408,7 +418,7 @@ class AppearanceManagementPresenter implements IAppearanceManagementPresenter
                     }
                     else if($request->isPostParameterMatching("target", "Image"))
                     {
-                        $this->postProcessImageUpdate($request, $companyData, $validElements);
+                        $this->postProcessImageUpdate($request, $companyData, $appearanceData, $validElements);
                     }
                     else
                     {
