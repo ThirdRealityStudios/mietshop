@@ -2,78 +2,176 @@
 
 namespace src\mietshop\model;
 
+use GdImage;
 use src\mietshop\contracts\IImageModel;
 use src\mietshop\utils\IFileUtility;
+use function Brotli\compress;
+
+// UPLOAD_ERR_OK         Value: 0
+// There is no error, the file uploaded with success.
+
+// UPLOAD_ERR_INI_SIZE   Value: 1
+// The uploaded file exceeds the upload_max_filesize directive in php.ini.
+
+// UPLOAD_ERR_FORM_SIZE  Value: 2
+// The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form.
+
+// UPLOAD_ERR_PARTIAL    Value: 3
+// The uploaded file was only partially uploaded.
+
+// UPLOAD_ERR_NO_FILE    Value: 4
+// No file was uploaded.
+
+// UPLOAD_ERR_NO_TMP_DIR Value: 6
+// Missing a temporary folder. Introduced in PHP 4.3.10 and PHP 5.0.3.
+
+// UPLOAD_ERR_CANT_WRITE Value: 7
+// Failed to write file to disk. Introduced in PHP 5.1.0.
+
+// UPLOAD_ERR_EXTENSION  Value: 8
+// A PHP extension stopped the file upload. Introduced in PHP 5.2.0.
+
 
 class ImageModel implements IImageModel
 {
     private IFileUtility $fileUtility;
+    private GdImage $image;
 
     public function __construct(IFileUtility $fileUtility)
     {
         $this->fileUtility = $fileUtility;
     }
 
-    private function convertImageToPNG($originalImage, $outputImage, $quality) : bool
+    /**
+     * Converts files of usual image types to an instance,
+     * ready to process.
+     * The function can create GdImage instances from the types:
+     *
+     * - png
+     *
+     * - jpeg
+     *
+     * - gif
+     *
+     * - webp
+     *
+     * - bmp
+     *
+     * @param string $imageFilepath
+     * @return GdImage|null
+     */
+    private function createImageFromFile(string $imageFilepath) : GdImage|null
     {
-        $mimeType = mime_content_type($originalImage);
+        $mimeType = mime_content_type($imageFilepath);
 
         if(!is_string($mimeType))
         {
-            return false;
+            return null;
         }
-
-        /*
-        // images
-        'png' => 'image/png',
-            'jpe' => 'image/jpeg',
-            'jpeg' => 'image/jpeg',
-            'jpg' => 'image/jpeg',
-            'gif' => 'image/gif',
-            'bmp' => 'image/bmp',
-            'ico' => 'image/vnd.microsoft.icon',
-            'tiff' => 'image/tiff',
-            'tif' => 'image/tiff',
-            'svg' => 'image/svg+xml',
-            'svgz' => 'image/svg+xml',
-        */
 
         if(strcmp($mimeType, "image/jpeg") === 0)
         {
-            $imageTmp = imagecreatefromjpeg($originalImage);
+            $image = imagecreatefromjpeg($imageFilepath);
         }
         else if(strcmp($mimeType, "image/png") === 0)
         {
-            $imageTmp = imagecreatefrompng($originalImage);
+            $image = imagecreatefrompng($imageFilepath);
         }
         else if(strcmp($mimeType, "image/gif") === 0)
         {
-            $imageTmp = imagecreatefromgif($originalImage);
+            $image = imagecreatefromgif($imageFilepath);
         }
         else if(strcmp($mimeType, "image/bmp") === 0)
         {
-            $imageTmp = imagecreatefrombmp($originalImage);
+            $image = imagecreatefrombmp($imageFilepath);
+        }
+        else if(strcmp($mimeType, "image/webp") === 0)
+        {
+            $image = imagecreatefromwebp($imageFilepath);
         }
         else
         {
-            return false;
+            return null;
         }
 
-        if(is_bool($imageTmp))
+        if(is_bool($image) || is_resource($image) || !imagesavealpha($image, true) || !imageinterlace($image, true))
+        {
+            return null;
+        }
+
+        return $image;
+    }
+
+    public function resize(string $imageFilepath, int $newHeight) : bool
+    {
+        $size = getimagesize($imageFilepath);
+
+        if(!is_array($size) || $size[0] === 0 || $size[1] === 0)
         {
             return false;
         }
 
-        if(!imagesavealpha($imageTmp, true))
+        $currentWidth = $size[0];
+        $currentHeight = $size[1];
+
+        $ratio = $newHeight / $currentHeight;
+
+        $newWidth = (int) ($currentWidth * $ratio);
+
+        $imageTmp = $this->createImageFromFile($imageFilepath);
+
+        $finalImg = imagescale($imageTmp, $newWidth, $newHeight, IMG_BICUBIC);
+
+        if(is_bool($finalImg) || is_resource($finalImg))
         {
             return false;
         }
+
+        if(!imagepng($finalImg, $imageFilepath, 9))
+        {
+            return false;
+        }
+
+        if(!imagedestroy($finalImg))
+        {
+            return false;
+        }
+
+        // Then load the image again from the disk as an instance to resize it, and save again on disk.
+        // (not possible otherwise currently).
+
+        $imgDownsized = $this->createImageFromFile($imageFilepath);
+
+        if(!imagepng($imgDownsized, $imageFilepath, 9))
+        {
+            return false;
+        }
+
+        if(!imagedestroy($imgDownsized))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    private function convertImageToPNG(string $originalImage, string $outputImage, int $compression, int $heightPx) : bool
+    {
+        $imageTmp = $this->createImageFromFile($originalImage);
+
+        if(is_null($imageTmp))
+        {
+            return false;
+        }
+
+        //for($i = 0; $i < 2; $i++)
+            //imagefilter($imageTmp, IMG_FILTER_SMOOTH, IMG_FILTER_SMOOTH);
 
         // quality is a value from 0 (worst) to 100 (best)
         // imagejpeg($imageTmp, $outputImage, $quality);
 
         // quality is a value from 0 (best quality without compression) to 9 (worst but smallest)
-        if(!imagepng($imageTmp, $outputImage, $quality))
+        if(!imagepng($imageTmp, $outputImage, $compression))
         {
             return false;
         }
@@ -83,7 +181,7 @@ class ImageModel implements IImageModel
             return false;
         }
 
-        return true;
+        return $this->resize($outputImage, $heightPx);
     }
 
     private function isUploadInformationAvailable(array $uploadedFiles, string $postName) : bool
@@ -102,32 +200,8 @@ class ImageModel implements IImageModel
         return true;
     }
 
-    public function uploadImageAsPNG(string $localPath, string $finalFileName, array $uploadedImage, string $postName) : bool
+    public function uploadImageAsPNG(string $localPath, string $finalFileName, array $uploadedImage, string $postName, int $maxBytesAccepted) : bool
     {
-        // UPLOAD_ERR_OK         Value: 0
-        // There is no error, the file uploaded with success.
-
-        // UPLOAD_ERR_INI_SIZE   Value: 1
-        // The uploaded file exceeds the upload_max_filesize directive in php.ini.
-
-        // UPLOAD_ERR_FORM_SIZE  Value: 2
-        // The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form.
-
-        // UPLOAD_ERR_PARTIAL    Value: 3
-        // The uploaded file was only partially uploaded.
-
-        // UPLOAD_ERR_NO_FILE    Value: 4
-        // No file was uploaded.
-
-        // UPLOAD_ERR_NO_TMP_DIR Value: 6
-        // Missing a temporary folder. Introduced in PHP 4.3.10 and PHP 5.0.3.
-
-        // UPLOAD_ERR_CANT_WRITE Value: 7
-        // Failed to write file to disk. Introduced in PHP 5.1.0.
-
-        // UPLOAD_ERR_EXTENSION  Value: 8
-        // A PHP extension stopped the file upload. Introduced in PHP 5.2.0.
-
         if(!$this->isUploadInformationAvailable($uploadedImage, $postName))
         {
             return false;
@@ -141,6 +215,10 @@ class ImageModel implements IImageModel
         }
 
         $uploadError = $uploadedImage[$postName]['error'];
+        $fileName = $uploadedImage[$postName]['name'];
+        $fileTmpName = $uploadedImage[$postName]['tmp_name'];
+        $fileType = $uploadedImage[$postName]['type'];
+        $fileSize = $uploadedImage[$postName]['size'];
 
         if($uploadError === UPLOAD_ERR_NO_FILE || // No file was uploaded
             $uploadError === UPLOAD_ERR_PARTIAL || // File was only uploaded partially, not completely
@@ -150,6 +228,11 @@ class ImageModel implements IImageModel
             $uploadError === UPLOAD_ERR_CANT_WRITE || // Missing write permissions on server
             $uploadError === UPLOAD_ERR_EXTENSION || // A PHP extension or other software (e.g. antivirus) stopped the upload process on server-side
             $uploadError !== UPLOAD_ERR_OK)
+        {
+            return false;
+        }
+
+        if($fileSize > $maxBytesAccepted)
         {
             return false;
         }
@@ -171,11 +254,6 @@ class ImageModel implements IImageModel
 
         // TODO Below was for loop before for multiple uploaded files. Adjust for only one uploaded image!
 
-        $fileName = $uploadedImage[$postName]['name'];
-        $fileTmpName = $uploadedImage[$postName]['tmp_name'];
-        $fileType = $uploadedImage[$postName]['type'];
-        $fileSize = $uploadedImage[$postName]['size'];
-
         // Upload filepath where all unprocessed images are.
         $uploadFilepath = $unprocessedFolderPath.DIRECTORY_SEPARATOR.$finalFileName;
 
@@ -186,7 +264,7 @@ class ImageModel implements IImageModel
         }
 
         // if-statement is true: the funtion convertImage(..) fails somehow to treat ALL uploaded files (only one)
-        if(!$this->convertImageToPNG($uploadFilepath, "$pictureFolderAbsolutePath$finalFileName", 9))
+        if(!$this->convertImageToPNG($uploadFilepath, "$pictureFolderAbsolutePath$finalFileName", 9, 100))
         {
             // Converting the uploaded picture file to JPEG failed.
             return false;

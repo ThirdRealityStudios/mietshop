@@ -9,7 +9,8 @@ interface IImageModel
      * @param string $finalFileName
      * @param array $uploadedImage
      * @param string $postName
+     * @param int $maxBytesAccepted
      * @return bool
      */
-    public function uploadImageAsPNG(string $localPath, string $finalFileName, array $uploadedImage, string $postName) : bool;
+    public function uploadImageAsPNG(string $localPath, string $finalFileName, array $uploadedImage, string $postName, int $maxBytesAccepted) : bool;
 }
